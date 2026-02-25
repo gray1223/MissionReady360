@@ -63,10 +63,10 @@ export const flightSchema = z.object({
   // Mission
   formation_position: z.string().optional().nullable(),
   formation_type: z.string().optional().default(""),
-  weapons_events: z.array(z.record(z.string(), z.unknown())).default([]),
+  weapons_events: z.array(z.record(z.unknown())).default([]),
   air_refueling_type: z.string().optional().nullable(),
   air_refueling_contacts: z.coerce.number().int().min(0).default(0),
-  airdrop_events: z.array(z.record(z.string(), z.unknown())).default([]),
+  airdrop_events: z.array(z.record(z.unknown())).default([]),
   low_level_time: z.coerce.number().min(0).default(0),
   low_level_type: z.string().optional().default(""),
   combat_time: z.coerce.number().min(0).default(0),

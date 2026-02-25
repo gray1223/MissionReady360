@@ -5,7 +5,9 @@ import {
   Clock,
   BarChart3,
   Award,
+  ArrowRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const FEATURES = [
   {
@@ -59,17 +61,11 @@ export default function LandingPage() {
         </div>
 
         <nav className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-slate-100"
-          >
-            Sign In
+          <Link href="/login">
+            <Button variant="ghost" size="sm">Sign In</Button>
           </Link>
-          <Link
-            href="/signup"
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
-          >
-            Get Started
+          <Link href="/signup">
+            <Button variant="primary" size="sm">Get Started</Button>
           </Link>
         </nav>
       </header>
@@ -93,30 +89,16 @@ export default function LandingPage() {
           </p>
 
           <div className="flex items-center justify-center gap-4 pt-2">
-            <Link
-              href="/signup"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-base font-medium text-white hover:bg-emerald-500"
-            >
-              Get Started
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
+            <Link href="/signup">
+              <Button variant="primary" size="lg">
+                Get Started
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-6 py-3 text-base font-medium text-slate-300 hover:bg-slate-800 hover:text-slate-100"
-            >
-              Sign In
+            <Link href="/login">
+              <Button variant="outline" size="lg">
+                Sign In
+              </Button>
             </Link>
           </div>
         </div>
