@@ -1,7 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { format } from "date-fns";
+import { redirect } from "next/navigation";
+import { format, subDays, startOfYear } from "date-fns";
 import {
   Plane,
   Clock,
@@ -10,56 +9,105 @@ import {
   ArrowRight,
   Plus,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/components/providers/supabase-provider";
-
-// Mock data for demonstration purposes
-const mockCurrencies = [
-  { name: "Instrument Currency", status: "current" as const, daysRemaining: 45 },
-  { name: "Night Currency", status: "current" as const, daysRemaining: 72 },
-  { name: "NVG Currency", status: "warning" as const, daysRemaining: 12 },
-  { name: "Formation Lead", status: "current" as const, daysRemaining: 90 },
-  { name: "Tactical Currency", status: "warning" as const, daysRemaining: 8 },
-  { name: "Passenger Currency", status: "danger" as const, daysRemaining: -5 },
-  { name: "BFM Currency", status: "current" as const, daysRemaining: 30 },
-];
-
-const mockRecentFlights = [
-  { date: "2026-02-20", aircraft: "C-17A", duration: 4.2, type: "Local Training" },
-  { date: "2026-02-17", aircraft: "C-17A", duration: 8.5, type: "Cross Country" },
-  { date: "2026-02-14", aircraft: "C-17A", duration: 2.1, type: "Instrument" },
-  { date: "2026-02-10", aircraft: "C-17A", duration: 6.3, type: "Formation" },
-  { date: "2026-02-05", aircraft: "C-17A", duration: 3.8, type: "Local Training" },
-];
 
 const statusVariant: Record<string, "success" | "warning" | "danger"> = {
   current: "success",
-  warning: "warning",
-  danger: "danger",
+  expiring_soon: "warning",
+  expired: "danger",
 };
 
 const statusLabel: Record<string, string> = {
   current: "Current",
-  warning: "Expiring Soon",
-  danger: "Expired",
+  expiring_soon: "Expiring Soon",
+  expired: "Expired",
 };
 
-export default function DashboardPage() {
-  const { user } = useUser();
+export default async function DashboardPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  // Fetch profile, recent flights, all flights for hours, and currencies in parallel
+  const now = new Date();
+  const thirtyDaysAgo = format(subDays(now, 30), "yyyy-MM-dd");
+  const ninetyDaysAgo = format(subDays(now, 90), "yyyy-MM-dd");
+  const yearStart = format(startOfYear(now), "yyyy-MM-dd");
+
+  const [
+    { data: profile },
+    { data: recentFlights },
+    { data: allFlights },
+    { data: currencies },
+  ] = await Promise.all([
+    supabase.from("profiles").select("callsign").eq("id", user.id).single(),
+    supabase
+      .from("flights")
+      .select("id, flight_date, total_time, sortie_type, tail_number, aircraft_type_id, aircraft_types(designation, name)")
+      .eq("user_id", user.id)
+      .order("flight_date", { ascending: false })
+      .limit(5),
+    supabase
+      .from("flights")
+      .select("flight_date, total_time, night_time, instrument_time")
+      .eq("user_id", user.id),
+    supabase.rpc("compute_user_currencies", { p_user_id: user.id }),
+  ]);
 
   const callsign =
-    user?.user_metadata?.callsign ||
-    user?.user_metadata?.full_name ||
-    user?.email?.split("@")[0] ||
-    "Pilot";
+    profile?.callsign || user.user_metadata?.callsign || user.email?.split("@")[0] || "Pilot";
+  const today = format(now, "EEEE, MMMM do, yyyy");
 
-  const today = format(new Date(), "EEEE, MMMM do, yyyy");
+  // Compute hours from all flights
+  const flights = allFlights || [];
+  let last30 = 0, last90 = 0, ytd = 0, career = 0;
+  let nightYtd = 0, instrumentYtd = 0, sortiesYtd = 0;
 
-  const currentCount = mockCurrencies.filter((c) => c.status === "current").length;
-  const warningCount = mockCurrencies.filter((c) => c.status === "warning").length;
-  const expiredCount = mockCurrencies.filter((c) => c.status === "danger").length;
+  for (const f of flights) {
+    const total = Number(f.total_time) || 0;
+    career += total;
+
+    if (f.flight_date >= thirtyDaysAgo) last30 += total;
+    if (f.flight_date >= ninetyDaysAgo) last90 += total;
+    if (f.flight_date >= yearStart) {
+      ytd += total;
+      nightYtd += Number(f.night_time) || 0;
+      instrumentYtd += Number(f.instrument_time) || 0;
+      sortiesYtd += 1;
+    }
+  }
+
+  // Currency summary
+  const currencyList = (currencies || []) as Array<{
+    rule_name: string;
+    status: string;
+    days_remaining: number;
+  }>;
+  const currentCount = currencyList.filter((c) => c.status === "current").length;
+  const warningCount = currencyList.filter((c) => c.status === "expiring_soon").length;
+  const expiredCount = currencyList.filter((c) => c.status === "expired").length;
+
+  // Format recent flights for display — Supabase joins return arrays
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recent = ((recentFlights || []) as any[]).map((f) => ({
+    ...f,
+    aircraft_types: Array.isArray(f.aircraft_types)
+      ? f.aircraft_types[0] ?? null
+      : f.aircraft_types ?? null,
+  })) as Array<{
+    id: string;
+    flight_date: string;
+    total_time: number;
+    sortie_type: string | null;
+    tail_number: string | null;
+    aircraft_type_id: string | null;
+    aircraft_types: { designation: string; name: string } | null;
+  }>;
 
   return (
     <div className="space-y-6">
@@ -109,36 +157,48 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {/* Summary badges */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              <Badge variant="success">{currentCount} Current</Badge>
-              <Badge variant="warning">{warningCount} Expiring</Badge>
-              <Badge variant="danger">{expiredCount} Expired</Badge>
-            </div>
-
-            {/* Currency list */}
-            <div className="space-y-2.5">
-              {mockCurrencies.map((currency) => (
-                <div
-                  key={currency.name}
-                  className="flex items-center justify-between rounded-lg bg-slate-800/30 px-3 py-2"
-                >
-                  <span className="text-sm text-slate-300">
-                    {currency.name}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">
-                      {currency.daysRemaining > 0
-                        ? `${currency.daysRemaining}d remaining`
-                        : `${Math.abs(currency.daysRemaining)}d overdue`}
-                    </span>
-                    <Badge variant={statusVariant[currency.status]}>
-                      {statusLabel[currency.status]}
-                    </Badge>
-                  </div>
+            {currencyList.length > 0 ? (
+              <>
+                {/* Summary badges */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <Badge variant="success">{currentCount} Current</Badge>
+                  <Badge variant="warning">{warningCount} Expiring</Badge>
+                  <Badge variant="danger">{expiredCount} Expired</Badge>
                 </div>
-              ))}
-            </div>
+
+                {/* Currency list */}
+                <div className="space-y-2.5">
+                  {currencyList.map((currency) => (
+                    <div
+                      key={currency.rule_name}
+                      className="flex items-center justify-between rounded-lg bg-slate-800/30 px-3 py-2"
+                    >
+                      <span className="text-sm text-slate-300">
+                        {currency.rule_name}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-slate-500">
+                          {currency.days_remaining > 0
+                            ? `${currency.days_remaining}d remaining`
+                            : `${Math.abs(currency.days_remaining)}d overdue`}
+                        </span>
+                        <Badge variant={statusVariant[currency.status] || "default"}>
+                          {statusLabel[currency.status] || currency.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Clock className="h-8 w-8 text-slate-700 mb-2" />
+                <p className="text-sm text-slate-400">No currency rules configured</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Add aircraft to get currency tracking
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -155,15 +215,15 @@ export default function DashboardPage() {
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="rounded-lg bg-slate-800/30 p-4 text-center">
-                <p className="text-2xl font-bold text-slate-100">24.9</p>
+                <p className="text-2xl font-bold text-slate-100">{last30.toFixed(1)}</p>
                 <p className="mt-1 text-xs text-slate-400">Last 30 Days</p>
               </div>
               <div className="rounded-lg bg-slate-800/30 p-4 text-center">
-                <p className="text-2xl font-bold text-slate-100">68.3</p>
+                <p className="text-2xl font-bold text-slate-100">{last90.toFixed(1)}</p>
                 <p className="mt-1 text-xs text-slate-400">Last 90 Days</p>
               </div>
               <div className="rounded-lg bg-slate-800/30 p-4 text-center">
-                <p className="text-2xl font-bold text-slate-100">142.7</p>
+                <p className="text-2xl font-bold text-slate-100">{ytd.toFixed(1)}</p>
                 <p className="mt-1 text-xs text-slate-400">Year to Date</p>
               </div>
             </div>
@@ -171,19 +231,19 @@ export default function DashboardPage() {
             <div className="mt-4 space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-400">Total Career Hours</span>
-                <span className="font-medium text-slate-200">1,247.3</span>
+                <span className="font-medium text-slate-200">{career.toFixed(1)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-400">Night Hours (YTD)</span>
-                <span className="font-medium text-slate-200">28.5</span>
+                <span className="font-medium text-slate-200">{nightYtd.toFixed(1)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-400">Instrument Hours (YTD)</span>
-                <span className="font-medium text-slate-200">18.2</span>
+                <span className="font-medium text-slate-200">{instrumentYtd.toFixed(1)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-400">Sorties (YTD)</span>
-                <span className="font-medium text-slate-200">34</span>
+                <span className="font-medium text-slate-200">{sortiesYtd}</span>
               </div>
             </div>
           </CardContent>
@@ -209,7 +269,7 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {mockRecentFlights.length > 0 ? (
+            {recent.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -232,22 +292,26 @@ export default function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockRecentFlights.map((flight, i) => (
+                    {recent.map((flight) => (
                       <tr
-                        key={i}
+                        key={flight.id}
                         className="border-b border-slate-800/50 last:border-0"
                       >
                         <td className="py-2.5 text-slate-300">
-                          {format(new Date(flight.date), "MMM d, yyyy")}
+                          {format(new Date(flight.flight_date), "MMM d, yyyy")}
                         </td>
                         <td className="py-2.5 text-slate-300">
-                          {flight.aircraft}
+                          {flight.aircraft_types?.designation || "—"}
                         </td>
                         <td className="py-2.5 text-right text-slate-300">
-                          {flight.duration.toFixed(1)} hrs
+                          {Number(flight.total_time).toFixed(1)} hrs
                         </td>
                         <td className="py-2.5">
-                          <Badge variant="default">{flight.type}</Badge>
+                          <Badge variant="default">
+                            {flight.sortie_type
+                              ? flight.sortie_type.replace(/_/g, " ")
+                              : "—"}
+                          </Badge>
                         </td>
                       </tr>
                     ))}

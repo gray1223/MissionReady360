@@ -17,7 +17,7 @@ import {
   Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { useUser } from "@/components/providers/supabase-provider";
+import { useUser, useProfile } from "@/components/providers/supabase-provider";
 import { createClient } from "@/lib/supabase/client";
 
 const STORAGE_KEY = "mr360-sidebar-collapsed";
@@ -38,6 +38,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
+  const { profile } = useProfile();
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -59,10 +60,10 @@ export function Sidebar() {
     router.push("/login");
   }
 
-  // Derive display name from user metadata
+  // Derive display name from profile (DB), falling back to user metadata
   const callsign =
+    profile?.callsign ||
     user?.user_metadata?.callsign ||
-    user?.user_metadata?.full_name ||
     user?.email?.split("@")[0] ||
     "Pilot";
 

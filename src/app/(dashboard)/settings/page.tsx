@@ -1,14 +1,10 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import {
   User,
   Bell,
   Shield,
-  LogOut,
   Mail,
   Lock,
-  Edit,
 } from "lucide-react";
 import {
   Card,
@@ -18,23 +14,31 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/components/providers/supabase-provider";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
+import { EditProfileModal } from "@/components/settings/edit-profile-modal";
+import { SignOutButton } from "@/components/settings/sign-out-button";
+import { FlightLogPreferencesCard } from "@/components/settings/flight-log-preferences";
 
-export default function SettingsPage() {
-  const router = useRouter();
-  const { user } = useUser();
+export default async function SettingsPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
-  const callsign = user?.user_metadata?.callsign || "Not set";
-  const rank = user?.user_metadata?.rank || "Not set";
-  const branch = user?.user_metadata?.branch || "Not set";
-  const unit = user?.user_metadata?.unit || "Not set";
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
-  async function handleSignOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-  }
+  const branch = profile?.branch || "Not set";
+  const rank = profile?.rank || "Not set";
+  const unit = profile?.unit || "Not set";
+  const callsign = profile?.callsign || "Not set";
+  const dutyStatus = profile?.duty_status
+    ? profile.duty_status.charAt(0).toUpperCase() + profile.duty_status.slice(1)
+    : "Not set";
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -53,10 +57,9 @@ export default function SettingsPage() {
                 Your military service profile information
               </CardDescription>
             </div>
-            <Button variant="ghost" size="sm" disabled>
-              <Edit className="h-4 w-4" />
-              Edit
-            </Button>
+            {profile && (
+              <EditProfileModal profile={profile} userId={user.id} />
+            )}
           </div>
         </CardHeader>
         <CardContent>
@@ -85,9 +88,23 @@ export default function SettingsPage() {
               </p>
               <p className="mt-1 text-sm text-slate-200">{callsign}</p>
             </div>
+            <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Duty Status
+              </p>
+              <p className="mt-1 text-sm text-slate-200">{dutyStatus}</p>
+            </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Flight Log Preferences */}
+      {profile && (
+        <FlightLogPreferencesCard
+          preferences={profile.flight_log_preferences || {}}
+          userId={user.id}
+        />
+      )}
 
       {/* Notification Preferences */}
       <Card>
@@ -150,7 +167,7 @@ export default function SettingsPage() {
                 <div>
                   <p className="text-sm text-slate-200">Email Address</p>
                   <p className="text-xs text-slate-500">
-                    {user?.email || "Not available"}
+                    {user.email || "Not available"}
                   </p>
                 </div>
               </div>
@@ -174,14 +191,7 @@ export default function SettingsPage() {
 
             {/* Sign Out */}
             <div className="pt-4 border-t border-slate-800">
-              <Button
-                variant="danger"
-                size="md"
-                onClick={handleSignOut}
-              >
-                <LogOut className="h-4 w-4" />
-                Sign Out
-              </Button>
+              <SignOutButton />
             </div>
           </div>
         </CardContent>

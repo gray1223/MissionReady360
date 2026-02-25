@@ -45,6 +45,10 @@ export type QualificationLevel =
 export type FlightCondition = "day" | "night" | "nvg" | "mixed";
 export type PeriodUnit = "days" | "calendar_months" | "calendar_years";
 
+export interface FlightLogPreferences {
+  hiddenSections?: string[];
+}
+
 export interface Profile {
   id: string;
   branch: MilitaryBranch | null;
@@ -68,6 +72,7 @@ export interface Profile {
     push_expiring: boolean;
     warning_days: number;
   };
+  flight_log_preferences: FlightLogPreferences;
   created_at: string;
   updated_at: string;
 }

@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MissionReady360",
   description: "Military pilot flight logger and currency tracker",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

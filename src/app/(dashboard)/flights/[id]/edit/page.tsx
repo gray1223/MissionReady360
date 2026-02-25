@@ -17,15 +17,21 @@ export default async function EditFlightPage({ params }: EditFlightPageProps) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: flight }, { data: aircraft }] = await Promise.all([
-    supabase
-      .from("flights")
-      .select("*")
-      .eq("id", id)
-      .eq("user_id", user.id)
-      .single(),
-    supabase.from("aircraft_types").select("*").order("designation"),
-  ]);
+  const [{ data: flight }, { data: aircraft }, { data: profile }] =
+    await Promise.all([
+      supabase
+        .from("flights")
+        .select("*")
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .single(),
+      supabase.from("aircraft_types").select("*").order("designation"),
+      supabase
+        .from("profiles")
+        .select("flight_log_preferences")
+        .eq("id", user.id)
+        .single(),
+    ]);
 
   if (!flight) notFound();
 
@@ -48,6 +54,7 @@ export default async function EditFlightPage({ params }: EditFlightPageProps) {
         aircraft={aircraft || []}
         initialData={flight}
         flightId={id}
+        preferences={profile?.flight_log_preferences}
       />
     </div>
   );

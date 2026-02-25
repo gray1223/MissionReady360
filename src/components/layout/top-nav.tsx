@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Plus, Bell, ChevronDown, LogOut, User, Settings } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { useUser } from "@/components/providers/supabase-provider";
+import { useUser, useProfile } from "@/components/providers/supabase-provider";
 import { createClient } from "@/lib/supabase/client";
 
 const pageTitles: Record<string, string> = {
@@ -40,12 +40,13 @@ export function TopNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
+  const { profile } = useProfile();
 
   const pageTitle = getPageTitle(pathname);
 
   const callsign =
+    profile?.callsign ||
     user?.user_metadata?.callsign ||
-    user?.user_metadata?.full_name ||
     user?.email?.split("@")[0] ||
     "Pilot";
 

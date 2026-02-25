@@ -9,10 +9,14 @@ export default async function NewFlightPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: aircraft } = await supabase
-    .from("aircraft_types")
-    .select("*")
-    .order("designation");
+  const [{ data: aircraft }, { data: profile }] = await Promise.all([
+    supabase.from("aircraft_types").select("*").order("designation"),
+    supabase
+      .from("profiles")
+      .select("flight_log_preferences")
+      .eq("id", user.id)
+      .single(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -22,7 +26,10 @@ export default async function NewFlightPage() {
           Record your flight details below
         </p>
       </div>
-      <FlightForm aircraft={aircraft || []} />
+      <FlightForm
+        aircraft={aircraft || []}
+        preferences={profile?.flight_log_preferences}
+      />
     </div>
   );
 }

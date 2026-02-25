@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Dark background circle -->
+  <circle cx="16" cy="16" r="16" fill="#0f172a"/>
+  <!-- Shield shape -->
+  <path d="M16 4 L26 9 L26 17 C26 22.5 21.5 27 16 28 C10.5 27 6 22.5 6 17 L6 9 Z" fill="#059669" opacity="0.9"/>
+  <!-- Inner shield highlight -->
+  <path d="M16 6.5 L24 10.5 L24 17 C24 21.5 20.5 25.5 16 26.5 C11.5 25.5 8 21.5 8 17 L8 10.5 Z" fill="#0f172a" opacity="0.6"/>
+  <!-- Wings -->
+  <path d="M16 13 L10 16 L6 15 L10 14 L14 12 Z" fill="#10b981" opacity="0.8"/>
+  <path d="M16 13 L22 16 L26 15 L22 14 L18 12 Z" fill="#10b981" opacity="0.8"/>
+  <!-- Star center -->
+  <polygon points="16,10 17.2,13.5 21,13.5 18,15.8 19.2,19.5 16,17 12.8,19.5 14,15.8 11,13.5 14.8,13.5" fill="#34d399"/>
+</svg>

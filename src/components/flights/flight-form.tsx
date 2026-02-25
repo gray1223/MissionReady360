@@ -24,15 +24,16 @@ import {
   FLIGHT_CONDITIONS,
   FORMATION_POSITIONS,
 } from "@/lib/constants/mission-symbols";
-import type { AircraftType, Flight } from "@/lib/types/database";
+import type { AircraftType, Flight, FlightLogPreferences } from "@/lib/types/database";
 
 interface FlightFormProps {
   aircraft: AircraftType[];
   initialData?: Partial<Flight>;
   flightId?: string;
+  preferences?: FlightLogPreferences;
 }
 
-export function FlightForm({ aircraft, initialData, flightId }: FlightFormProps) {
+export function FlightForm({ aircraft, initialData, flightId, preferences }: FlightFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -61,6 +62,7 @@ export function FlightForm({ aircraft, initialData, flightId }: FlightFormProps)
   const selectedAircraftId = watch("aircraft_type_id");
   const selectedAircraft = aircraft.find((a) => a.id === selectedAircraftId);
   const isSim = watch("is_simulator");
+  const hiddenSections = new Set(preferences?.hiddenSections || []);
 
   const aircraftOptions = aircraft.map((a) => ({
     value: a.id,
@@ -174,7 +176,7 @@ export function FlightForm({ aircraft, initialData, flightId }: FlightFormProps)
       </CollapsibleSection>
 
       {/* Military Mission Info */}
-      <CollapsibleSection title="Mission Details">
+      {!hiddenSections.has("mission_details") && <CollapsibleSection title="Mission Details">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Select
             {...register("sortie_type")}
@@ -207,7 +209,7 @@ export function FlightForm({ aircraft, initialData, flightId }: FlightFormProps)
         <div className="mt-4">
           <CrewInput control={control} register={register} />
         </div>
-      </CollapsibleSection>
+      </CollapsibleSection>}
 
       {/* Flight Time */}
       <CollapsibleSection title="Flight Time" defaultOpen>
@@ -279,7 +281,7 @@ export function FlightForm({ aircraft, initialData, flightId }: FlightFormProps)
       </CollapsibleSection>
 
       {/* FAA Time */}
-      <CollapsibleSection title="FAA Time">
+      {!hiddenSections.has("faa_time") && <CollapsibleSection title="FAA Time">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           <Input
             {...register("pic_time")}
@@ -317,10 +319,10 @@ export function FlightForm({ aircraft, initialData, flightId }: FlightFormProps)
             min="0"
           />
         </div>
-      </CollapsibleSection>
+      </CollapsibleSection>}
 
       {/* Landings */}
-      <CollapsibleSection title="Landings">
+      {!hiddenSections.has("landings") && <CollapsibleSection title="Landings">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           <Input
             {...register("day_landings")}
@@ -371,15 +373,15 @@ export function FlightForm({ aircraft, initialData, flightId }: FlightFormProps)
             </>
           )}
         </div>
-      </CollapsibleSection>
+      </CollapsibleSection>}
 
       {/* Approaches */}
-      <CollapsibleSection title="Approaches">
+      {!hiddenSections.has("approaches") && <CollapsibleSection title="Approaches">
         <ApproachInput control={control} register={register} />
-      </CollapsibleSection>
+      </CollapsibleSection>}
 
       {/* Mission Specific - conditionally show based on aircraft capabilities */}
-      {selectedAircraft && (selectedAircraft.has_formation || selectedAircraft.has_weapons || selectedAircraft.has_air_refueling || selectedAircraft.has_airdrop || selectedAircraft.has_low_level) && (
+      {!hiddenSections.has("mission_specific") && selectedAircraft && (selectedAircraft.has_formation || selectedAircraft.has_weapons || selectedAircraft.has_air_refueling || selectedAircraft.has_airdrop || selectedAircraft.has_low_level) && (
         <CollapsibleSection title="Mission Specific">
           <div className="space-y-6">
             {selectedAircraft.has_formation && (
@@ -472,13 +474,13 @@ export function FlightForm({ aircraft, initialData, flightId }: FlightFormProps)
       )}
 
       {/* Remarks */}
-      <CollapsibleSection title="Remarks">
+      {!hiddenSections.has("remarks") && <CollapsibleSection title="Remarks">
         <Textarea
           {...register("remarks")}
           placeholder="Additional notes about this flight..."
           rows={3}
         />
-      </CollapsibleSection>
+      </CollapsibleSection>}
 
       {/* Submit */}
       <div className="flex items-center justify-end gap-3 pt-4">

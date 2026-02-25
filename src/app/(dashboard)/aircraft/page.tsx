@@ -1,10 +1,49 @@
-"use client";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { AircraftList } from "@/components/aircraft/aircraft-list";
+import { AddAircraftButton } from "@/components/aircraft/add-aircraft-button";
 
-import { Cog, Plus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+export default async function AircraftPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
-export default function AircraftPage() {
+  const [{ data: userAircraft }, { data: allAircraft }, { data: profile }] =
+    await Promise.all([
+      supabase
+        .from("user_aircraft")
+        .select("id, qualification_level, is_primary, aircraft_type_id, aircraft_types(id, designation, name)")
+        .eq("user_id", user.id)
+        .order("created_at"),
+      supabase
+        .from("aircraft_types")
+        .select("*")
+        .order("designation"),
+      supabase
+        .from("profiles")
+        .select("primary_aircraft_id, branch")
+        .eq("id", user.id)
+        .single(),
+    ]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const aircraftRows = ((userAircraft || []) as any[]).map((ua) => ({
+    ...ua,
+    aircraft_types: Array.isArray(ua.aircraft_types)
+      ? ua.aircraft_types[0]
+      : ua.aircraft_types,
+  }));
+
+  // Filter available aircraft by user's branch if set
+  const branch = profile?.branch;
+  const available = (allAircraft || []).filter(
+    (a) => !branch || !a.branch || a.branch === branch
+  );
+
+  const existingIds = aircraftRows.map((ua: any) => ua.aircraft_types?.id).filter(Boolean);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -14,33 +53,18 @@ export default function AircraftPage() {
             Manage your qualified aircraft types
           </p>
         </div>
-        <Button variant="primary" size="md" disabled>
-          <Plus className="h-4 w-4" />
-          Add Aircraft
-        </Button>
+        <AddAircraftButton
+          availableAircraft={available}
+          userId={user.id}
+          existingAircraftIds={existingIds}
+        />
       </div>
 
-      {/* Empty state */}
-      <Card>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-800/50 mb-4">
-              <Cog className="h-8 w-8 text-slate-600" />
-            </div>
-            <h3 className="text-lg font-semibold text-slate-300">
-              No aircraft added
-            </h3>
-            <p className="mt-2 max-w-sm text-sm text-slate-500">
-              Add the aircraft types you are qualified to fly. This helps track
-              type-specific currencies and requirements.
-            </p>
-            <Button variant="outline" size="md" className="mt-6" disabled>
-              <Plus className="h-4 w-4" />
-              Add Your First Aircraft
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <AircraftList
+        userAircraft={aircraftRows}
+        userId={user.id}
+        primaryAircraftId={profile?.primary_aircraft_id || null}
+      />
     </div>
   );
 }

@@ -20,8 +20,14 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
   return (
-    <SupabaseProvider initialUser={user}>
+    <SupabaseProvider initialUser={user} initialProfile={profile}>
       <div className="min-h-screen bg-slate-950">
         {/* Desktop sidebar */}
         <Sidebar />
