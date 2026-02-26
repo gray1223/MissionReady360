@@ -5,6 +5,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/dashboard";
+  const mode = searchParams.get("mode");
 
   if (code) {
     const supabase = await createClient();
@@ -26,7 +27,14 @@ export async function GET(request: Request) {
 
         if (!profile) {
           // No profile yet -- send to onboarding
-          return NextResponse.redirect(`${origin}/onboarding`);
+          // Resolve mode: explicit param > user metadata > default military
+          const resolvedMode =
+            mode ||
+            user.user_metadata?.logbook_mode ||
+            "military";
+          return NextResponse.redirect(
+            `${origin}/onboarding?mode=${resolvedMode}`
+          );
         }
       }
 

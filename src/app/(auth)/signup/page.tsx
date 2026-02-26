@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckCircle } from "lucide-react";
+import type { LogbookMode } from "@/lib/types/database";
 
 const signupSchema = z
   .object({
@@ -34,6 +36,16 @@ const signupSchema = z
 type SignupFormData = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[200px] flex items-center justify-center text-text-muted">Loading...</div>}>
+      <SignupContent />
+    </Suspense>
+  );
+}
+
+function SignupContent() {
+  const searchParams = useSearchParams();
+  const mode = (searchParams.get("mode") as LogbookMode) || "military";
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -54,7 +66,8 @@ export default function SignupPage() {
       email: data.email,
       password: data.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/callback`,
+        emailRedirectTo: `${window.location.origin}/callback?mode=${mode}`,
+        data: { logbook_mode: mode },
       },
     });
 
@@ -74,7 +87,7 @@ export default function SignupPage() {
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/callback`,
+        redirectTo: `${window.location.origin}/callback?mode=${mode}`,
       },
     });
 
@@ -116,7 +129,9 @@ export default function SignupPage() {
           Create your account
         </h2>
         <p className="mt-1 text-sm text-text-secondary">
-          Start tracking your flight currencies
+          {mode === "civilian"
+            ? "Start tracking your flights and FAA currencies"
+            : "Start tracking your flight currencies"}
         </p>
       </div>
 

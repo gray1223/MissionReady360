@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils/cn";
 import { useUser, useProfile } from "@/components/providers/supabase-provider";
 import { createClient } from "@/lib/supabase/client";
+import { ModeSwitcher } from "./mode-switcher";
 
 const STORAGE_KEY = "mr360-sidebar-collapsed";
 
@@ -99,6 +100,9 @@ export function Sidebar() {
           )}
         </Link>
       </div>
+
+      {/* Mode Switcher */}
+      <ModeSwitcher collapsed={collapsed} />
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">

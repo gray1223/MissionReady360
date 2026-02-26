@@ -72,6 +72,9 @@ export const flightSchema = z.object({
   combat_time: z.coerce.number().min(0).default(0),
   combat_sorties: z.coerce.number().int().min(0).default(0),
 
+  // Mode
+  is_military_flight: z.boolean().default(true),
+
   // Simulator
   is_simulator: z.boolean().default(false),
   simulator_type: z.string().optional().default(""),
@@ -125,6 +128,7 @@ export const flightDefaults: FlightFormData = {
   low_level_type: "",
   combat_time: 0,
   combat_sorties: 0,
+  is_military_flight: true,
   is_simulator: false,
   simulator_type: "",
 };

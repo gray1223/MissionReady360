@@ -35,6 +35,9 @@ export function FlightCard({ flight, onClick }: FlightCardProps) {
             </span>
             <Badge variant={condition.variant}>{condition.label}</Badge>
             {flight.is_simulator && <Badge variant="info">SIM</Badge>}
+            <Badge variant={flight.is_military_flight ? "success" : "default"}>
+              {flight.is_military_flight ? "MIL" : "CIV"}
+            </Badge>
           </div>
           <div className="flex items-center gap-3 text-sm text-slate-400">
             {flight.aircraft_type && (

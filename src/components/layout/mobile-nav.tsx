@@ -14,9 +14,10 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { useUser } from "@/components/providers/supabase-provider";
+import { useUser, useLogbookMode } from "@/components/providers/supabase-provider";
 import { createClient } from "@/lib/supabase/client";
 
 const mainNavItems = [
@@ -48,6 +49,8 @@ export function MobileNav() {
     await supabase.auth.signOut();
     router.push("/login");
   }
+
+  const { mode, switchMode, isMilitary } = useLogbookMode();
 
   const callsign =
     user?.user_metadata?.callsign ||
@@ -87,6 +90,27 @@ export function MobileNav() {
               </p>
             </div>
           </div>
+
+          {/* Mode switcher */}
+          <button
+            onClick={() => {
+              switchMode(isMilitary ? "civilian" : "military");
+              setMoreOpen(false);
+            }}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-300 hover:bg-slate-800/50 transition-colors mb-1 border-b border-slate-800 pb-2.5"
+          >
+            {isMilitary ? (
+              <>
+                <Plane className="h-5 w-5" />
+                <span>Switch to Civilian</span>
+              </>
+            ) : (
+              <>
+                <Shield className="h-5 w-5" />
+                <span>Switch to Military</span>
+              </>
+            )}
+          </button>
 
           {/* More nav items */}
           {moreNavItems.map((item) => {

@@ -44,6 +44,15 @@ export type QualificationLevel =
   | "mission_commander";
 export type FlightCondition = "day" | "night" | "nvg" | "mixed";
 export type PeriodUnit = "days" | "calendar_months" | "calendar_years";
+export type LogbookMode = "military" | "civilian";
+export type CertificateType =
+  | "none"
+  | "student"
+  | "sport"
+  | "recreational"
+  | "private"
+  | "commercial"
+  | "atp";
 
 export interface PriorHoursInput {
   total_time?: number;
@@ -62,11 +71,13 @@ export interface FlightLogPreferences {
   hiddenSections?: string[];
   trackedRatings?: string[];
   showRatingProgress?: boolean;
+  showFaaCurrencies?: boolean;
   priorHours?: PriorHoursInput;
 }
 
 export interface Profile {
   id: string;
+  logbook_mode: LogbookMode;
   branch: MilitaryBranch | null;
   rank: string | null;
   duty_status:
@@ -78,6 +89,10 @@ export interface Profile {
     | null;
   unit: string | null;
   callsign: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  home_airport: string | null;
+  certificate_type: CertificateType | null;
   primary_aircraft_id: string | null;
   qualification_level: QualificationLevel | null;
   faa_certificate_number: string | null;
@@ -196,6 +211,7 @@ export interface Flight {
   low_level_type: string | null;
   combat_time: number;
   combat_sorties: number;
+  is_military_flight: boolean;
   is_simulator: boolean;
   simulator_type: string | null;
   is_synced: boolean;

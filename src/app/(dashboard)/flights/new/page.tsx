@@ -13,7 +13,7 @@ export default async function NewFlightPage() {
     supabase.from("aircraft_types").select("*").order("designation"),
     supabase
       .from("profiles")
-      .select("flight_log_preferences")
+      .select("flight_log_preferences, logbook_mode")
       .eq("id", user.id)
       .single(),
   ]);
@@ -29,6 +29,7 @@ export default async function NewFlightPage() {
       <FlightForm
         aircraft={aircraft || []}
         preferences={profile?.flight_log_preferences}
+        logbookMode={profile?.logbook_mode || "military"}
       />
     </div>
   );

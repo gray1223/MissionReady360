@@ -5,7 +5,9 @@ import {
   Shield,
   Mail,
   Lock,
+  Plane,
 } from "lucide-react";
+import type { LogbookMode } from "@/lib/types/database";
 import {
   Card,
   CardHeader,
@@ -20,6 +22,7 @@ import { SignOutButton } from "@/components/settings/sign-out-button";
 import { FlightLogPreferencesCard } from "@/components/settings/flight-log-preferences";
 import { RatingTrackingPreferencesCard } from "@/components/settings/rating-tracking-preferences";
 import { PriorHoursForm } from "@/components/settings/prior-hours-form";
+import { CurrencyPreferencesCard } from "@/components/settings/currency-preferences";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -34,6 +37,9 @@ export default async function SettingsPage() {
     .eq("id", user.id)
     .single();
 
+  const mode: LogbookMode = (profile?.logbook_mode as LogbookMode) || "military";
+  const isMilitary = mode === "military";
+
   const branch = profile?.branch || "Not set";
   const rank = profile?.rank || "Not set";
   const unit = profile?.unit || "Not set";
@@ -42,67 +48,133 @@ export default async function SettingsPage() {
     ? profile.duty_status.charAt(0).toUpperCase() + profile.duty_status.slice(1)
     : "Not set";
 
+  const firstName = profile?.first_name || "Not set";
+  const lastName = profile?.last_name || "Not set";
+  const homeAirport = profile?.home_airport || "Not set";
+  const certificateType = profile?.certificate_type
+    ? profile.certificate_type.charAt(0).toUpperCase() + profile.certificate_type.slice(1)
+    : "Not set";
+
   return (
     <div className="space-y-6 max-w-3xl">
-      {/* Profile Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>
-                <span className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-emerald-500" />
-                  Profile
-                </span>
-              </CardTitle>
-              <CardDescription>
-                Your military service profile information
-              </CardDescription>
+      {/* Profile Section — Mode-dependent */}
+      {isMilitary ? (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>
+                  <span className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-emerald-500" />
+                    Military Profile
+                  </span>
+                </CardTitle>
+                <CardDescription>
+                  Your military service profile information
+                </CardDescription>
+              </div>
+              {profile && (
+                <EditProfileModal profile={profile} userId={user.id} />
+              )}
             </div>
-            {profile && (
-              <EditProfileModal profile={profile} userId={user.id} />
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="rounded-lg bg-slate-800/30 px-4 py-3">
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                Branch
-              </p>
-              <p className="mt-1 text-sm text-slate-200">{branch}</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Branch
+                </p>
+                <p className="mt-1 text-sm text-slate-200">{branch}</p>
+              </div>
+              <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Rank
+                </p>
+                <p className="mt-1 text-sm text-slate-200">{rank}</p>
+              </div>
+              <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Unit
+                </p>
+                <p className="mt-1 text-sm text-slate-200">{unit}</p>
+              </div>
+              <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Callsign
+                </p>
+                <p className="mt-1 text-sm text-slate-200">{callsign}</p>
+              </div>
+              <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Duty Status
+                </p>
+                <p className="mt-1 text-sm text-slate-200">{dutyStatus}</p>
+              </div>
             </div>
-            <div className="rounded-lg bg-slate-800/30 px-4 py-3">
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                Rank
-              </p>
-              <p className="mt-1 text-sm text-slate-200">{rank}</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>
+                  <span className="flex items-center gap-2">
+                    <Plane className="h-5 w-5 text-emerald-500" />
+                    Pilot Profile
+                  </span>
+                </CardTitle>
+                <CardDescription>
+                  Your civilian pilot profile information
+                </CardDescription>
+              </div>
+              {profile && (
+                <EditProfileModal profile={profile} userId={user.id} />
+              )}
             </div>
-            <div className="rounded-lg bg-slate-800/30 px-4 py-3">
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                Unit
-              </p>
-              <p className="mt-1 text-sm text-slate-200">{unit}</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  First Name
+                </p>
+                <p className="mt-1 text-sm text-slate-200">{firstName}</p>
+              </div>
+              <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Last Name
+                </p>
+                <p className="mt-1 text-sm text-slate-200">{lastName}</p>
+              </div>
+              <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Home Airport
+                </p>
+                <p className="mt-1 text-sm text-slate-200">{homeAirport}</p>
+              </div>
+              <div className="rounded-lg bg-slate-800/30 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Certificate Type
+                </p>
+                <p className="mt-1 text-sm text-slate-200">{certificateType}</p>
+              </div>
             </div>
-            <div className="rounded-lg bg-slate-800/30 px-4 py-3">
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                Callsign
-              </p>
-              <p className="mt-1 text-sm text-slate-200">{callsign}</p>
-            </div>
-            <div className="rounded-lg bg-slate-800/30 px-4 py-3">
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                Duty Status
-              </p>
-              <p className="mt-1 text-sm text-slate-200">{dutyStatus}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Flight Log Preferences */}
       {profile && (
         <FlightLogPreferencesCard
+          preferences={profile.flight_log_preferences || {}}
+          userId={user.id}
+        />
+      )}
+
+      {/* Currency Preferences */}
+      {profile && (
+        <CurrencyPreferencesCard
           preferences={profile.flight_log_preferences || {}}
           userId={user.id}
         />

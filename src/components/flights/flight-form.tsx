@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -24,16 +24,17 @@ import {
   FLIGHT_CONDITIONS,
   FORMATION_POSITIONS,
 } from "@/lib/constants/mission-symbols";
-import type { AircraftType, Flight, FlightLogPreferences } from "@/lib/types/database";
+import type { AircraftType, Flight, FlightLogPreferences, LogbookMode } from "@/lib/types/database";
 
 interface FlightFormProps {
   aircraft: AircraftType[];
   initialData?: Partial<Flight>;
   flightId?: string;
   preferences?: FlightLogPreferences;
+  logbookMode?: LogbookMode;
 }
 
-export function FlightForm({ aircraft, initialData, flightId, preferences }: FlightFormProps) {
+export function FlightForm({ aircraft, initialData, flightId, preferences, logbookMode = "military" }: FlightFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -45,6 +46,7 @@ export function FlightForm({ aircraft, initialData, flightId, preferences }: Fli
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FlightFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,17 +54,26 @@ export function FlightForm({ aircraft, initialData, flightId, preferences }: Fli
     defaultValues: initialData
       ? {
           ...flightDefaults,
+          is_military_flight: logbookMode === "military",
           ...Object.fromEntries(
             Object.entries(initialData).map(([k, v]) => [k, v === null ? undefined : v])
           ),
         }
-      : flightDefaults,
+      : { ...flightDefaults, is_military_flight: logbookMode === "military" },
   });
 
   const selectedAircraftId = watch("aircraft_type_id");
   const selectedAircraft = aircraft.find((a) => a.id === selectedAircraftId);
   const isSim = watch("is_simulator");
+  const isMilitaryFlight = watch("is_military_flight");
   const hiddenSections = new Set(preferences?.hiddenSections || []);
+
+  // Auto-set is_military_flight when aircraft changes (only for new flights)
+  useEffect(() => {
+    if (!isEdit && selectedAircraft) {
+      setValue("is_military_flight", selectedAircraft.is_military);
+    }
+  }, [selectedAircraftId, selectedAircraft, isEdit, setValue]);
 
   const aircraftOptions = aircraft.map((a) => ({
     value: a.id,
@@ -156,7 +167,15 @@ export function FlightForm({ aircraft, initialData, flightId, preferences }: Fli
             placeholder="e.g., KLUF MOA1 KNFL"
           />
         </div>
-        <div className="mt-4 flex items-center gap-4">
+        <div className="mt-4 flex flex-wrap items-center gap-4">
+          <label className="flex items-center gap-2 text-sm text-slate-300">
+            <input
+              type="checkbox"
+              {...register("is_military_flight")}
+              className="rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
+            />
+            Military Flight
+          </label>
           <label className="flex items-center gap-2 text-sm text-slate-300">
             <input
               type="checkbox"
@@ -175,8 +194,8 @@ export function FlightForm({ aircraft, initialData, flightId, preferences }: Fli
         </div>
       </CollapsibleSection>
 
-      {/* Military Mission Info */}
-      {!hiddenSections.has("mission_details") && <CollapsibleSection title="Mission Details">
+      {/* Military Mission Info — hidden for civilian flights */}
+      {isMilitaryFlight && !hiddenSections.has("mission_details") && <CollapsibleSection title="Mission Details">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Select
             {...register("sortie_type")}
@@ -380,8 +399,8 @@ export function FlightForm({ aircraft, initialData, flightId, preferences }: Fli
         <ApproachInput control={control} register={register} />
       </CollapsibleSection>}
 
-      {/* Mission Specific - conditionally show based on aircraft capabilities */}
-      {!hiddenSections.has("mission_specific") && selectedAircraft && (selectedAircraft.has_formation || selectedAircraft.has_weapons || selectedAircraft.has_air_refueling || selectedAircraft.has_airdrop || selectedAircraft.has_low_level) && (
+      {/* Mission Specific - conditionally show based on aircraft capabilities, hidden for civilian flights */}
+      {isMilitaryFlight && !hiddenSections.has("mission_specific") && selectedAircraft && (selectedAircraft.has_formation || selectedAircraft.has_weapons || selectedAircraft.has_air_refueling || selectedAircraft.has_airdrop || selectedAircraft.has_low_level) && (
         <CollapsibleSection title="Mission Specific">
           <div className="space-y-6">
             {selectedAircraft.has_formation && (

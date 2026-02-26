@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,8 @@ import type {
   MilitaryBranch,
   QualificationLevel,
   AircraftType,
+  LogbookMode,
+  CertificateType,
 } from "@/lib/types/database";
 import {
   ChevronLeft,
@@ -24,6 +26,8 @@ import {
   User,
   Award,
   ClipboardCheck,
+  GraduationCap,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -40,26 +44,64 @@ interface AircraftSelection {
 }
 
 interface OnboardingState {
-  // Step 1 - Service Info
+  // Military - Step 1
   branch: MilitaryBranch | "";
   rank: string;
   duty_status: string;
   unit: string;
   callsign: string;
-  // Step 2 - Aircraft
+  // Civilian - Step 1
+  first_name: string;
+  last_name: string;
+  home_airport: string;
+  certificate_type: CertificateType | "";
+  // Shared - Aircraft
   selectedAircraft: AircraftSelection[];
-  // Step 3 - FAA Info
+  // Civilian - Prior Experience
+  prior_hours_choice: "none" | "enter_totals" | "log_every" | "start_zero" | "";
+  prior_total_time: string;
+  prior_pic_time: string;
+  prior_xc_time: string;
+  prior_night_time: string;
+  prior_instrument_actual: string;
+  prior_instrument_sim: string;
+  prior_solo_time: string;
+  prior_dual_received_time: string;
+  // FAA Info
   track_faa: boolean;
   faa_certificate_number: string;
   faa_medical_class: string;
   faa_medical_expiry: string;
 }
 
-const STEPS = [
+interface StepDef {
+  label: string;
+  icon: typeof User;
+}
+
+const MILITARY_STEPS: StepDef[] = [
   { label: "Service Info", icon: User },
   { label: "Aircraft", icon: Plane },
   { label: "FAA Info", icon: Award },
   { label: "Review", icon: ClipboardCheck },
+];
+
+const CIVILIAN_STEPS: StepDef[] = [
+  { label: "About You", icon: User },
+  { label: "Aircraft", icon: Plane },
+  { label: "Prior Experience", icon: Clock },
+  { label: "FAA Info", icon: GraduationCap },
+  { label: "Review", icon: ClipboardCheck },
+];
+
+const CERTIFICATE_TYPES = [
+  { value: "none", label: "None" },
+  { value: "student", label: "Student Pilot" },
+  { value: "sport", label: "Sport Pilot" },
+  { value: "recreational", label: "Recreational Pilot" },
+  { value: "private", label: "Private Pilot" },
+  { value: "commercial", label: "Commercial Pilot" },
+  { value: "atp", label: "Airline Transport Pilot" },
 ];
 
 const initialState: OnboardingState = {
@@ -68,7 +110,20 @@ const initialState: OnboardingState = {
   duty_status: "",
   unit: "",
   callsign: "",
+  first_name: "",
+  last_name: "",
+  home_airport: "",
+  certificate_type: "",
   selectedAircraft: [],
+  prior_hours_choice: "",
+  prior_total_time: "",
+  prior_pic_time: "",
+  prior_xc_time: "",
+  prior_night_time: "",
+  prior_instrument_actual: "",
+  prior_instrument_sim: "",
+  prior_solo_time: "",
+  prior_dual_received_time: "",
   track_faa: false,
   faa_certificate_number: "",
   faa_medical_class: "",
@@ -80,7 +135,22 @@ const initialState: OnboardingState = {
 // ---------------------------------------------------------------------------
 
 export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[320px] flex items-center justify-center text-text-muted">Loading...</div>}>
+      <OnboardingContent />
+    </Suspense>
+  );
+}
+
+function OnboardingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const mode: LogbookMode =
+    (searchParams.get("mode") as LogbookMode) || "military";
+  const isMilitary = mode === "military";
+
+  const STEPS = isMilitary ? MILITARY_STEPS : CIVILIAN_STEPS;
+
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<OnboardingState>(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -92,9 +162,9 @@ export default function OnboardingPage() {
   const [aircraftSearch, setAircraftSearch] = useState("");
   const [loadingAircraft, setLoadingAircraft] = useState(false);
 
-  // Fetch aircraft when branch changes
+  // Fetch aircraft when branch changes (military) or on mount (civilian)
   useEffect(() => {
-    if (!form.branch) {
+    if (isMilitary && !form.branch) {
       setAircraftTypes([]);
       return;
     }
@@ -103,11 +173,18 @@ export default function OnboardingPage() {
     async function fetchAircraft() {
       setLoadingAircraft(true);
       const supabase = createClient();
-      const { data } = await supabase
+      let query = supabase
         .from("aircraft_types")
         .select("*")
-        .eq("branch", form.branch)
         .order("designation");
+
+      if (isMilitary) {
+        query = query.eq("branch", form.branch);
+      } else {
+        query = query.eq("is_military", false);
+      }
+
+      const { data } = await query;
 
       if (!cancelled && data) {
         setAircraftTypes(data as AircraftType[]);
@@ -119,7 +196,7 @@ export default function OnboardingPage() {
     return () => {
       cancelled = true;
     };
-  }, [form.branch]);
+  }, [form.branch, isMilitary]);
 
   // ------- Field updater -------
   function updateField<K extends keyof OnboardingState>(
@@ -134,18 +211,37 @@ export default function OnboardingPage() {
     });
   }
 
+  // ------- Determine which logical step we're on -------
+  // Military: 0=Service, 1=Aircraft, 2=FAA, 3=Review
+  // Civilian: 0=About You, 1=Aircraft, 2=Prior Exp, 3=FAA, 4=Review
+
+  function getAircraftStepIndex() {
+    return 1;
+  }
+  function getFaaStepIndex() {
+    return isMilitary ? 2 : 3;
+  }
+  function getReviewStepIndex() {
+    return STEPS.length - 1;
+  }
+
   // ------- Validation per step -------
   function validateStep(s: number): boolean {
     const errs: Record<string, string> = {};
 
     if (s === 0) {
-      if (!form.branch) errs.branch = "Branch is required";
-      if (!form.rank) errs.rank = "Rank is required";
-      if (!form.duty_status) errs.duty_status = "Duty status is required";
-      if (!form.unit.trim()) errs.unit = "Unit is required";
+      if (isMilitary) {
+        if (!form.branch) errs.branch = "Branch is required";
+        if (!form.rank) errs.rank = "Rank is required";
+        if (!form.duty_status) errs.duty_status = "Duty status is required";
+        if (!form.unit.trim()) errs.unit = "Unit is required";
+      } else {
+        if (!form.first_name.trim()) errs.first_name = "First name is required";
+        if (!form.last_name.trim()) errs.last_name = "Last name is required";
+      }
     }
 
-    if (s === 1) {
+    if (s === getAircraftStepIndex()) {
       if (form.selectedAircraft.length === 0) {
         errs.aircraft = "Select at least one aircraft";
       } else {
@@ -154,7 +250,7 @@ export default function OnboardingPage() {
       }
     }
 
-    if (s === 2 && form.track_faa) {
+    if (isMilitary && s === getFaaStepIndex() && form.track_faa) {
       if (!form.faa_certificate_number.trim())
         errs.faa_certificate_number = "Certificate number is required";
       if (!form.faa_medical_class)
@@ -162,6 +258,8 @@ export default function OnboardingPage() {
       if (!form.faa_medical_expiry)
         errs.faa_medical_expiry = "Medical expiry date is required";
     }
+
+    // Civilian prior experience step — no required fields
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -263,25 +361,65 @@ export default function OnboardingPage() {
 
     const primaryAircraft = form.selectedAircraft.find((a) => a.is_primary);
 
-    // Insert profile
-    const { error: profileError } = await supabase.from("profiles").upsert({
+    // Build profile payload
+    const profilePayload: Record<string, unknown> = {
       id: user.id,
-      branch: form.branch || null,
-      rank: form.rank || null,
-      duty_status: form.duty_status || null,
-      unit: form.unit.trim() || null,
-      callsign: form.callsign.trim() || null,
+      logbook_mode: mode,
       primary_aircraft_id: primaryAircraft?.aircraft_type_id ?? null,
-      faa_certificate_number: form.track_faa
+    };
+
+    if (isMilitary) {
+      profilePayload.branch = form.branch || null;
+      profilePayload.rank = form.rank || null;
+      profilePayload.duty_status = form.duty_status || null;
+      profilePayload.unit = form.unit.trim() || null;
+      profilePayload.callsign = form.callsign.trim() || null;
+      profilePayload.faa_certificate_number = form.track_faa
         ? form.faa_certificate_number.trim() || null
-        : null,
-      faa_medical_class: form.track_faa
+        : null;
+      profilePayload.faa_medical_class = form.track_faa
         ? form.faa_medical_class || null
-        : null,
-      faa_medical_expiry: form.track_faa
+        : null;
+      profilePayload.faa_medical_expiry = form.track_faa
         ? form.faa_medical_expiry || null
-        : null,
-    });
+        : null;
+    } else {
+      profilePayload.first_name = form.first_name.trim() || null;
+      profilePayload.last_name = form.last_name.trim() || null;
+      profilePayload.home_airport = form.home_airport.trim().toUpperCase() || null;
+      profilePayload.certificate_type = form.certificate_type || null;
+      profilePayload.faa_certificate_number =
+        form.faa_certificate_number.trim() || null;
+      profilePayload.faa_medical_class = form.faa_medical_class || null;
+      profilePayload.faa_medical_expiry = form.faa_medical_expiry || null;
+
+      // Build flight_log_preferences for civilian
+      const priorHours: Record<string, number> = {};
+      if (form.prior_hours_choice === "enter_totals") {
+        if (form.prior_total_time) priorHours.total_time = Number(form.prior_total_time) || 0;
+        if (form.prior_pic_time) priorHours.pic_time = Number(form.prior_pic_time) || 0;
+        if (form.prior_xc_time) priorHours.xc_time = Number(form.prior_xc_time) || 0;
+        if (form.prior_night_time) priorHours.night_time = Number(form.prior_night_time) || 0;
+        if (form.prior_instrument_actual)
+          priorHours.instrument_actual = Number(form.prior_instrument_actual) || 0;
+        if (form.prior_instrument_sim)
+          priorHours.instrument_sim = Number(form.prior_instrument_sim) || 0;
+        if (form.prior_solo_time) priorHours.solo_time = Number(form.prior_solo_time) || 0;
+        if (form.prior_dual_received_time)
+          priorHours.dual_received_time = Number(form.prior_dual_received_time) || 0;
+      }
+
+      profilePayload.flight_log_preferences = {
+        showRatingProgress: true,
+        showFaaCurrencies: true,
+        priorHours: Object.keys(priorHours).length > 0 ? priorHours : undefined,
+      };
+    }
+
+    // Insert profile
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .upsert(profilePayload);
 
     if (profileError) {
       setSubmitError(profileError.message);
@@ -317,6 +455,12 @@ export default function OnboardingPage() {
   const rankOptions = form.branch
     ? RANKS[form.branch as MilitaryBranch] ?? []
     : [];
+
+  // ------- Determine if certificate is "rated" (has prior experience) -------
+  const isRatedCertificate =
+    form.certificate_type === "private" ||
+    form.certificate_type === "commercial" ||
+    form.certificate_type === "atp";
 
   // ------- Render -------
   return (
@@ -382,8 +526,8 @@ export default function OnboardingPage() {
 
       {/* Step Content */}
       <div className="min-h-[320px]">
-        {/* =================== STEP 1: Service Info =================== */}
-        {step === 0 && (
+        {/* =================== MILITARY STEP 0: Service Info =================== */}
+        {isMilitary && step === 0 && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-slate-100">
               Service Information
@@ -401,8 +545,8 @@ export default function OnboardingPage() {
               error={errors.branch}
               onChange={(e) => {
                 updateField("branch", e.target.value as MilitaryBranch | "");
-                updateField("rank", ""); // Reset rank when branch changes
-                updateField("selectedAircraft", []); // Reset aircraft
+                updateField("rank", "");
+                updateField("selectedAircraft", []);
               }}
             />
 
@@ -449,15 +593,68 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* =================== STEP 2: Aircraft =================== */}
-        {step === 1 && (
+        {/* =================== CIVILIAN STEP 0: About You =================== */}
+        {!isMilitary && step === 0 && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-100">
+              About You
+            </h3>
+            <p className="text-sm text-text-secondary">
+              Tell us a bit about yourself.
+            </p>
+
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                id="first_name"
+                label="First Name"
+                placeholder="John"
+                value={form.first_name}
+                error={errors.first_name}
+                onChange={(e) => updateField("first_name", e.target.value)}
+              />
+              <Input
+                id="last_name"
+                label="Last Name"
+                placeholder="Doe"
+                value={form.last_name}
+                error={errors.last_name}
+                onChange={(e) => updateField("last_name", e.target.value)}
+              />
+            </div>
+
+            <Input
+              id="home_airport"
+              label="Home Airport"
+              placeholder="ICAO code (e.g., KJFK)"
+              hint="Optional — your primary airport"
+              value={form.home_airport}
+              onChange={(e) => updateField("home_airport", e.target.value)}
+            />
+
+            <Select
+              id="certificate_type"
+              label="Certificate Type"
+              placeholder="Select your certificate"
+              options={CERTIFICATE_TYPES}
+              value={form.certificate_type}
+              onChange={(e) =>
+                updateField("certificate_type", e.target.value as CertificateType | "")
+              }
+            />
+          </div>
+        )}
+
+        {/* =================== SHARED: Aircraft (step 1) =================== */}
+        {step === getAircraftStepIndex() && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-slate-100">
               Your Aircraft
             </h3>
             <p className="text-sm text-text-secondary">
-              Select the aircraft you fly and set your qualification level for
-              each. Mark one as your primary aircraft.
+              Select the aircraft you fly and{" "}
+              {isMilitary
+                ? "set your qualification level for each."
+                : "mark one as your primary aircraft."}
             </p>
 
             {/* Search */}
@@ -484,9 +681,9 @@ export default function OnboardingPage() {
                 </p>
               ) : filteredAircraft.length === 0 ? (
                 <p className="py-4 text-center text-sm text-text-muted">
-                  {form.branch
-                    ? "No aircraft found"
-                    : "Select a branch first"}
+                  {isMilitary && !form.branch
+                    ? "Select a branch first"
+                    : "No aircraft found"}
                 </p>
               ) : (
                 filteredAircraft.map((aircraft) => {
@@ -564,22 +761,24 @@ export default function OnboardingPage() {
                         {sa.name}
                       </span>
                     </div>
-                    <select
-                      value={sa.qualification_level}
-                      onChange={(e) =>
-                        setAircraftQual(
-                          sa.aircraft_type_id,
-                          e.target.value as QualificationLevel
-                        )
-                      }
-                      className="rounded-md border border-slate-700 bg-slate-800/50 px-2 py-1.5 text-xs text-slate-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    >
-                      {QUALIFICATION_LEVELS.map((q) => (
-                        <option key={q.value} value={q.value}>
-                          {q.label}
-                        </option>
-                      ))}
-                    </select>
+                    {isMilitary && (
+                      <select
+                        value={sa.qualification_level}
+                        onChange={(e) =>
+                          setAircraftQual(
+                            sa.aircraft_type_id,
+                            e.target.value as QualificationLevel
+                          )
+                        }
+                        className="rounded-md border border-slate-700 bg-slate-800/50 px-2 py-1.5 text-xs text-slate-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        {QUALIFICATION_LEVELS.map((q) => (
+                          <option key={q.value} value={q.value}>
+                            {q.label}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 ))}
                 <p className="flex items-center gap-1.5 text-xs text-text-muted">
@@ -591,46 +790,206 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* =================== STEP 3: FAA Info =================== */}
-        {step === 2 && (
+        {/* =================== CIVILIAN STEP 2: Prior Experience =================== */}
+        {!isMilitary && step === 2 && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-100">
+              Prior Experience
+            </h3>
+            <p className="text-sm text-text-secondary">
+              {isRatedCertificate
+                ? "How would you like to start your logbook?"
+                : "Do you have any prior flight hours?"}
+            </p>
+
+            {isRatedCertificate ? (
+              <div className="space-y-2">
+                {[
+                  { value: "enter_totals", label: "Enter my totals & resume logging from here" },
+                  { value: "log_every", label: "I want to log every flight from the beginning" },
+                  { value: "start_zero", label: "Start at zero" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => updateField("prior_hours_choice", option.value as OnboardingState["prior_hours_choice"])}
+                    className={cn(
+                      "w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors",
+                      form.prior_hours_choice === option.value
+                        ? "border-emerald-500/50 bg-emerald-600/10 text-emerald-300"
+                        : "border-slate-700 text-slate-300 hover:border-slate-600"
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {[
+                  { value: "enter_totals", label: "Yes, I have prior hours" },
+                  { value: "start_zero", label: "No, starting fresh" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => updateField("prior_hours_choice", option.value as OnboardingState["prior_hours_choice"])}
+                    className={cn(
+                      "w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors",
+                      form.prior_hours_choice === option.value
+                        ? "border-emerald-500/50 bg-emerald-600/10 text-emerald-300"
+                        : "border-slate-700 text-slate-300 hover:border-slate-600"
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {form.prior_hours_choice === "enter_totals" && (
+              <div className="space-y-4 pt-2">
+                <p className="text-sm text-text-secondary">
+                  Enter your prior flight time totals. These will be added to your
+                  logged flights for rating progress tracking.
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    id="prior_total_time"
+                    label="Total Time"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="0.0"
+                    value={form.prior_total_time}
+                    onChange={(e) => updateField("prior_total_time", e.target.value)}
+                  />
+                  <Input
+                    id="prior_pic_time"
+                    label="PIC Time"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="0.0"
+                    value={form.prior_pic_time}
+                    onChange={(e) => updateField("prior_pic_time", e.target.value)}
+                  />
+                  <Input
+                    id="prior_xc_time"
+                    label="Cross-Country"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="0.0"
+                    value={form.prior_xc_time}
+                    onChange={(e) => updateField("prior_xc_time", e.target.value)}
+                  />
+                  <Input
+                    id="prior_night_time"
+                    label="Night Time"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="0.0"
+                    value={form.prior_night_time}
+                    onChange={(e) => updateField("prior_night_time", e.target.value)}
+                  />
+                  <Input
+                    id="prior_instrument_actual"
+                    label="Instrument (Actual)"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="0.0"
+                    value={form.prior_instrument_actual}
+                    onChange={(e) =>
+                      updateField("prior_instrument_actual", e.target.value)
+                    }
+                  />
+                  <Input
+                    id="prior_instrument_sim"
+                    label="Instrument (Sim)"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="0.0"
+                    value={form.prior_instrument_sim}
+                    onChange={(e) =>
+                      updateField("prior_instrument_sim", e.target.value)
+                    }
+                  />
+                  <Input
+                    id="prior_solo_time"
+                    label="Solo Time"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="0.0"
+                    value={form.prior_solo_time}
+                    onChange={(e) => updateField("prior_solo_time", e.target.value)}
+                  />
+                  <Input
+                    id="prior_dual_received_time"
+                    label="Dual Received"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="0.0"
+                    value={form.prior_dual_received_time}
+                    onChange={(e) =>
+                      updateField("prior_dual_received_time", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* =================== FAA Info (military step 2 / civilian step 3) =================== */}
+        {step === getFaaStepIndex() && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-slate-100">
               FAA Information
             </h3>
             <p className="text-sm text-text-secondary">
-              Optionally track your FAA certificates and medical currency.
+              {isMilitary
+                ? "Optionally track your FAA certificates and medical currency."
+                : "Enter your FAA certificate and medical information."}
             </p>
 
-            {/* Toggle */}
-            <label className="flex cursor-pointer items-center gap-3">
-              <button
-                type="button"
-                role="switch"
-                aria-checked={form.track_faa}
-                onClick={() => updateField("track_faa", !form.track_faa)}
-                className={cn(
-                  "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent",
-                  form.track_faa ? "bg-emerald-600" : "bg-slate-700"
-                )}
-              >
-                <span
+            {isMilitary && (
+              <label className="flex cursor-pointer items-center gap-3">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={form.track_faa}
+                  onClick={() => updateField("track_faa", !form.track_faa)}
                   className={cn(
-                    "inline-block h-4 w-4 rounded-full bg-white shadow-sm",
-                    form.track_faa ? "translate-x-5" : "translate-x-1"
+                    "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent",
+                    form.track_faa ? "bg-emerald-600" : "bg-slate-700"
                   )}
-                />
-              </button>
-              <span className="text-sm font-medium text-slate-200">
-                Track FAA currencies
-              </span>
-            </label>
+                >
+                  <span
+                    className={cn(
+                      "inline-block h-4 w-4 rounded-full bg-white shadow-sm",
+                      form.track_faa ? "translate-x-5" : "translate-x-1"
+                    )}
+                  />
+                </button>
+                <span className="text-sm font-medium text-slate-200">
+                  Track FAA currencies
+                </span>
+              </label>
+            )}
 
-            {form.track_faa && (
+            {(form.track_faa || !isMilitary) && (
               <div className="space-y-4 pt-2">
                 <Input
                   id="faa_certificate_number"
                   label="FAA Certificate Number"
                   placeholder="e.g. 1234567"
+                  hint="Optional"
                   value={form.faa_certificate_number}
                   error={errors.faa_certificate_number}
                   onChange={(e) =>
@@ -670,8 +1029,8 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* =================== STEP 4: Review =================== */}
-        {step === 3 && (
+        {/* =================== Review (last step for both modes) =================== */}
+        {step === getReviewStepIndex() && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-slate-100">
               Review &amp; Complete
@@ -680,33 +1039,62 @@ export default function OnboardingPage() {
               Confirm your details before completing setup.
             </p>
 
-            {/* Service Info Summary */}
-            <div className="space-y-2 rounded-lg border border-slate-700/50 bg-bg-base/50 p-4">
-              <h4 className="text-sm font-medium text-emerald-400">
-                Service Info
-              </h4>
-              <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                <dt className="text-text-muted">Branch</dt>
-                <dd className="text-slate-200">
-                  {BRANCHES.find((b) => b.value === form.branch)?.label ?? "-"}
-                </dd>
-                <dt className="text-text-muted">Rank</dt>
-                <dd className="text-slate-200">{form.rank || "-"}</dd>
-                <dt className="text-text-muted">Duty Status</dt>
-                <dd className="text-slate-200">
-                  {DUTY_STATUSES.find((d) => d.value === form.duty_status)
-                    ?.label ?? "-"}
-                </dd>
-                <dt className="text-text-muted">Unit</dt>
-                <dd className="text-slate-200">{form.unit || "-"}</dd>
-                {form.callsign && (
-                  <>
-                    <dt className="text-text-muted">Callsign</dt>
-                    <dd className="text-slate-200">{form.callsign}</dd>
-                  </>
-                )}
-              </dl>
-            </div>
+            {/* Military: Service Info Summary */}
+            {isMilitary && (
+              <div className="space-y-2 rounded-lg border border-slate-700/50 bg-bg-base/50 p-4">
+                <h4 className="text-sm font-medium text-emerald-400">
+                  Service Info
+                </h4>
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                  <dt className="text-text-muted">Branch</dt>
+                  <dd className="text-slate-200">
+                    {BRANCHES.find((b) => b.value === form.branch)?.label ?? "-"}
+                  </dd>
+                  <dt className="text-text-muted">Rank</dt>
+                  <dd className="text-slate-200">{form.rank || "-"}</dd>
+                  <dt className="text-text-muted">Duty Status</dt>
+                  <dd className="text-slate-200">
+                    {DUTY_STATUSES.find((d) => d.value === form.duty_status)
+                      ?.label ?? "-"}
+                  </dd>
+                  <dt className="text-text-muted">Unit</dt>
+                  <dd className="text-slate-200">{form.unit || "-"}</dd>
+                  {form.callsign && (
+                    <>
+                      <dt className="text-text-muted">Callsign</dt>
+                      <dd className="text-slate-200">{form.callsign}</dd>
+                    </>
+                  )}
+                </dl>
+              </div>
+            )}
+
+            {/* Civilian: About You Summary */}
+            {!isMilitary && (
+              <div className="space-y-2 rounded-lg border border-slate-700/50 bg-bg-base/50 p-4">
+                <h4 className="text-sm font-medium text-emerald-400">
+                  About You
+                </h4>
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                  <dt className="text-text-muted">Name</dt>
+                  <dd className="text-slate-200">
+                    {form.first_name} {form.last_name}
+                  </dd>
+                  {form.home_airport && (
+                    <>
+                      <dt className="text-text-muted">Home Airport</dt>
+                      <dd className="text-slate-200">{form.home_airport.toUpperCase()}</dd>
+                    </>
+                  )}
+                  <dt className="text-text-muted">Certificate</dt>
+                  <dd className="text-slate-200">
+                    {CERTIFICATE_TYPES.find(
+                      (c) => c.value === form.certificate_type
+                    )?.label ?? "Not set"}
+                  </dd>
+                </dl>
+              </div>
+            )}
 
             {/* Aircraft Summary */}
             <div className="space-y-2 rounded-lg border border-slate-700/50 bg-bg-base/50 p-4">
@@ -731,12 +1119,16 @@ export default function OnboardingPage() {
                       <span className="font-medium text-slate-200">
                         {a.designation}
                       </span>
-                      <span className="text-text-muted">-</span>
-                      <span className="text-text-secondary">
-                        {QUALIFICATION_LEVELS.find(
-                          (q) => q.value === a.qualification_level
-                        )?.label ?? a.qualification_level}
-                      </span>
+                      {isMilitary && (
+                        <>
+                          <span className="text-text-muted">-</span>
+                          <span className="text-text-secondary">
+                            {QUALIFICATION_LEVELS.find(
+                              (q) => q.value === a.qualification_level
+                            )?.label ?? a.qualification_level}
+                          </span>
+                        </>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -748,24 +1140,39 @@ export default function OnboardingPage() {
               <h4 className="text-sm font-medium text-emerald-400">
                 FAA Info
               </h4>
-              {form.track_faa ? (
+              {(form.track_faa || !isMilitary) &&
+              (form.faa_certificate_number || form.faa_medical_class) ? (
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                  <dt className="text-text-muted">Certificate #</dt>
-                  <dd className="text-slate-200">
-                    {form.faa_certificate_number || "-"}
-                  </dd>
-                  <dt className="text-text-muted">Medical Class</dt>
-                  <dd className="text-slate-200 capitalize">
-                    {form.faa_medical_class || "-"}
-                  </dd>
-                  <dt className="text-text-muted">Medical Expiry</dt>
-                  <dd className="text-slate-200">
-                    {form.faa_medical_expiry || "-"}
-                  </dd>
+                  {form.faa_certificate_number && (
+                    <>
+                      <dt className="text-text-muted">Certificate #</dt>
+                      <dd className="text-slate-200">
+                        {form.faa_certificate_number}
+                      </dd>
+                    </>
+                  )}
+                  {form.faa_medical_class && (
+                    <>
+                      <dt className="text-text-muted">Medical Class</dt>
+                      <dd className="text-slate-200 capitalize">
+                        {form.faa_medical_class}
+                      </dd>
+                    </>
+                  )}
+                  {form.faa_medical_expiry && (
+                    <>
+                      <dt className="text-text-muted">Medical Expiry</dt>
+                      <dd className="text-slate-200">
+                        {form.faa_medical_expiry}
+                      </dd>
+                    </>
+                  )}
                 </dl>
               ) : (
                 <p className="text-sm text-text-muted">
-                  Not tracking FAA currencies
+                  {isMilitary
+                    ? "Not tracking FAA currencies"
+                    : "No FAA info provided"}
                 </p>
               )}
             </div>

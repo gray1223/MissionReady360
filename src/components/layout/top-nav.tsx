@@ -7,6 +7,7 @@ import { Plus, Bell, ChevronDown, LogOut, User, Settings } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useUser, useProfile } from "@/components/providers/supabase-provider";
 import { createClient } from "@/lib/supabase/client";
+import { ModeBadge } from "./mode-switcher";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -76,9 +77,12 @@ export function TopNav() {
     <header className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/80 backdrop-blur-sm">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
         {/* Left: Page title */}
-        <h1 className="text-lg font-semibold text-slate-100 truncate">
-          {pageTitle}
-        </h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-semibold text-slate-100 truncate">
+            {pageTitle}
+          </h1>
+          <ModeBadge />
+        </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
