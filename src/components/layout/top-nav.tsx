@@ -89,7 +89,7 @@ export function TopNav() {
           {/* New Flight button - hidden on very small screens */}
           <Link
             href="/flights/new"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-500 transition-colors"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>New Flight</span>
@@ -98,7 +98,7 @@ export function TopNav() {
           {/* Mobile new flight - icon only */}
           <Link
             href="/flights/new"
-            className="sm:hidden inline-flex items-center justify-center rounded-lg bg-emerald-600 p-2 text-white hover:bg-emerald-500 transition-colors"
+            className="sm:hidden inline-flex items-center justify-center rounded-lg bg-primary p-2 text-white hover:bg-primary-hover transition-colors"
             aria-label="New Flight"
           >
             <Plus className="h-4 w-4" />
@@ -111,7 +111,7 @@ export function TopNav() {
           >
             <Bell className="h-5 w-5" />
             {/* Notification dot placeholder */}
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />
           </button>
 
           {/* User dropdown */}
@@ -120,7 +120,7 @@ export function TopNav() {
               onClick={() => setDropdownOpen((prev) => !prev)}
               className="hidden md:flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-300 hover:bg-slate-800/50 transition-colors"
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600/20 text-emerald-400 text-xs font-bold">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-primary text-xs font-bold">
                 {initials}
               </div>
               <span className="max-w-[100px] truncate">{callsign}</span>

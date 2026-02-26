@@ -113,7 +113,7 @@ export function AircraftList({
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Plane className="h-4 w-4 text-emerald-500" />
+                    <Plane className="h-4 w-4 text-primary" />
                     <h3 className="font-semibold text-slate-100">
                       {ua.aircraft_types.designation}
                     </h3>

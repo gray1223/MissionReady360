@@ -12,7 +12,7 @@ export default function AuthLayout({
         className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(16,185,129,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.4) 1px, transparent 1px)",
+            "linear-gradient(var(--grid-accent) 1px, transparent 1px), linear-gradient(90deg, var(--grid-accent) 1px, transparent 1px)",
           backgroundSize: "40px 40px",
         }}
       />
@@ -20,8 +20,8 @@ export default function AuthLayout({
       <div className="relative z-10 w-full max-w-md">
         {/* Branding */}
         <div className="mb-8 flex flex-col items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-600/20 ring-1 ring-emerald-500/30">
-            <Shield className="h-6 w-6 text-emerald-400" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 ring-1 ring-primary/30">
+            <Shield className="h-6 w-6 text-primary" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-100">
             MissionReady360

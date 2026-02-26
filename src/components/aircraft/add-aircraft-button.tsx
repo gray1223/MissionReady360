@@ -115,7 +115,7 @@ export function AddAircraftButton({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search aircraft..."
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 py-2 pl-9 pr-3 text-sm text-slate-200 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 py-2 pl-9 pr-3 text-sm text-slate-200 placeholder:text-slate-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
@@ -128,7 +128,7 @@ export function AddAircraftButton({
                   onClick={() => setSelectedId(a.id)}
                   className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-colors ${
                     selectedId === a.id
-                      ? "bg-emerald-600/20 text-emerald-400 border border-emerald-600/30"
+                      ? "bg-primary/20 text-primary border border-primary/30"
                       : "text-slate-300 hover:bg-slate-800/50 border border-transparent"
                   }`}
                 >
@@ -159,7 +159,7 @@ export function AddAircraftButton({
                   type="checkbox"
                   checked={setPrimary}
                   onChange={(e) => setSetPrimary(e.target.checked)}
-                  className="rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
+                  className="rounded border-slate-600 bg-slate-800 text-primary focus:ring-primary"
                 />
                 Set as primary aircraft
               </label>

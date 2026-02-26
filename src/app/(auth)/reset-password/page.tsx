@@ -51,8 +51,8 @@ export default function ResetPasswordPage() {
     return (
       <div className="space-y-4 text-center">
         <div className="flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600/20">
-            <Mail className="h-6 w-6 text-emerald-400" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20">
+            <Mail className="h-6 w-6 text-primary" />
           </div>
         </div>
         <h2 className="text-xl font-semibold text-slate-100">
@@ -64,7 +64,7 @@ export default function ResetPasswordPage() {
         </p>
         <Link
           href="/login"
-          className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-400 hover:text-emerald-300"
+          className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to sign in
@@ -114,7 +114,7 @@ export default function ResetPasswordPage() {
       <p className="text-center text-sm text-text-secondary">
         <Link
           href="/login"
-          className="inline-flex items-center gap-1.5 font-medium text-emerald-400 hover:text-emerald-300"
+          className="inline-flex items-center gap-1.5 font-medium text-primary hover:text-primary-hover"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to sign in

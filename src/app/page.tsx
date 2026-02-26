@@ -9,7 +9,7 @@ export default function ChooserPage() {
         className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(16,185,129,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.4) 1px, transparent 1px)",
+            "linear-gradient(var(--grid-accent) 1px, transparent 1px), linear-gradient(90deg, var(--grid-accent) 1px, transparent 1px)",
           backgroundSize: "40px 40px",
         }}
       />
@@ -18,8 +18,8 @@ export default function ChooserPage() {
         <div className="mx-auto max-w-2xl space-y-8 text-center">
           {/* Logo */}
           <div className="flex flex-col items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-600/20 ring-1 ring-emerald-500/30">
-              <Plane className="h-7 w-7 text-emerald-400" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-slate-800/60 ring-1 ring-slate-700">
+              <Plane className="h-7 w-7 text-slate-300" />
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-100 sm:text-4xl">
               MissionReady360
@@ -43,8 +43,8 @@ export default function ChooserPage() {
                 I&apos;m a Military Pilot
               </h2>
               <p className="mt-2 text-sm text-text-secondary">
-                Track military sorties, branch-specific currencies, and FAA
-                rating progress with your military flight time.
+                Track sorties, branch currencies, NVG proficiency, and weapons
+                events alongside FAA rating progress.
               </p>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-emerald-400 group-hover:gap-2 transition-all">
                 Get started <ArrowRight className="h-4 w-4" />
@@ -54,19 +54,19 @@ export default function ChooserPage() {
             {/* Civilian */}
             <Link
               href="/civilian"
-              className="group rounded-xl border border-slate-800 bg-bg-surface/60 p-8 text-left transition-all hover:border-emerald-500/40 hover:bg-bg-surface/80"
+              className="group rounded-xl border border-slate-800 bg-bg-surface/60 p-8 text-left transition-all hover:border-sky-500/40 hover:bg-bg-surface/80"
             >
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-600/15">
-                <Plane className="h-6 w-6 text-emerald-400" />
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-sky-600/15">
+                <Plane className="h-6 w-6 text-sky-400" />
               </div>
               <h2 className="text-xl font-semibold text-slate-100">
                 I&apos;m a Civilian Pilot
               </h2>
               <p className="mt-2 text-sm text-text-secondary">
-                Log flights, track FAA currencies, and monitor your progress
-                toward ratings with a clean, simple logbook.
+                Log flights, track FAA currencies and checkride requirements,
+                and monitor your progress from Student Pilot to ATP.
               </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-emerald-400 group-hover:gap-2 transition-all">
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-sky-400 group-hover:gap-2 transition-all">
                 Get started <ArrowRight className="h-4 w-4" />
               </span>
             </Link>
@@ -77,7 +77,7 @@ export default function ChooserPage() {
             Already have an account?{" "}
             <Link
               href="/login"
-              className="font-medium text-emerald-400 hover:text-emerald-300"
+              className="font-medium text-slate-300 hover:text-slate-100"
             >
               Sign In
             </Link>

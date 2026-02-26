@@ -3,50 +3,66 @@ import {
   Shield,
   Plane,
   Clock,
-  BarChart3,
-  Award,
   ArrowRight,
   GraduationCap,
-  Settings2,
+  Eye,
+  Swords,
+  Users,
+  Award,
+  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const BRANCHES = ["USAF", "USN", "USA", "USMC", "USCG", "USSF"];
 
 const FEATURES = [
   {
     icon: Plane,
-    title: "Unified Logbook",
+    title: "Sortie & Mission Logging",
     description:
-      "Log military sorties and civilian flights in one place with mission details, FAA times, approaches, and more.",
+      "Log mission symbols, crew positions, and formation data per branch standards. Track every sortie with tactical precision.",
   },
   {
     icon: Clock,
-    title: "Currency Tracking",
+    title: "Branch Currency Compliance",
     description:
-      "Automatic tracking of military and FAA currency requirements with expiration warnings and status badges.",
+      "Automatic tracking of AR 95-1, AFI 11-2, and NATOPS currency rules with expiration warnings and countdown timers.",
+  },
+  {
+    icon: Eye,
+    title: "NVG & Night Proficiency",
+    description:
+      "Track NVG hours, goggle currency, and night proficiency requirements. Stay current on all night operations.",
+  },
+  {
+    icon: Target,
+    title: "Combat & Deployment Hours",
+    description:
+      "Log combat sorties, deployment time, and combat support hours. Separate combat from training records.",
+  },
+  {
+    icon: Swords,
+    title: "Weapons & Tactical Events",
+    description:
+      "Record weapons deliveries, air refueling contacts, airdrop events, and other tactical mission data.",
+  },
+  {
+    icon: Users,
+    title: "Crew Resource Management",
+    description:
+      "Track crew members, crew positions, and formation roles for every sortie. Build your CRM history.",
   },
   {
     icon: GraduationCap,
     title: "FAA Rating Progress",
     description:
-      "Track your hours toward PPL, Instrument, Commercial, ATP, and R-ATP ratings with visual progress bars.",
-  },
-  {
-    icon: BarChart3,
-    title: "Flight Analytics",
-    description:
-      "See 30-day, 90-day, and year-to-date flight hour summaries with night and instrument breakdowns.",
+      "Your military flight time counts toward civilian ratings. Track PPL, Instrument, Commercial, and ATP progress.",
   },
   {
     icon: Award,
     title: "Qualification Management",
     description:
-      "Track your certifications, ratings, medicals, and military qualifications in one place.",
-  },
-  {
-    icon: Settings2,
-    title: "Customizable Dashboard",
-    description:
-      "Toggle flight log sections, choose which ratings to track, and personalize your dashboard widgets.",
+      "Track aircraft qualifications, evaluation dates, upgrade status, and instructor certifications in one place.",
   },
 ];
 
@@ -83,13 +99,14 @@ export default function MilitaryLandingPage() {
           </div>
 
           <h1 className="text-4xl font-bold leading-tight tracking-tight text-slate-100 sm:text-5xl">
-            Track your military and civilian flight currencies{" "}
-            <span className="text-emerald-400">in one place</span>
+            Stay Mission Ready.{" "}
+            <span className="text-emerald-400">Every Flight.</span>
           </h1>
 
           <p className="mx-auto max-w-lg text-lg text-text-secondary">
-            MissionReady360 combines your military flight log with FAA currency
-            tracking and rating progress, so you always know where you stand.
+            Track military sorties, branch currencies, NVG proficiency, and
+            weapons events — plus FAA rating progress using your military flight
+            time.
           </p>
 
           <div className="flex items-center justify-center gap-4 pt-2">
@@ -107,8 +124,20 @@ export default function MilitaryLandingPage() {
           </div>
         </div>
 
+        {/* Branch bar */}
+        <div className="mx-auto mt-16 flex flex-wrap items-center justify-center gap-3">
+          {BRANCHES.map((branch) => (
+            <span
+              key={branch}
+              className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-xs font-bold tracking-wider text-emerald-400"
+            >
+              {branch}
+            </span>
+          ))}
+        </div>
+
         {/* Features */}
-        <div className="mx-auto mt-24 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto mt-20 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((feature) => {
             const Icon = feature.icon;
             return (

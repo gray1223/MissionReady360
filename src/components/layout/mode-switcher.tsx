@@ -38,7 +38,7 @@ export function ModeSwitcher({ collapsed = false }: ModeSwitcherProps) {
           className="flex w-full items-center justify-center rounded-lg p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors"
           title={`${label} mode`}
         >
-          <Icon className="h-4 w-4 text-emerald-400" />
+          <Icon className="h-4 w-4 text-primary" />
         </button>
 
         {open && (
@@ -68,7 +68,7 @@ export function ModeSwitcher({ collapsed = false }: ModeSwitcherProps) {
         onClick={() => setOpen((prev) => !prev)}
         className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-slate-800/50 transition-colors"
       >
-        <Icon className="h-4 w-4 text-emerald-400 shrink-0" />
+        <Icon className="h-4 w-4 text-primary shrink-0" />
         <span className="flex-1 text-left font-medium">{label}</span>
         <ChevronDown
           className={cn(

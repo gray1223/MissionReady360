@@ -172,7 +172,7 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
             <input
               type="checkbox"
               {...register("is_military_flight")}
-              className="rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
+              className="rounded border-slate-600 bg-slate-800 text-primary focus:ring-primary"
             />
             Military Flight
           </label>
@@ -180,7 +180,7 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
             <input
               type="checkbox"
               {...register("is_simulator")}
-              className="rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
+              className="rounded border-slate-600 bg-slate-800 text-primary focus:ring-primary"
             />
             Simulator
           </label>

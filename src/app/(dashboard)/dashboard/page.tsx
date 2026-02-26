@@ -208,13 +208,13 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between">
               <CardTitle>
                 <span className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-emerald-500" />
+                  <Clock className="h-5 w-5 text-primary" />
                   Currency Overview
                 </span>
               </CardTitle>
               <Link
                 href="/currencies"
-                className="text-xs text-slate-400 hover:text-emerald-400 flex items-center gap-1"
+                className="text-xs text-slate-400 hover:text-primary flex items-center gap-1"
               >
                 View All
                 <ArrowRight className="h-3 w-3" />
@@ -278,7 +278,7 @@ export default async function DashboardPage() {
           <CardHeader>
             <CardTitle>
               <span className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-emerald-500" />
+                <TrendingUp className="h-5 w-5 text-primary" />
                 {isMilitary ? "Military" : "Civilian"} Flight Hours
               </span>
             </CardTitle>
@@ -352,13 +352,13 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-between">
               <CardTitle>
                 <span className="flex items-center gap-2">
-                  <Plane className="h-5 w-5 text-emerald-500" />
+                  <Plane className="h-5 w-5 text-primary" />
                   Recent {isMilitary ? "Military" : "Civilian"} Flights
                 </span>
               </CardTitle>
               <Link
                 href="/flights"
-                className="text-xs text-slate-400 hover:text-emerald-400 flex items-center gap-1"
+                className="text-xs text-slate-400 hover:text-primary flex items-center gap-1"
               >
                 View All
                 <ArrowRight className="h-3 w-3" />

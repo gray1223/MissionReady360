@@ -43,7 +43,7 @@ export function CurrencyPreferencesCard({
       <CardHeader>
         <CardTitle>
           <span className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-emerald-500" />
+            <Clock className="h-5 w-5 text-primary" />
             Currency Preferences
           </span>
         </CardTitle>
@@ -68,7 +68,7 @@ export function CurrencyPreferencesCard({
                 onChange={toggleFaa}
                 className="peer sr-only"
               />
-              <div className="h-6 w-11 rounded-full bg-slate-700 peer-checked:bg-emerald-600 peer-disabled:opacity-50 transition-colors" />
+              <div className="h-6 w-11 rounded-full bg-slate-700 peer-checked:bg-primary peer-disabled:opacity-50 transition-colors" />
               <div className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5" />
             </div>
           </label>

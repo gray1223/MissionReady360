@@ -103,7 +103,7 @@ export default async function CurrenciesPage() {
         </div>
         <Link
           href="/settings"
-          className="text-xs text-slate-400 hover:text-emerald-400 flex items-center gap-1"
+          className="text-xs text-slate-400 hover:text-primary flex items-center gap-1"
         >
           <Settings2 className="h-3.5 w-3.5" />
           Settings
@@ -176,7 +176,7 @@ export default async function CurrenciesPage() {
               <CardHeader>
                 <CardTitle>
                   <span className="flex items-center gap-2">
-                    <Plane className="h-5 w-5 text-emerald-500" />
+                    <Plane className="h-5 w-5 text-primary" />
                     FAA Currencies
                   </span>
                 </CardTitle>
@@ -200,7 +200,7 @@ export default async function CurrenciesPage() {
               <CardHeader>
                 <CardTitle>
                   <span className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-emerald-500" />
+                    <Shield className="h-5 w-5 text-primary" />
                     Military Currencies
                   </span>
                 </CardTitle>

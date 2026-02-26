@@ -30,13 +30,13 @@ export function RatingProgressCard({ ratings, hasPriorHours }: RatingProgressCar
         <div className="flex items-center justify-between">
           <CardTitle>
             <span className="flex items-center gap-2">
-              <GraduationCap className="h-5 w-5 text-emerald-500" />
+              <GraduationCap className="h-5 w-5 text-primary" />
               FAA Rating Progress
             </span>
           </CardTitle>
           <Link
             href="/settings"
-            className="text-xs text-slate-400 hover:text-emerald-400 flex items-center gap-1"
+            className="text-xs text-slate-400 hover:text-primary flex items-center gap-1"
           >
             <Settings2 className="h-3 w-3" />
             Configure
@@ -49,7 +49,7 @@ export function RatingProgressCard({ ratings, hasPriorHours }: RatingProgressCar
             Have prior flight hours?{" "}
             <Link
               href="/settings"
-              className="text-emerald-400 hover:text-emerald-300"
+              className="text-primary hover:text-primary-hover"
             >
               Add them in settings
             </Link>

@@ -87,9 +87,9 @@ export function Sidebar() {
       <div className="flex h-16 items-center justify-between px-4 border-b border-slate-800">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 text-slate-100 hover:text-emerald-400"
+          className="flex items-center gap-2 text-slate-100 hover:text-primary"
         >
-          <Shield className="h-6 w-6 text-emerald-500 shrink-0" />
+          <Shield className="h-6 w-6 text-primary shrink-0" />
           {!collapsed && (
             <span className="text-lg font-bold tracking-tight">
               MissionReady360
@@ -118,13 +118,13 @@ export function Sidebar() {
               className={cn(
                 "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-emerald-600/10 text-emerald-400"
+                  ? "bg-primary/10 text-primary"
                   : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
               )}
             >
               {/* Active indicator bar */}
               {isActive && (
-                <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-emerald-400" />
+                <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-primary" />
               )}
               <Icon className="h-5 w-5 shrink-0" />
               {!collapsed && <span>{item.label}</span>}
@@ -151,7 +151,7 @@ export function Sidebar() {
       {/* User section */}
       <div className="border-t border-slate-800 px-3 py-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600/20 text-emerald-400 text-xs font-bold">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary text-xs font-bold">
             {initials}
           </div>
           {!collapsed && (

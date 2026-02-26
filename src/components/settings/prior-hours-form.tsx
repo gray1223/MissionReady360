@@ -72,7 +72,7 @@ export function PriorHoursForm({ preferences, userId }: PriorHoursFormProps) {
       <CardHeader>
         <CardTitle>
           <span className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-emerald-500" />
+            <Clock className="h-5 w-5 text-primary" />
             Prior Flight Hours
           </span>
         </CardTitle>

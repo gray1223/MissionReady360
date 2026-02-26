@@ -479,9 +479,9 @@ function OnboardingContent() {
                     className={cn(
                       "flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-medium",
                       isCompleted &&
-                        "border-emerald-500 bg-emerald-600 text-white",
+                        "border-primary bg-primary text-white",
                       isActive &&
-                        "border-emerald-500 bg-emerald-600/20 text-emerald-400",
+                        "border-primary bg-primary/20 text-primary",
                       !isActive &&
                         !isCompleted &&
                         "border-slate-700 bg-transparent text-text-muted"
@@ -497,7 +497,7 @@ function OnboardingContent() {
                     className={cn(
                       "text-xs whitespace-nowrap",
                       isActive
-                        ? "font-medium text-emerald-400"
+                        ? "font-medium text-primary"
                         : "text-text-muted"
                     )}
                   >
@@ -508,7 +508,7 @@ function OnboardingContent() {
                   <div
                     className={cn(
                       "mb-5 mx-2 h-0.5 flex-1",
-                      i < step ? "bg-emerald-500" : "bg-slate-700"
+                      i < step ? "bg-primary" : "bg-slate-700"
                     )}
                   />
                 )}
@@ -665,7 +665,7 @@ function OnboardingContent() {
                 placeholder="Search aircraft..."
                 value={aircraftSearch}
                 onChange={(e) => setAircraftSearch(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800/50 py-2 pl-10 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full rounded-lg border border-slate-700 bg-slate-800/50 py-2 pl-10 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
 
@@ -698,7 +698,7 @@ function OnboardingContent() {
                       className={cn(
                         "flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm",
                         isSelected
-                          ? "bg-emerald-600/15 text-emerald-300 ring-1 ring-emerald-500/30"
+                          ? "bg-primary/15 text-primary ring-1 ring-primary/30"
                           : "text-text-secondary hover:bg-slate-800"
                       )}
                     >
@@ -706,7 +706,7 @@ function OnboardingContent() {
                         className={cn(
                           "flex h-5 w-5 shrink-0 items-center justify-center rounded border",
                           isSelected
-                            ? "border-emerald-500 bg-emerald-600"
+                            ? "border-primary bg-primary"
                             : "border-slate-600"
                         )}
                       >
@@ -770,7 +770,7 @@ function OnboardingContent() {
                             e.target.value as QualificationLevel
                           )
                         }
-                        className="rounded-md border border-slate-700 bg-slate-800/50 px-2 py-1.5 text-xs text-slate-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="rounded-md border border-slate-700 bg-slate-800/50 px-2 py-1.5 text-xs text-slate-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
                       >
                         {QUALIFICATION_LEVELS.map((q) => (
                           <option key={q.value} value={q.value}>
@@ -816,7 +816,7 @@ function OnboardingContent() {
                     className={cn(
                       "w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors",
                       form.prior_hours_choice === option.value
-                        ? "border-emerald-500/50 bg-emerald-600/10 text-emerald-300"
+                        ? "border-primary/50 bg-primary/10 text-primary"
                         : "border-slate-700 text-slate-300 hover:border-slate-600"
                     )}
                   >
@@ -837,7 +837,7 @@ function OnboardingContent() {
                     className={cn(
                       "w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors",
                       form.prior_hours_choice === option.value
-                        ? "border-emerald-500/50 bg-emerald-600/10 text-emerald-300"
+                        ? "border-primary/50 bg-primary/10 text-primary"
                         : "border-slate-700 text-slate-300 hover:border-slate-600"
                     )}
                   >
@@ -967,7 +967,7 @@ function OnboardingContent() {
                   onClick={() => updateField("track_faa", !form.track_faa)}
                   className={cn(
                     "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent",
-                    form.track_faa ? "bg-emerald-600" : "bg-slate-700"
+                    form.track_faa ? "bg-primary" : "bg-slate-700"
                   )}
                 >
                   <span
@@ -1042,7 +1042,7 @@ function OnboardingContent() {
             {/* Military: Service Info Summary */}
             {isMilitary && (
               <div className="space-y-2 rounded-lg border border-slate-700/50 bg-bg-base/50 p-4">
-                <h4 className="text-sm font-medium text-emerald-400">
+                <h4 className="text-sm font-medium text-primary">
                   Service Info
                 </h4>
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
@@ -1072,7 +1072,7 @@ function OnboardingContent() {
             {/* Civilian: About You Summary */}
             {!isMilitary && (
               <div className="space-y-2 rounded-lg border border-slate-700/50 bg-bg-base/50 p-4">
-                <h4 className="text-sm font-medium text-emerald-400">
+                <h4 className="text-sm font-medium text-primary">
                   About You
                 </h4>
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
@@ -1098,7 +1098,7 @@ function OnboardingContent() {
 
             {/* Aircraft Summary */}
             <div className="space-y-2 rounded-lg border border-slate-700/50 bg-bg-base/50 p-4">
-              <h4 className="text-sm font-medium text-emerald-400">
+              <h4 className="text-sm font-medium text-primary">
                 Aircraft
               </h4>
               {form.selectedAircraft.length === 0 ? (
@@ -1137,7 +1137,7 @@ function OnboardingContent() {
 
             {/* FAA Summary */}
             <div className="space-y-2 rounded-lg border border-slate-700/50 bg-bg-base/50 p-4">
-              <h4 className="text-sm font-medium text-emerald-400">
+              <h4 className="text-sm font-medium text-primary">
                 FAA Info
               </h4>
               {(form.track_faa || !isMilitary) &&

@@ -192,7 +192,7 @@ export default async function ReportsPage() {
           <CardHeader>
             <CardTitle>
               <span className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-emerald-500" />
+                <TrendingUp className="h-5 w-5 text-primary" />
                 Career Hour Breakdown
               </span>
             </CardTitle>
@@ -222,7 +222,7 @@ export default async function ReportsPage() {
           <CardHeader>
             <CardTitle>
               <span className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-emerald-500" />
+                <Calendar className="h-5 w-5 text-primary" />
                 Year to Date ({format(now, "yyyy")})
               </span>
             </CardTitle>
@@ -256,7 +256,7 @@ export default async function ReportsPage() {
           <CardHeader>
             <CardTitle>
               <span className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-emerald-500" />
+                <BarChart3 className="h-5 w-5 text-primary" />
                 Monthly Hours (Last 12 Months)
               </span>
             </CardTitle>
@@ -275,7 +275,7 @@ export default async function ReportsPage() {
                     </span>
                     <div className="w-full flex items-end h-28">
                       <div
-                        className="w-full rounded-t bg-emerald-600/80 transition-all min-h-[2px]"
+                        className="w-full rounded-t bg-primary/80 transition-all min-h-[2px]"
                         style={{ height: `${Math.max(pct, m.hours > 0 ? 4 : 0)}%` }}
                       />
                     </div>
@@ -294,7 +294,7 @@ export default async function ReportsPage() {
           <CardHeader>
             <CardTitle>
               <span className="flex items-center gap-2">
-                <Plane className="h-5 w-5 text-emerald-500" />
+                <Plane className="h-5 w-5 text-primary" />
                 Sortie Type Breakdown
               </span>
             </CardTitle>
@@ -334,7 +334,7 @@ function StatCard({
 }) {
   return (
     <Card className="flex items-center gap-3">
-      <Icon className="h-5 w-5 text-emerald-500 shrink-0" />
+      <Icon className="h-5 w-5 text-primary shrink-0" />
       <div>
         <p className="text-xl font-bold text-slate-100">{value}</p>
         <p className="text-xs text-slate-500">{label}</p>
@@ -364,7 +364,7 @@ function HourRow({
       </div>
       <div className="h-1.5 rounded-full bg-slate-700">
         <div
-          className="h-1.5 rounded-full bg-emerald-600/80 transition-all"
+          className="h-1.5 rounded-full bg-primary/80 transition-all"
           style={{ width: `${pct}%` }}
         />
       </div>

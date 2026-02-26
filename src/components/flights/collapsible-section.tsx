@@ -31,7 +31,7 @@ export function CollapsibleSection({
             {title}
           </h3>
           {badge && (
-            <span className="rounded-full bg-emerald-900/50 border border-emerald-800 px-2 py-0.5 text-xs text-emerald-400">
+            <span className="rounded-full bg-primary/10 border border-primary/30 px-2 py-0.5 text-xs text-primary">
               {badge}
             </span>
           )}

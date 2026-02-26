@@ -101,8 +101,8 @@ function SignupContent() {
     return (
       <div className="space-y-4 text-center">
         <div className="flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600/20">
-            <CheckCircle className="h-6 w-6 text-emerald-400" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20">
+            <CheckCircle className="h-6 w-6 text-primary" />
           </div>
         </div>
         <h2 className="text-xl font-semibold text-slate-100">
@@ -114,7 +114,7 @@ function SignupContent() {
         </p>
         <Link
           href="/login"
-          className="mt-4 inline-block text-sm font-medium text-emerald-400 hover:text-emerald-300"
+          className="mt-4 inline-block text-sm font-medium text-primary hover:text-primary-hover"
         >
           Back to sign in
         </Link>
@@ -225,7 +225,7 @@ function SignupContent() {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-medium text-emerald-400 hover:text-emerald-300"
+          className="font-medium text-primary hover:text-primary-hover"
         >
           Sign in
         </Link>

@@ -62,7 +62,7 @@ export function FlightLogPreferencesCard({
       <CardHeader>
         <CardTitle>
           <span className="flex items-center gap-2">
-            <Plane className="h-5 w-5 text-emerald-500" />
+            <Plane className="h-5 w-5 text-primary" />
             Flight Log Preferences
           </span>
         </CardTitle>
@@ -95,7 +95,7 @@ export function FlightLogPreferencesCard({
                     onChange={() => toggle(section.id)}
                     className="peer sr-only"
                   />
-                  <div className="h-6 w-11 rounded-full bg-slate-700 peer-checked:bg-emerald-600 peer-disabled:opacity-50 transition-colors" />
+                  <div className="h-6 w-11 rounded-full bg-slate-700 peer-checked:bg-primary peer-disabled:opacity-50 transition-colors" />
                   <div className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5" />
                 </div>
               </label>

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SupabaseProvider } from "@/components/providers/supabase-provider";
+import { ThemeSetter } from "@/components/providers/theme-setter";
 import { Sidebar } from "@/components/layout/sidebar";
 import { TopNav } from "@/components/layout/top-nav";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -28,6 +29,10 @@ export default async function DashboardLayout({
 
   return (
     <SupabaseProvider initialUser={user} initialProfile={profile}>
+      <script dangerouslySetInnerHTML={{
+        __html: `document.documentElement.setAttribute('data-mode','${profile?.logbook_mode || 'military'}')`,
+      }} />
+      <ThemeSetter />
       <div className="min-h-screen bg-slate-950">
         {/* Desktop sidebar */}
         <Sidebar />

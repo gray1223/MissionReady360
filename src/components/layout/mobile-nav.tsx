@@ -78,7 +78,7 @@ export function MobileNav() {
         <div className="mx-3 mb-2 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-lg">
           {/* User info */}
           <div className="flex items-center gap-3 px-3 py-2.5 mb-1 border-b border-slate-800">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600/20 text-emerald-400 text-xs font-bold">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-primary text-xs font-bold">
               {callsign.slice(0, 2).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
@@ -127,7 +127,7 @@ export function MobileNav() {
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-emerald-600/10 text-emerald-400"
+                    ? "bg-primary/10 text-primary"
                     : "text-slate-300 hover:bg-slate-800/50"
                 )}
               >
@@ -173,7 +173,7 @@ export function MobileNav() {
                 className={cn(
                   "flex flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 text-[10px] font-medium transition-colors",
                   isActive
-                    ? "text-emerald-400"
+                    ? "text-primary"
                     : "text-slate-500 hover:text-slate-300"
                 )}
               >
@@ -189,7 +189,7 @@ export function MobileNav() {
             className={cn(
               "flex flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 text-[10px] font-medium transition-colors",
               isMoreActive || moreOpen
-                ? "text-emerald-400"
+                ? "text-primary"
                 : "text-slate-500 hover:text-slate-300"
             )}
           >
