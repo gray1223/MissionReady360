@@ -99,8 +99,15 @@ export default async function DashboardPage() {
   const flightLogPrefs = (profile?.flight_log_preferences || {}) as FlightLogPreferences;
   const ratingProgress =
     flightLogPrefs.showRatingProgress && flightLogPrefs.trackedRatings?.length
-      ? computeRatingProgress(flights as never[], flightLogPrefs.trackedRatings)
+      ? computeRatingProgress(
+          flights as never[],
+          flightLogPrefs.trackedRatings,
+          flightLogPrefs.priorHours
+        )
       : [];
+  const hasPriorHours = Object.values(flightLogPrefs.priorHours || {}).some(
+    (v) => typeof v === "number" && v > 0
+  );
 
   // Format recent flights for display — Supabase joins return arrays
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -261,7 +268,7 @@ export default async function DashboardPage() {
 
         {/* Rating Progress */}
         {ratingProgress.length > 0 && (
-          <RatingProgressCard ratings={ratingProgress} />
+          <RatingProgressCard ratings={ratingProgress} hasPriorHours={hasPriorHours} />
         )}
 
         {/* Recent Flights */}

@@ -45,10 +45,24 @@ export type QualificationLevel =
 export type FlightCondition = "day" | "night" | "nvg" | "mixed";
 export type PeriodUnit = "days" | "calendar_months" | "calendar_years";
 
+export interface PriorHoursInput {
+  total_time?: number;
+  pic_time?: number;
+  xc_time?: number;
+  night_time?: number;
+  instrument_actual?: number;
+  instrument_sim?: number;
+  solo_time?: number;
+  dual_received_time?: number;
+  solo_xc_time?: number;
+  pic_xc_time?: number;
+}
+
 export interface FlightLogPreferences {
   hiddenSections?: string[];
   trackedRatings?: string[];
   showRatingProgress?: boolean;
+  priorHours?: PriorHoursInput;
 }
 
 export interface Profile {

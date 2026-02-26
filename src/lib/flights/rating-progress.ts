@@ -5,10 +5,13 @@ import {
   type FlightTotals,
   type RatingRequirement,
 } from "@/lib/constants/faa-ratings";
+import type { PriorHoursInput } from "@/lib/types/database";
+import { priorHoursToTotals, mergeFlightTotals } from "./prior-hours";
 
 export interface RequirementProgress {
   requirement: RatingRequirement;
   achieved: number;
+  achievedFromPrior: number;
   percent: number;
 }
 
@@ -88,14 +91,21 @@ function computeTotals(flights: FlightRow[]): FlightTotals {
 
 /**
  * Compute progress toward tracked FAA ratings.
+ * Optional priorHours are merged into flight totals for rating progress
+ * (but do NOT affect currency, which is computed separately via RPC).
  */
 export function computeRatingProgress(
   flights: FlightRow[],
-  trackedRatingIds: string[]
+  trackedRatingIds: string[],
+  priorHours?: PriorHoursInput
 ): RatingProgress[] {
   if (trackedRatingIds.length === 0) return [];
 
-  const totals = computeTotals(flights);
+  const flightTotals = computeTotals(flights);
+  const priorTotals = priorHours ? priorHoursToTotals(priorHours) : null;
+  const totals = priorTotals
+    ? mergeFlightTotals(flightTotals, priorTotals)
+    : flightTotals;
 
   return trackedRatingIds
     .map((id) => FAA_RATINGS.find((r) => r.id === id))
@@ -103,8 +113,9 @@ export function computeRatingProgress(
     .map((rating) => {
       const requirements = rating.requirements.map((req) => {
         const achieved = totals[req.field];
+        const achievedFromPrior = priorTotals ? priorTotals[req.field] : 0;
         const percent = Math.min(Math.round((achieved / req.required) * 100), 100);
-        return { requirement: req, achieved, percent };
+        return { requirement: req, achieved, achievedFromPrior, percent };
       });
 
       // Overall = minimum of all requirements (all must be met)

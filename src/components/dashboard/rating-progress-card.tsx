@@ -18,9 +18,10 @@ function progressTrack(percent: number) {
 
 interface RatingProgressCardProps {
   ratings: RatingProgress[];
+  hasPriorHours?: boolean;
 }
 
-export function RatingProgressCard({ ratings }: RatingProgressCardProps) {
+export function RatingProgressCard({ ratings, hasPriorHours }: RatingProgressCardProps) {
   if (ratings.length === 0) return null;
 
   return (
@@ -43,6 +44,17 @@ export function RatingProgressCard({ ratings }: RatingProgressCardProps) {
         </div>
       </CardHeader>
       <CardContent>
+        {!hasPriorHours && (
+          <p className="mb-4 text-xs text-slate-500">
+            Have prior flight hours?{" "}
+            <Link
+              href="/settings"
+              className="text-emerald-400 hover:text-emerald-300"
+            >
+              Add them in settings
+            </Link>
+          </p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {ratings.map((rp) => (
             <div key={rp.rating.id} className="rounded-lg bg-slate-800/30 p-4">
@@ -71,6 +83,11 @@ export function RatingProgressCard({ ratings }: RatingProgressCardProps) {
                       </span>
                       <span className={`text-xs font-medium ${progressTrack(req.percent)}`}>
                         {req.achieved.toFixed(1)} / {req.requirement.required}
+                        {req.achievedFromPrior > 0 && (
+                          <span className="ml-1 text-slate-500 font-normal">
+                            (incl. {req.achievedFromPrior.toFixed(1)} prior)
+                          </span>
+                        )}
                       </span>
                     </div>
                     <div className="h-1.5 rounded-full bg-slate-700">
