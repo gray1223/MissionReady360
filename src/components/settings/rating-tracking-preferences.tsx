@@ -9,8 +9,8 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { createClient } from "@/lib/supabase/client";
 import { FAA_RATINGS } from "@/lib/constants/faa-ratings";
+import { updateFlightLogPreferences } from "@/app/(dashboard)/settings/actions";
 import type { FlightLogPreferences } from "@/lib/types/database";
 
 const GROUPS = [
@@ -35,27 +35,23 @@ export function RatingTrackingPreferencesCard({
     new Set(preferences.trackedRatings || [])
   );
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  async function save(
-    nextShow: boolean,
-    nextTracked: Set<string>
-  ) {
+  async function save(nextShow: boolean, nextTracked: Set<string>) {
     setSaving(true);
+    setError(null);
     try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          flight_log_preferences: {
-            ...preferences,
-            showRatingProgress: nextShow,
-            trackedRatings: Array.from(nextTracked),
-          },
-        })
-        .eq("id", userId);
-      if (error) {
-        console.error("Failed to save rating preferences:", error);
+      const result = await updateFlightLogPreferences(userId, {
+        ...preferences,
+        showRatingProgress: nextShow,
+        trackedRatings: Array.from(nextTracked),
+      });
+      if (result.error) {
+        setError(result.error);
       }
+    } catch (e) {
+      setError("Failed to save preferences");
+      console.error(e);
     } finally {
       setSaving(false);
     }
@@ -93,6 +89,12 @@ export function RatingTrackingPreferencesCard({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
+          {error && (
+            <p className="text-sm text-red-400 bg-red-500/10 rounded-lg px-3 py-2">
+              {error}
+            </p>
+          )}
+
           {/* Master toggle */}
           <label className="flex items-center justify-between rounded-lg bg-slate-800/30 px-4 py-3 cursor-pointer">
             <div>
@@ -114,7 +116,7 @@ export function RatingTrackingPreferencesCard({
             </div>
           </label>
 
-          {/* Rating checkboxes — shown when dashboard toggle is on */}
+          {/* Rating checkboxes */}
           {showOnDashboard && (
             <div className="space-y-4 pt-2">
               {GROUPS.map((group) => {

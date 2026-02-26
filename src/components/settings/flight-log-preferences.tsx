@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { createClient } from "@/lib/supabase/client";
+import { updateFlightLogPreferences } from "@/app/(dashboard)/settings/actions";
 import type { FlightLogPreferences } from "@/lib/types/database";
 
 const SECTIONS = [
@@ -48,13 +48,10 @@ export function FlightLogPreferencesCard({
 
     setSaving(true);
     try {
-      const supabase = createClient();
-      await supabase
-        .from("profiles")
-        .update({
-          flight_log_preferences: { ...preferences, hiddenSections: Array.from(next) },
-        })
-        .eq("id", userId);
+      await updateFlightLogPreferences(userId, {
+        ...preferences,
+        hiddenSections: Array.from(next),
+      });
     } finally {
       setSaving(false);
     }
