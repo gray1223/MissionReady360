@@ -7,49 +7,49 @@
 -- =============================================================================
 
 -- USAF Aircraft
-INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level)
+INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level, engine_count, engine_type)
 VALUES
-  ('F-16C', 'Fighting Falcon', 'F-16C', 'USAF', 'airplane', 'single_engine_land', true, true, true, true, true, false, false, true, true),
-  ('F-15E', 'Strike Eagle', 'F-15E', 'USAF', 'airplane', 'multi_engine_land', true, true, true, true, true, false, false, true, true),
-  ('F-35A', 'Lightning II', 'F-35A', 'USAF', 'airplane', 'single_engine_land', true, true, true, true, true, false, false, true, true),
-  ('C-17A', 'Globemaster III', 'C-17A', 'USAF', 'airplane', 'multi_engine_land', true, true, true, false, true, true, false, false, true),
-  ('C-130J', 'Super Hercules', 'C-130J', 'USAF', 'airplane', 'multi_engine_land', true, true, true, false, true, true, false, true, true),
-  ('KC-135R', 'Stratotanker', 'KC-135R', 'USAF', 'airplane', 'multi_engine_land', true, true, true, false, true, false, false, false, false),
-  ('KC-46A', 'Pegasus', 'KC-46A', 'USAF', 'airplane', 'multi_engine_land', true, true, true, false, true, false, false, false, false),
-  ('B-1B', 'Lancer', 'B-1B', 'USAF', 'airplane', 'multi_engine_land', true, true, true, true, true, false, false, true, true),
-  ('T-6A', 'Texan II', 'T-6A', 'USAF', 'airplane', 'single_engine_land', true, false, false, false, true, false, false, false, false),
-  ('T-38C', 'Talon', 'T-38C', 'USAF', 'airplane', 'multi_engine_land', true, false, false, false, true, false, false, false, false);
+  ('F-16C', 'Fighting Falcon', 'F-16C', 'USAF', 'airplane', 'single_engine_land', true, true, true, true, true, false, false, true, true, 1, 'turbojet'),
+  ('F-15E', 'Strike Eagle', 'F-15E', 'USAF', 'airplane', 'multi_engine_land', true, true, true, true, true, false, false, true, true, 2, 'turbojet'),
+  ('F-35A', 'Lightning II', 'F-35A', 'USAF', 'airplane', 'single_engine_land', true, true, true, true, true, false, false, true, true, 1, 'turbojet'),
+  ('C-17A', 'Globemaster III', 'C-17A', 'USAF', 'airplane', 'multi_engine_land', true, true, true, false, true, true, false, false, true, 4, 'turbofan'),
+  ('C-130J', 'Super Hercules', 'C-130J', 'USAF', 'airplane', 'multi_engine_land', true, true, true, false, true, true, false, true, true, 4, 'turboprop'),
+  ('KC-135R', 'Stratotanker', 'KC-135R', 'USAF', 'airplane', 'multi_engine_land', true, true, true, false, true, false, false, false, false, 4, 'turbofan'),
+  ('KC-46A', 'Pegasus', 'KC-46A', 'USAF', 'airplane', 'multi_engine_land', true, true, true, false, true, false, false, false, false, 2, 'turbofan'),
+  ('B-1B', 'Lancer', 'B-1B', 'USAF', 'airplane', 'multi_engine_land', true, true, true, true, true, false, false, true, true, 4, 'turbofan'),
+  ('T-6A', 'Texan II', 'T-6A', 'USAF', 'airplane', 'single_engine_land', true, false, false, false, true, false, false, false, false, 1, 'turboprop'),
+  ('T-38C', 'Talon', 'T-38C', 'USAF', 'airplane', 'multi_engine_land', true, false, false, false, true, false, false, false, false, 2, 'turbojet');
 
 -- USN Aircraft
-INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level)
+INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level, engine_count, engine_type)
 VALUES
-  ('FA-18E', 'Super Hornet', 'FA-18E', 'USN', 'airplane', 'multi_engine_land', true, true, true, true, true, false, true, true, true),
-  ('FA-18F', 'Super Hornet (Two-Seat)', 'FA-18F', 'USN', 'airplane', 'multi_engine_land', true, true, true, true, true, false, true, true, true),
-  ('E-2D', 'Hawkeye', 'E-2D', 'USN', 'airplane', 'multi_engine_land', true, true, true, false, true, false, true, false, false),
-  ('P-8A', 'Poseidon', 'P-8A', 'USN', 'airplane', 'multi_engine_land', true, false, false, true, false, false, false, true, true),
-  ('T-45C', 'Goshawk', 'T-45C', 'USN', 'airplane', 'single_engine_land', true, false, false, false, true, false, true, false, false),
-  ('C-2A', 'Greyhound', 'C-2A', 'USN', 'airplane', 'multi_engine_land', true, true, false, false, true, false, true, false, false);
+  ('FA-18E', 'Super Hornet', 'FA-18E', 'USN', 'airplane', 'multi_engine_land', true, true, true, true, true, false, true, true, true, 2, 'turbofan'),
+  ('FA-18F', 'Super Hornet (Two-Seat)', 'FA-18F', 'USN', 'airplane', 'multi_engine_land', true, true, true, true, true, false, true, true, true, 2, 'turbofan'),
+  ('E-2D', 'Hawkeye', 'E-2D', 'USN', 'airplane', 'multi_engine_land', true, true, true, false, true, false, true, false, false, 2, 'turboprop'),
+  ('P-8A', 'Poseidon', 'P-8A', 'USN', 'airplane', 'multi_engine_land', true, false, false, true, false, false, false, true, true, 2, 'turbofan'),
+  ('T-45C', 'Goshawk', 'T-45C', 'USN', 'airplane', 'single_engine_land', true, false, false, false, true, false, true, false, false, 1, 'turbojet'),
+  ('C-2A', 'Greyhound', 'C-2A', 'USN', 'airplane', 'multi_engine_land', true, true, false, false, true, false, true, false, false, 2, 'turboprop');
 
 -- USMC Aircraft
-INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level)
+INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level, engine_count, engine_type)
 VALUES
-  ('MV-22B', 'Osprey', 'MV-22B', 'USMC', 'rotorcraft', NULL, true, true, true, false, true, false, true, true, true),
-  ('AV-8B', 'Harrier II', 'AV-8B', 'USMC', 'airplane', 'single_engine_land', true, true, false, true, true, false, true, true, true),
-  ('CH-53E', 'Super Stallion', 'CH-53E', 'USMC', 'rotorcraft', NULL, true, true, true, false, true, false, true, true, true);
+  ('MV-22B', 'Osprey', 'MV-22B', 'USMC', 'rotorcraft', NULL, true, true, true, false, true, false, true, true, true, 2, 'turboshaft'),
+  ('AV-8B', 'Harrier II', 'AV-8B', 'USMC', 'airplane', 'single_engine_land', true, true, false, true, true, false, true, true, true, 1, 'turbojet'),
+  ('CH-53E', 'Super Stallion', 'CH-53E', 'USMC', 'rotorcraft', NULL, true, true, true, false, true, false, true, true, true, 3, 'turboshaft');
 
 -- USA Aircraft
-INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level)
+INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level, engine_count, engine_type)
 VALUES
-  ('UH-60M', 'Black Hawk', 'UH-60M', 'USA', 'rotorcraft', NULL, true, true, false, false, true, false, false, true, true),
-  ('AH-64E', 'Apache', 'AH-64E', 'USA', 'rotorcraft', NULL, true, true, false, true, true, false, false, true, true),
-  ('CH-47F', 'Chinook', 'CH-47F', 'USA', 'rotorcraft', NULL, true, true, false, false, true, false, false, true, true);
+  ('UH-60M', 'Black Hawk', 'UH-60M', 'USA', 'rotorcraft', NULL, true, true, false, false, true, false, false, true, true, 2, 'turboshaft'),
+  ('AH-64E', 'Apache', 'AH-64E', 'USA', 'rotorcraft', NULL, true, true, false, true, true, false, false, true, true, 2, 'turboshaft'),
+  ('CH-47F', 'Chinook', 'CH-47F', 'USA', 'rotorcraft', NULL, true, true, false, false, true, false, false, true, true, 2, 'turboshaft');
 
 -- Civilian Aircraft (for FAA currency tracking)
-INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, faa_type_rating, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level)
+INSERT INTO aircraft_types (designation, name, mds, branch, faa_category, faa_class, faa_type_rating, is_military, has_nvg, has_air_refueling, has_weapons, has_formation, has_airdrop, has_carrier, has_tactical, has_low_level, engine_count, engine_type)
 VALUES
-  ('C172', 'Cessna 172 Skyhawk', NULL, NULL, 'airplane', 'single_engine_land', NULL, false, false, false, false, false, false, false, false, false),
-  ('PA-28', 'Piper Cherokee', NULL, NULL, 'airplane', 'single_engine_land', NULL, false, false, false, false, false, false, false, false, false),
-  ('BE-C90', 'Beechcraft King Air C90', NULL, NULL, 'airplane', 'multi_engine_land', 'BE-C90', false, false, false, false, false, false, false, false, false);
+  ('C172', 'Cessna 172 Skyhawk', NULL, NULL, 'airplane', 'single_engine_land', NULL, false, false, false, false, false, false, false, false, false, 1, 'piston'),
+  ('PA-28', 'Piper Cherokee', NULL, NULL, 'airplane', 'single_engine_land', NULL, false, false, false, false, false, false, false, false, false, 1, 'piston'),
+  ('BE-C90', 'Beechcraft King Air C90', NULL, NULL, 'airplane', 'multi_engine_land', 'BE-C90', false, false, false, false, false, false, false, false, false, 2, 'turboprop');
 
 
 -- =============================================================================

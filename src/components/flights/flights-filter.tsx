@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 
 const FILTERS = [
@@ -16,6 +16,7 @@ interface FlightsFilterProps {
 export function FlightsFilter({ currentFilter }: FlightsFilterProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   return (
     <div className="flex gap-1 rounded-lg bg-slate-800/50 p-1 w-fit">
@@ -23,7 +24,7 @@ export function FlightsFilter({ currentFilter }: FlightsFilterProps) {
         <button
           key={f.value}
           onClick={() => {
-            const params = new URLSearchParams();
+            const params = new URLSearchParams(searchParams.toString());
             params.set("filter", f.value);
             router.push(`${pathname}?${params.toString()}`);
           }}

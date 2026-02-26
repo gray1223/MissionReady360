@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FlightCard } from "@/components/flights/flight-card";
 import { FlightsFilter } from "@/components/flights/flights-filter";
+import { FlightsSearch } from "@/components/flights/flights-search";
 
 export default async function FlightsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; q?: string; from?: string; to?: string }>;
 }) {
   const supabase = await createClient();
   const {
@@ -26,6 +27,9 @@ export default async function FlightsPage({
 
   const params = await searchParams;
   const filter = params.filter || profile?.logbook_mode || "military";
+  const q = params.q?.trim() || "";
+  const fromDate = params.from || "";
+  const toDate = params.to || "";
 
   let query = supabase
     .from("flights")
@@ -39,9 +43,65 @@ export default async function FlightsPage({
   } else if (filter === "civilian") {
     query = query.eq("is_military_flight", false);
   }
-  // "all" — no filter
+
+  // Date range filters
+  if (fromDate) {
+    query = query.gte("flight_date", fromDate);
+  }
+  if (toDate) {
+    query = query.lte("flight_date", toDate);
+  }
+
+  // Text search — use ilike across multiple fields
+  if (q) {
+    query = query.or(
+      [
+        `tail_number.ilike.%${q}%`,
+        `departure_icao.ilike.%${q}%`,
+        `arrival_icao.ilike.%${q}%`,
+        `route.ilike.%${q}%`,
+        `remarks.ilike.%${q}%`,
+        `mission_number.ilike.%${q}%`,
+        `mission_symbol.ilike.%${q}%`,
+      ].join(",")
+    );
+  }
 
   const { data: flights } = await query;
+
+  // If searching by text, also filter client-side by aircraft designation/name
+  // (joined data can't be filtered via .or() on the parent table)
+  let filteredFlights = flights || [];
+  if (q) {
+    const lowerQ = q.toLowerCase();
+    filteredFlights = filteredFlights.filter((f: any) => {
+      // Already matched by Supabase .or() on flight fields
+      const flightFieldMatch = [
+        f.tail_number,
+        f.departure_icao,
+        f.arrival_icao,
+        f.route,
+        f.remarks,
+        f.mission_number,
+        f.mission_symbol,
+      ].some((v) => v && v.toLowerCase().includes(lowerQ));
+
+      if (flightFieldMatch) return true;
+
+      // Check aircraft type
+      const at = f.aircraft_type;
+      if (at) {
+        if (
+          at.designation?.toLowerCase().includes(lowerQ) ||
+          at.name?.toLowerCase().includes(lowerQ)
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -60,10 +120,13 @@ export default async function FlightsPage({
         </Link>
       </div>
 
+      {/* Search */}
+      <FlightsSearch />
+
       {/* Filter tabs */}
       <FlightsFilter currentFilter={filter} />
 
-      {!flights || flights.length === 0 ? (
+      {filteredFlights.length === 0 ? (
         <Card>
           <CardContent>
             <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -71,24 +134,27 @@ export default async function FlightsPage({
                 <Plane className="h-8 w-8 text-slate-600" />
               </div>
               <h3 className="text-lg font-semibold text-slate-300">
-                No flights logged yet
+                {q ? "No flights match your search" : "No flights logged yet"}
               </h3>
               <p className="mt-2 max-w-sm text-sm text-slate-500">
-                Start logging your flights to track hours, currencies, and build
-                your flight history.
+                {q
+                  ? "Try a different search term or adjust your filters."
+                  : "Start logging your flights to track hours, currencies, and build your flight history."}
               </p>
-              <Link href="/flights/new" className="mt-6">
-                <Button variant="outline">
-                  <Plus className="h-4 w-4" />
-                  Log Your First Flight
-                </Button>
-              </Link>
+              {!q && (
+                <Link href="/flights/new" className="mt-6">
+                  <Button variant="outline">
+                    <Plus className="h-4 w-4" />
+                    Log Your First Flight
+                  </Button>
+                </Link>
+              )}
             </div>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
-          {flights.map((flight) => (
+          {filteredFlights.map((flight: any) => (
             <Link key={flight.id} href={`/flights/${flight.id}`}>
               <FlightCard flight={flight} />
             </Link>

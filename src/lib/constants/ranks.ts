@@ -64,12 +64,4 @@ export const RANKS: Record<MilitaryBranch, RankOption[]> = {
     { value: "CDR", label: "CDR - Commander" },
     { value: "CAPT", label: "CAPT - Captain" },
   ],
-  USSF: [
-    { value: "2Lt", label: "2Lt - Second Lieutenant" },
-    { value: "1Lt", label: "1Lt - First Lieutenant" },
-    { value: "Capt", label: "Capt - Captain" },
-    { value: "Maj", label: "Maj - Major" },
-    { value: "Lt Col", label: "Lt Col - Lieutenant Colonel" },
-    { value: "Col", label: "Col - Colonel" },
-  ],
 };

@@ -15,13 +15,15 @@ import type { FlightLogPreferences } from "@/lib/types/database";
 interface CurrencyPreferencesCardProps {
   preferences: FlightLogPreferences;
   userId: string;
+  isMilitary: boolean;
 }
 
 export function CurrencyPreferencesCard({
   preferences,
   userId,
+  isMilitary,
 }: CurrencyPreferencesCardProps) {
-  const [showFaa, setShowFaa] = useState(preferences.showFaaCurrencies ?? true);
+  const [showFaa, setShowFaa] = useState(preferences.showFaaCurrencies ?? !isMilitary);
   const [saving, setSaving] = useState(false);
 
   async function toggleFaa() {

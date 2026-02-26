@@ -479,7 +479,7 @@ function OnboardingContent() {
                     className={cn(
                       "flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-medium",
                       isCompleted &&
-                        "border-primary bg-primary text-white",
+                        "border-primary-button bg-primary-button text-white",
                       isActive &&
                         "border-primary bg-primary/20 text-primary",
                       !isActive &&

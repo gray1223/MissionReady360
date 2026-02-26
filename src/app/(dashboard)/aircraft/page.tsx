@@ -14,7 +14,7 @@ export default async function AircraftPage() {
     await Promise.all([
       supabase
         .from("user_aircraft")
-        .select("id, qualification_level, is_primary, aircraft_type_id, aircraft_types(id, designation, name)")
+        .select("id, qualification_level, is_primary, aircraft_type_id, aircraft_types(id, designation, name, engine_count, engine_type)")
         .eq("user_id", user.id)
         .order("created_at"),
       supabase

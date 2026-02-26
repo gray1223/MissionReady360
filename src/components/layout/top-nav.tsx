@@ -89,7 +89,7 @@ export function TopNav() {
           {/* New Flight button - hidden on very small screens */}
           <Link
             href="/flights/new"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-lg bg-primary-button px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-button-hover transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>New Flight</span>
@@ -98,7 +98,7 @@ export function TopNav() {
           {/* Mobile new flight - icon only */}
           <Link
             href="/flights/new"
-            className="sm:hidden inline-flex items-center justify-center rounded-lg bg-primary p-2 text-white hover:bg-primary-hover transition-colors"
+            className="sm:hidden inline-flex items-center justify-center rounded-lg bg-primary-button p-2 text-white hover:bg-primary-button-hover transition-colors"
             aria-label="New Flight"
           >
             <Plus className="h-4 w-4" />

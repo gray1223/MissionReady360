@@ -177,6 +177,7 @@ export default async function SettingsPage() {
         <CurrencyPreferencesCard
           preferences={profile.flight_log_preferences || {}}
           userId={user.id}
+          isMilitary={isMilitary}
         />
       )}
 

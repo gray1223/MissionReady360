@@ -74,7 +74,7 @@ export default async function CurrenciesPage() {
   const mode: LogbookMode = (profile?.logbook_mode as LogbookMode) || "military";
   const isMilitary = mode === "military";
   const prefs = (profile?.flight_log_preferences || {}) as FlightLogPreferences;
-  const showFaa = prefs.showFaaCurrencies ?? true;
+  const showFaa = prefs.showFaaCurrencies ?? !isMilitary;
 
   const all = ((currencies || []) as CurrencyRow[]).filter((c) => {
     if (!isMilitary) return c.is_faa; // Civilian: FAA only

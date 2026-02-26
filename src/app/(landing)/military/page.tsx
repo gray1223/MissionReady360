@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const BRANCHES = ["USAF", "USN", "USA", "USMC", "USCG", "USSF"];
+const BRANCHES = ["USAF", "USN", "USA", "USMC", "USCG"];
 
 const FEATURES = [
   {

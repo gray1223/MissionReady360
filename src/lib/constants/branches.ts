@@ -6,7 +6,6 @@ export const BRANCHES: { value: MilitaryBranch; label: string }[] = [
   { value: "USA", label: "U.S. Army" },
   { value: "USMC", label: "U.S. Marine Corps" },
   { value: "USCG", label: "U.S. Coast Guard" },
-  { value: "USSF", label: "U.S. Space Force" },
 ];
 
 export const DUTY_STATUSES = [

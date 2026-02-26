@@ -28,6 +28,8 @@ interface UserAircraftRow {
     id: string;
     designation: string;
     name: string;
+    engine_count?: number;
+    engine_type?: string | null;
   };
 }
 
@@ -124,6 +126,11 @@ export function AircraftList({
                   <p className="text-sm text-slate-400 mt-0.5">
                     {ua.aircraft_types.name}
                   </p>
+                  {ua.aircraft_types.engine_type && (
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {ua.aircraft_types.engine_count}x {ua.aircraft_types.engine_type}
+                    </p>
+                  )}
                 </div>
                 <Badge variant="info">
                   {ua.qualification_level.replace(/_/g, " ")}

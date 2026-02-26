@@ -3,8 +3,7 @@ export type MilitaryBranch =
   | "USN"
   | "USA"
   | "USMC"
-  | "USCG"
-  | "USSF";
+  | "USCG";
 export type CrewPositionCategory =
   | "pilot"
   | "copilot"
@@ -53,6 +52,7 @@ export type CertificateType =
   | "private"
   | "commercial"
   | "atp";
+export type EngineType = "piston" | "turboprop" | "turboshaft" | "turbojet" | "turbofan";
 
 export interface PriorHoursInput {
   total_time?: number;
@@ -126,6 +126,10 @@ export interface AircraftType {
   has_carrier: boolean;
   has_tactical: boolean;
   has_low_level: boolean;
+  engine_count: number;
+  engine_type: EngineType | null;
+  is_custom: boolean;
+  created_by: string | null;
   created_at: string;
 }
 

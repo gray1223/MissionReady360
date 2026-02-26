@@ -120,7 +120,7 @@ export default async function DashboardPage() {
   const flightLogPrefs = (profile?.flight_log_preferences || {}) as FlightLogPreferences;
 
   // Currency summary — military mode shows all, civilian mode shows FAA only
-  const showFaa = flightLogPrefs.showFaaCurrencies ?? true;
+  const showFaa = flightLogPrefs.showFaaCurrencies ?? !isMilitary;
   const currencyList = (
     (currencies || []) as Array<{
       rule_name: string;
