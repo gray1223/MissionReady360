@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Plane } from "lucide-react";
 import {
   Card,
@@ -33,7 +32,6 @@ export function FlightLogPreferencesCard({
   preferences,
   userId,
 }: FlightLogPreferencesCardProps) {
-  const router = useRouter();
   const [hidden, setHidden] = useState<Set<string>>(
     new Set(preferences.hiddenSections || [])
   );
@@ -57,7 +55,6 @@ export function FlightLogPreferencesCard({
           flight_log_preferences: { ...preferences, hiddenSections: Array.from(next) },
         })
         .eq("id", userId);
-      router.refresh();
     } finally {
       setSaving(false);
     }

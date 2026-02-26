@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { GraduationCap } from "lucide-react";
 import {
   Card,
@@ -29,7 +28,6 @@ export function RatingTrackingPreferencesCard({
   preferences,
   userId,
 }: RatingTrackingPreferencesCardProps) {
-  const router = useRouter();
   const [showOnDashboard, setShowOnDashboard] = useState(
     preferences.showRatingProgress ?? false
   );
@@ -58,7 +56,6 @@ export function RatingTrackingPreferencesCard({
       if (error) {
         console.error("Failed to save rating preferences:", error);
       }
-      router.refresh();
     } finally {
       setSaving(false);
     }
