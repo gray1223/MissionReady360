@@ -45,7 +45,7 @@ export function RatingTrackingPreferencesCard({
     setSaving(true);
     try {
       const supabase = createClient();
-      await supabase
+      const { error } = await supabase
         .from("profiles")
         .update({
           flight_log_preferences: {
@@ -55,6 +55,9 @@ export function RatingTrackingPreferencesCard({
           },
         })
         .eq("id", userId);
+      if (error) {
+        console.error("Failed to save rating preferences:", error);
+      }
       router.refresh();
     } finally {
       setSaving(false);
