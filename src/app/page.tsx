@@ -6,6 +6,8 @@ import {
   BarChart3,
   Award,
   ArrowRight,
+  GraduationCap,
+  Settings2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -14,25 +16,37 @@ const FEATURES = [
     icon: Plane,
     title: "Unified Logbook",
     description:
-      "Log military sorties and civilian flights in one place with all the details that matter.",
+      "Log military sorties and civilian flights in one place with mission details, FAA times, approaches, and more.",
   },
   {
     icon: Clock,
     title: "Currency Tracking",
     description:
-      "Automatic tracking of military and FAA currency requirements so you never fall out of currency.",
+      "Automatic tracking of military and FAA currency requirements with expiration warnings and status badges.",
+  },
+  {
+    icon: GraduationCap,
+    title: "FAA Rating Progress",
+    description:
+      "Track your hours toward PPL, Instrument, Commercial, ATP, and R-ATP ratings with visual progress bars.",
   },
   {
     icon: BarChart3,
     title: "Flight Analytics",
     description:
-      "Visualize your flight hours, trends, and qualification progress at a glance.",
+      "See 30-day, 90-day, and year-to-date flight hour summaries with night and instrument breakdowns.",
   },
   {
     icon: Award,
     title: "Qualification Management",
     description:
-      "Track your certifications, ratings, medicals, and military qualifications.",
+      "Track your certifications, ratings, medicals, and military qualifications in one place.",
+  },
+  {
+    icon: Settings2,
+    title: "Customizable Dashboard",
+    description:
+      "Toggle flight log sections, choose which ratings to track, and personalize your dashboard widgets.",
   },
 ];
 
@@ -85,7 +99,7 @@ export default function LandingPage() {
 
           <p className="mx-auto max-w-lg text-lg text-text-secondary">
             MissionReady360 combines your military flight log with FAA currency
-            tracking, so you always know where you stand.
+            tracking and rating progress, so you always know where you stand.
           </p>
 
           <div className="flex items-center justify-center gap-4 pt-2">
@@ -104,7 +118,7 @@ export default function LandingPage() {
         </div>
 
         {/* Features */}
-        <div className="mx-auto mt-24 grid max-w-4xl gap-6 sm:grid-cols-2">
+        <div className="mx-auto mt-24 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature) => {
             const Icon = feature.icon;
             return (

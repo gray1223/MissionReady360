@@ -13,6 +13,9 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { RatingProgressCard } from "@/components/dashboard/rating-progress-card";
+import { computeRatingProgress } from "@/lib/flights/rating-progress";
+import type { FlightLogPreferences } from "@/lib/types/database";
 
 const statusVariant: Record<string, "success" | "warning" | "danger"> = {
   current: "success",
@@ -45,7 +48,7 @@ export default async function DashboardPage() {
     { data: allFlights },
     { data: currencies },
   ] = await Promise.all([
-    supabase.from("profiles").select("callsign").eq("id", user.id).single(),
+    supabase.from("profiles").select("callsign, flight_log_preferences").eq("id", user.id).single(),
     supabase
       .from("flights")
       .select("id, flight_date, total_time, sortie_type, tail_number, aircraft_type_id, aircraft_types(designation, name)")
@@ -54,7 +57,7 @@ export default async function DashboardPage() {
       .limit(5),
     supabase
       .from("flights")
-      .select("flight_date, total_time, night_time, instrument_time")
+      .select("flight_date, total_time, night_time, instrument_time, sim_instrument_time, pic_time, xc_time, solo_time, dual_received_time, is_simulator")
       .eq("user_id", user.id),
     supabase.rpc("compute_user_currencies", { p_user_id: user.id }),
   ]);
@@ -91,6 +94,13 @@ export default async function DashboardPage() {
   const currentCount = currencyList.filter((c) => c.status === "current").length;
   const warningCount = currencyList.filter((c) => c.status === "expiring_soon").length;
   const expiredCount = currencyList.filter((c) => c.status === "expired").length;
+
+  // Rating progress
+  const flightLogPrefs = (profile?.flight_log_preferences || {}) as FlightLogPreferences;
+  const ratingProgress =
+    flightLogPrefs.showRatingProgress && flightLogPrefs.trackedRatings?.length
+      ? computeRatingProgress(flights as never[], flightLogPrefs.trackedRatings)
+      : [];
 
   // Format recent flights for display — Supabase joins return arrays
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -248,6 +258,11 @@ export default async function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Rating Progress */}
+        {ratingProgress.length > 0 && (
+          <RatingProgressCard ratings={ratingProgress} />
+        )}
 
         {/* Recent Flights */}
         <Card className="lg:col-span-2">

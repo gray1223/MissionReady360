@@ -18,6 +18,7 @@ import { createClient } from "@/lib/supabase/server";
 import { EditProfileModal } from "@/components/settings/edit-profile-modal";
 import { SignOutButton } from "@/components/settings/sign-out-button";
 import { FlightLogPreferencesCard } from "@/components/settings/flight-log-preferences";
+import { RatingTrackingPreferencesCard } from "@/components/settings/rating-tracking-preferences";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -101,6 +102,14 @@ export default async function SettingsPage() {
       {/* Flight Log Preferences */}
       {profile && (
         <FlightLogPreferencesCard
+          preferences={profile.flight_log_preferences || {}}
+          userId={user.id}
+        />
+      )}
+
+      {/* FAA Rating Progress Preferences */}
+      {profile && (
+        <RatingTrackingPreferencesCard
           preferences={profile.flight_log_preferences || {}}
           userId={user.id}
         />

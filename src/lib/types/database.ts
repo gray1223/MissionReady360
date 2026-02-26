@@ -47,6 +47,8 @@ export type PeriodUnit = "days" | "calendar_months" | "calendar_years";
 
 export interface FlightLogPreferences {
   hiddenSections?: string[];
+  trackedRatings?: string[];
+  showRatingProgress?: boolean;
 }
 
 export interface Profile {

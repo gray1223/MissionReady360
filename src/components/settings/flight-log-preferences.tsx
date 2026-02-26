@@ -54,7 +54,7 @@ export function FlightLogPreferencesCard({
       await supabase
         .from("profiles")
         .update({
-          flight_log_preferences: { hiddenSections: Array.from(next) },
+          flight_log_preferences: { ...preferences, hiddenSections: Array.from(next) },
         })
         .eq("id", userId);
       router.refresh();
