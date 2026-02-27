@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Plane, Clock, MapPin, Moon, Eye, MessageSquare, ArrowUp, ArrowDown } from "lucide-react";
+import { Plane, Clock, MapPin, Moon, Eye, MessageSquare, ArrowUp, ArrowDown, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils/cn";
 import type { Flight, AircraftType } from "@/lib/types/database";
@@ -59,6 +59,17 @@ export function FlightCard({ flight, onClick }: FlightCardProps) {
             {flight.tail_number && (
               <span className="text-slate-500">#{flight.tail_number}</span>
             )}
+            {(() => {
+              const ip = flight.crew_members?.find(
+                (c) => c.position === "instructor" || c.position === "pilot" || c.position === "copilot"
+              );
+              return ip ? (
+                <span className="flex items-center gap-1">
+                  <Users className="h-3.5 w-3.5" />
+                  {ip.name}{ip.position === "instructor" ? " (IP)" : ""}
+                </span>
+              ) : null;
+            })()}
           </div>
         </div>
         <div className="text-right">
