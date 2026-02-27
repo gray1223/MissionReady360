@@ -375,6 +375,13 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
       {!hiddenSections.has("faa_time") && <CollapsibleSection title="FAA Time" defaultOpen={!isMilitaryFlight}>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           <Input
+            {...register("total_time")}
+            label="Total Time"
+            type="number"
+            step="0.1"
+            min="0"
+          />
+          <Input
             {...register("pic_time")}
             label="PIC"
             type="number"
