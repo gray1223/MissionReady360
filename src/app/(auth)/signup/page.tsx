@@ -2,14 +2,13 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle } from "lucide-react";
 import type { LogbookMode } from "@/lib/types/database";
 
 const signupSchema = z
@@ -45,9 +44,9 @@ export default function SignupPage() {
 
 function SignupContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const mode = (searchParams.get("mode") as LogbookMode) || "military";
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const {
@@ -61,10 +60,6 @@ function SignupContent() {
   async function onSubmit(data: SignupFormData) {
     setError(null);
 
-    // Debug: check if env vars are present
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "MISSING";
-    const hasKey = !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
     try {
       const supabase = createClient();
 
@@ -72,24 +67,24 @@ function SignupContent() {
         email: data.email,
         password: data.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/callback?mode=${mode}`,
           data: { logbook_mode: mode },
         },
       });
 
       if (result.error) {
-        setError(`[${supabaseUrl}][key:${hasKey}] ${String(result.error.message)} | status:${result.error.status} | name:${result.error.name}`);
+        setError(result.error.message || "Signup failed. Please try again.");
         return;
       }
 
       if (!result.data.user) {
-        setError(`No user returned. URL:${supabaseUrl} key:${hasKey}`);
+        setError("Signup failed. Please try again.");
         return;
       }
 
-      setSuccess(true);
+      // No email confirmation — redirect straight to onboarding
+      router.push(`/onboarding?mode=${mode}`);
     } catch (err) {
-      setError(`[catch][${supabaseUrl}][key:${hasKey}] ${err instanceof Error ? err.message : String(err)}`);
+      setError(err instanceof Error ? err.message : "An unexpected error occurred.");
     }
   }
 
@@ -109,31 +104,6 @@ function SignupContent() {
       setError(oauthError.message);
       setGoogleLoading(false);
     }
-  }
-
-  if (success) {
-    return (
-      <div className="space-y-4 text-center">
-        <div className="flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20">
-            <CheckCircle className="h-6 w-6 text-primary" />
-          </div>
-        </div>
-        <h2 className="text-xl font-semibold text-slate-100">
-          Check your email
-        </h2>
-        <p className="text-sm text-text-secondary">
-          We sent a confirmation link to your email address. Click the link to
-          activate your account and get started.
-        </p>
-        <Link
-          href="/login"
-          className="mt-4 inline-block text-sm font-medium text-primary hover:text-primary-hover"
-        >
-          Back to sign in
-        </Link>
-      </div>
-    );
   }
 
   return (
