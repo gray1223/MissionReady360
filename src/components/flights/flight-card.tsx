@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Plane, Clock, MapPin, Moon, Eye, MessageSquare } from "lucide-react";
+import { Plane, Clock, MapPin, Moon, Eye, MessageSquare, ArrowUp, ArrowDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils/cn";
 import type { Flight, AircraftType } from "@/lib/types/database";
@@ -38,9 +38,14 @@ export function FlightCard({ flight, onClick }: FlightCardProps) {
             <Badge variant={flight.is_military_flight ? "success" : "default"}>
               {flight.is_military_flight ? "MIL" : "CIV"}
             </Badge>
-            {flight.upt_grades?.progression_grade && (
-              <Badge variant="info">
-                {flight.upt_grades.progression_grade}
+            {flight.upt_grades?.overall_grade && (
+              <Badge variant={
+                flight.upt_grades.overall_grade === "Excellent" ? "success" :
+                flight.upt_grades.overall_grade === "Good" ? "info" :
+                flight.upt_grades.overall_grade === "Fair" ? "warning" :
+                "danger"
+              }>
+                {flight.upt_grades.overall_grade}
               </Badge>
             )}
           </div>
@@ -105,6 +110,23 @@ export function FlightCard({ flight, onClick }: FlightCardProps) {
           <span className="flex items-center gap-1">
             <MessageSquare className="h-3 w-3" />
             {flight.debrief_items.length} debrief
+          </span>
+        )}
+        {flight.upt_grades?.progression_grade && (
+          <span className="font-medium text-blue-400">
+            {flight.upt_grades.progression_grade}
+          </span>
+        )}
+        {(flight.upt_grades?.upgrades ?? 0) > 0 && (
+          <span className="flex items-center gap-0.5 text-emerald-400">
+            <ArrowUp className="h-3 w-3" />
+            {flight.upt_grades!.upgrades} upgrade{flight.upt_grades!.upgrades !== 1 ? "s" : ""}
+          </span>
+        )}
+        {(flight.upt_grades?.downgrades ?? 0) > 0 && (
+          <span className="flex items-center gap-0.5 text-red-400">
+            <ArrowDown className="h-3 w-3" />
+            {flight.upt_grades!.downgrades} downgrade{flight.upt_grades!.downgrades !== 1 ? "s" : ""}
           </span>
         )}
       </div>
