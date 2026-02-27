@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Plane, Clock, MapPin, Moon, Eye } from "lucide-react";
+import { Plane, Clock, MapPin, Moon, Eye, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils/cn";
 import type { Flight, AircraftType } from "@/lib/types/database";
@@ -95,6 +95,12 @@ export function FlightCard({ flight, onClick }: FlightCardProps) {
         )}
         {flight.carrier_traps > 0 && (
           <span>{flight.carrier_traps} trap{flight.carrier_traps !== 1 ? "s" : ""}</span>
+        )}
+        {flight.debrief_items && flight.debrief_items.length > 0 && (
+          <span className="flex items-center gap-1">
+            <MessageSquare className="h-3 w-3" />
+            {flight.debrief_items.length} debrief
+          </span>
         )}
       </div>
     </div>

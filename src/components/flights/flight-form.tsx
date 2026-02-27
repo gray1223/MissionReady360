@@ -495,7 +495,7 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
 
       {/* Debrief */}
       {!hiddenSections.has("debrief") && <CollapsibleSection title="Debrief Items">
-        <DebriefInput control={control} register={register} />
+        <DebriefInput control={control} register={register} errors={errors} />
       </CollapsibleSection>}
 
       {/* Remarks */}

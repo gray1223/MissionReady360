@@ -1,6 +1,11 @@
 "use client";
 
-import { useFieldArray, type Control, type UseFormRegister } from "react-hook-form";
+import {
+  useFieldArray,
+  type Control,
+  type UseFormRegister,
+  type FieldErrors,
+} from "react-hook-form";
 import { Plus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -24,9 +29,10 @@ const DEBRIEF_CATEGORIES = [
 interface DebriefInputProps {
   control: Control<FlightFormData>;
   register: UseFormRegister<FlightFormData>;
+  errors?: FieldErrors<FlightFormData>;
 }
 
-export function DebriefInput({ control, register }: DebriefInputProps) {
+export function DebriefInput({ control, register, errors }: DebriefInputProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "debrief_items",
@@ -34,41 +40,46 @@ export function DebriefInput({ control, register }: DebriefInputProps) {
 
   return (
     <div className="space-y-3">
-      {fields.map((field, index) => (
-        <div
-          key={field.id}
-          className="rounded-lg border border-slate-800 bg-slate-800/20 p-3 space-y-3"
-        >
-          <div className="flex items-start gap-2">
-            <div className="flex-1 grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <Select
-                {...register(`debrief_items.${index}.category`)}
-                label="Category"
-                options={DEBRIEF_CATEGORIES}
-              />
-              <div className="sm:col-span-2">
-                <Input
-                  {...register(`debrief_items.${index}.item`)}
-                  label="Item"
-                  placeholder="What happened / what to discuss"
+      {fields.map((field, index) => {
+        const itemError = errors?.debrief_items?.[index]?.item?.message;
+
+        return (
+          <div
+            key={field.id}
+            className="rounded-lg border border-slate-800 bg-slate-800/20 p-3 space-y-3"
+          >
+            <div className="flex items-start gap-2">
+              <div className="flex-1 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <Select
+                  {...register(`debrief_items.${index}.category`)}
+                  label="Category"
+                  options={DEBRIEF_CATEGORIES}
                 />
+                <div className="sm:col-span-2">
+                  <Input
+                    {...register(`debrief_items.${index}.item`)}
+                    label="Item"
+                    placeholder="What happened / what to discuss"
+                    error={itemError}
+                  />
+                </div>
               </div>
+              <button
+                type="button"
+                onClick={() => remove(index)}
+                className="mt-6 rounded-lg p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => remove(index)}
-              className="mt-6 rounded-lg p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <Input
+              {...register(`debrief_items.${index}.resolution`)}
+              label="Resolution / Action"
+              placeholder="How was it resolved or what action is needed"
+            />
           </div>
-          <Input
-            {...register(`debrief_items.${index}.resolution`)}
-            label="Resolution / Action"
-            placeholder="How was it resolved or what action is needed"
-          />
-        </div>
-      ))}
+        );
+      })}
 
       <Button
         type="button"
