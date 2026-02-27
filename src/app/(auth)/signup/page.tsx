@@ -61,10 +61,14 @@ function SignupContent() {
   async function onSubmit(data: SignupFormData) {
     setError(null);
 
+    // Debug: check if env vars are present
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "MISSING";
+    const hasKey = !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
     try {
       const supabase = createClient();
 
-      const { error: signUpError } = await supabase.auth.signUp({
+      const result = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -73,19 +77,19 @@ function SignupContent() {
         },
       });
 
-      if (signUpError) {
-        const msg =
-          signUpError.message ||
-          (signUpError as unknown as { error_description?: string }).error_description ||
-          (signUpError as unknown as { msg?: string }).msg ||
-          `Error ${signUpError.status ?? ""}: ${JSON.stringify(Object.keys(signUpError))}`;
-        setError(msg);
+      if (result.error) {
+        setError(`[${supabaseUrl}][key:${hasKey}] ${String(result.error.message)} | status:${result.error.status} | name:${result.error.name}`);
+        return;
+      }
+
+      if (!result.data.user) {
+        setError(`No user returned. URL:${supabaseUrl} key:${hasKey}`);
         return;
       }
 
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(`[catch][${supabaseUrl}][key:${hasKey}] ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
