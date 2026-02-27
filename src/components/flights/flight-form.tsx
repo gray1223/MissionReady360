@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CollapsibleSection } from "./collapsible-section";
 import { ApproachInput } from "./approach-input";
 import { CrewInput } from "./crew-input";
+import { DebriefInput } from "./debrief-input";
 import {
   flightSchema,
   flightDefaults,
@@ -299,8 +300,8 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
         </div>
       </CollapsibleSection>
 
-      {/* FAA Time */}
-      {!hiddenSections.has("faa_time") && <CollapsibleSection title="FAA Time">
+      {/* FAA Time — default open for civilian flights */}
+      {!hiddenSections.has("faa_time") && <CollapsibleSection title="FAA Time" defaultOpen={!isMilitaryFlight}>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           <Input
             {...register("pic_time")}
@@ -491,6 +492,11 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
           </div>
         </CollapsibleSection>
       )}
+
+      {/* Debrief */}
+      {!hiddenSections.has("debrief") && <CollapsibleSection title="Debrief Items">
+        <DebriefInput control={control} register={register} />
+      </CollapsibleSection>}
 
       {/* Remarks */}
       {!hiddenSections.has("remarks") && <CollapsibleSection title="Remarks">

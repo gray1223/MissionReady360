@@ -226,6 +226,41 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
         </Card>
       )}
 
+      {/* Debrief Items */}
+      {flight.debrief_items && (flight.debrief_items as unknown[]).length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Debrief Items</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {(flight.debrief_items as { category: string; item: string; resolution: string }[]).map(
+                (di, i) => (
+                  <div
+                    key={i}
+                    className="rounded-lg bg-slate-800/30 px-4 py-3"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      {di.category && (
+                        <Badge>{di.category.replace(/_/g, " ")}</Badge>
+                      )}
+                      <span className="text-sm font-medium text-slate-200">
+                        {di.item}
+                      </span>
+                    </div>
+                    {di.resolution && (
+                      <p className="text-xs text-slate-400 mt-1">
+                        Resolution: {di.resolution}
+                      </p>
+                    )}
+                  </div>
+                )
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Remarks */}
       {flight.remarks && (
         <Card>

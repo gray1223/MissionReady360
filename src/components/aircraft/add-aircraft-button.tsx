@@ -44,15 +44,15 @@ export function AddAircraftButton({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const existing = new Set(existingAircraftIds);
   const filtered = useMemo(() => {
+    const existing = new Set(existingAircraftIds);
     return availableAircraft.filter(
       (a) =>
         !existing.has(a.id) &&
         (a.designation.toLowerCase().includes(search.toLowerCase()) ||
           a.name.toLowerCase().includes(search.toLowerCase()))
     );
-  }, [availableAircraft, search, existing]);
+  }, [availableAircraft, search, existingAircraftIds]);
 
   const selectedAircraft = availableAircraft.find((a) => a.id === selectedId);
 

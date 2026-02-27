@@ -12,6 +12,12 @@ const crewMemberSchema = z.object({
   callsign: z.string().optional(),
 });
 
+const debriefItemSchema = z.object({
+  category: z.string().default(""),
+  item: z.string().min(1, "Item required"),
+  resolution: z.string().default(""),
+});
+
 export const flightSchema = z.object({
   // Basic
   flight_date: z.string().min(1, "Date is required"),
@@ -72,6 +78,9 @@ export const flightSchema = z.object({
   combat_time: z.coerce.number().min(0).default(0),
   combat_sorties: z.coerce.number().int().min(0).default(0),
 
+  // Debrief
+  debrief_items: z.array(debriefItemSchema).default([]),
+
   // Mode
   is_military_flight: z.boolean().default(true),
 
@@ -128,6 +137,7 @@ export const flightDefaults: FlightFormData = {
   low_level_type: "",
   combat_time: 0,
   combat_sorties: 0,
+  debrief_items: [],
   is_military_flight: true,
   is_simulator: false,
   simulator_type: "",

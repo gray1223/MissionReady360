@@ -36,12 +36,6 @@ export default async function AircraftPage() {
       : ua.aircraft_types,
   }));
 
-  // Filter available aircraft by user's branch if set
-  const branch = profile?.branch;
-  const available = (allAircraft || []).filter(
-    (a) => !branch || !a.branch || a.branch === branch
-  );
-
   const existingIds = aircraftRows.map((ua: any) => ua.aircraft_types?.id).filter(Boolean);
 
   return (
@@ -54,7 +48,7 @@ export default async function AircraftPage() {
           </p>
         </div>
         <AddAircraftButton
-          availableAircraft={available}
+          availableAircraft={allAircraft || []}
           userId={user.id}
           existingAircraftIds={existingIds}
         />

@@ -143,6 +143,12 @@ export interface UserAircraft {
   created_at: string;
 }
 
+export interface DebriefItem {
+  category: string;
+  item: string;
+  resolution: string;
+}
+
 export interface Approach {
   type: string;
   runway: string;
@@ -215,6 +221,7 @@ export interface Flight {
   low_level_type: string | null;
   combat_time: number;
   combat_sorties: number;
+  debrief_items: DebriefItem[];
   is_military_flight: boolean;
   is_simulator: boolean;
   simulator_type: string | null;
