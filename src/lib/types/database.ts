@@ -60,6 +60,8 @@ export type UptOverallGrade = "Unsat" | "Fair" | "Good" | "Excellent";
 export interface UptGrades {
   progression_grade: UptProgressionGrade | null;
   overall_grade: UptOverallGrade | null;
+  upgrades: number;
+  downgrades: number;
   mif_notes: string;
 }
 

@@ -21,6 +21,8 @@ const debriefItemSchema = z.object({
 const uptGradesSchema = z.object({
   progression_grade: z.string().nullable().default(null),
   overall_grade: z.string().nullable().default(null),
+  upgrades: z.coerce.number().int().min(0).default(0),
+  downgrades: z.coerce.number().int().min(0).default(0),
   mif_notes: z.string().default(""),
 }).nullable().default(null);
 

@@ -104,9 +104,11 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
         uptGrades = {
           progression_grade: uptGrades.progression_grade || null,
           overall_grade: uptGrades.overall_grade || null,
+          upgrades: Number(uptGrades.upgrades) || 0,
+          downgrades: Number(uptGrades.downgrades) || 0,
           mif_notes: uptGrades.mif_notes || "",
         };
-        if (!uptGrades.progression_grade && !uptGrades.overall_grade && !uptGrades.mif_notes) {
+        if (!uptGrades.progression_grade && !uptGrades.overall_grade && !uptGrades.mif_notes && !uptGrades.upgrades && !uptGrades.downgrades) {
           uptGrades = null;
         }
       }
@@ -254,7 +256,7 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
       {/* UPT Grading — only when UPT enabled and military flight */}
       {uptEnabled && (
         <CollapsibleSection title="UPT Grading" defaultOpen>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             <Select
               {...register("upt_grades.progression_grade")}
               label="Progression Grade"
@@ -266,6 +268,18 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
               label="Overall Grade"
               options={[{ value: "", label: "Select grade..." }, ...UPT_OVERALL_GRADES]}
               placeholder="Select grade"
+            />
+            <Input
+              {...register("upt_grades.upgrades")}
+              label="Upgrades"
+              type="number"
+              min="0"
+            />
+            <Input
+              {...register("upt_grades.downgrades")}
+              label="Downgrades"
+              type="number"
+              min="0"
             />
           </div>
           <div className="mt-4">

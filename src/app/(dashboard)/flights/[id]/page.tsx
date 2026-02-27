@@ -191,6 +191,22 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
                   </p>
                 </div>
               )}
+              {((flight.upt_grades as { upgrades?: number }).upgrades ?? 0) > 0 && (
+                <div>
+                  <p className="text-xs text-slate-500 uppercase">Upgrades</p>
+                  <p className="mt-1 text-sm font-medium text-emerald-400">
+                    +{(flight.upt_grades as { upgrades: number }).upgrades}
+                  </p>
+                </div>
+              )}
+              {((flight.upt_grades as { downgrades?: number }).downgrades ?? 0) > 0 && (
+                <div>
+                  <p className="text-xs text-slate-500 uppercase">Downgrades</p>
+                  <p className="mt-1 text-sm font-medium text-red-400">
+                    -{(flight.upt_grades as { downgrades: number }).downgrades}
+                  </p>
+                </div>
+              )}
             </div>
             {(flight.upt_grades as { mif_notes?: string }).mif_notes && (
               <div className="mt-4">
