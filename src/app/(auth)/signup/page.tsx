@@ -60,23 +60,33 @@ function SignupContent() {
 
   async function onSubmit(data: SignupFormData) {
     setError(null);
-    const supabase = createClient();
 
-    const { error: signUpError } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/callback?mode=${mode}`,
-        data: { logbook_mode: mode },
-      },
-    });
+    try {
+      const supabase = createClient();
 
-    if (signUpError) {
-      setError(signUpError.message || JSON.stringify(signUpError) || "Signup failed. Please try again.");
-      return;
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/callback?mode=${mode}`,
+          data: { logbook_mode: mode },
+        },
+      });
+
+      if (signUpError) {
+        const msg =
+          signUpError.message ||
+          (signUpError as unknown as { error_description?: string }).error_description ||
+          (signUpError as unknown as { msg?: string }).msg ||
+          `Error ${signUpError.status ?? ""}: ${JSON.stringify(Object.keys(signUpError))}`;
+        setError(msg);
+        return;
+      }
+
+      setSuccess(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     }
-
-    setSuccess(true);
   }
 
   async function handleGoogleSignUp() {
