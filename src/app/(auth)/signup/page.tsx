@@ -72,7 +72,7 @@ function SignupContent() {
     });
 
     if (signUpError) {
-      setError(signUpError.message);
+      setError(signUpError.message || JSON.stringify(signUpError) || "Signup failed. Please try again.");
       return;
     }
 
