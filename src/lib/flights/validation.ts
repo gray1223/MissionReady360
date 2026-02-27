@@ -18,6 +18,12 @@ const debriefItemSchema = z.object({
   resolution: z.string().default(""),
 });
 
+const uptGradesSchema = z.object({
+  progression_grade: z.string().nullable().default(null),
+  overall_grade: z.string().nullable().default(null),
+  mif_notes: z.string().default(""),
+}).nullable().default(null);
+
 export const flightSchema = z.object({
   // Basic
   flight_date: z.string().min(1, "Date is required"),
@@ -81,6 +87,9 @@ export const flightSchema = z.object({
   // Debrief
   debrief_items: z.array(debriefItemSchema).default([]),
 
+  // UPT Grades
+  upt_grades: uptGradesSchema,
+
   // Mode
   is_military_flight: z.boolean().default(true),
 
@@ -138,6 +147,7 @@ export const flightDefaults: FlightFormData = {
   combat_time: 0,
   combat_sorties: 0,
   debrief_items: [],
+  upt_grades: null,
   is_military_flight: true,
   is_simulator: false,
   simulator_type: "",

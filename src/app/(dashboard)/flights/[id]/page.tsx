@@ -1,7 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
-import { Pencil, Trash2, ArrowLeft, Plane, Clock, MapPin } from "lucide-react";
+import { Pencil, Trash2, ArrowLeft, Plane, Clock, MapPin, GraduationCap } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -161,6 +161,48 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
           </div>
         </CardContent>
       </Card>
+
+      {/* UPT Grading */}
+      {flight.upt_grades && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <span className="flex items-center gap-2">
+                <GraduationCap className="h-4 w-4" />
+                UPT Grading
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {(flight.upt_grades as { progression_grade?: string; overall_grade?: string; mif_notes?: string }).progression_grade && (
+                <div>
+                  <p className="text-xs text-slate-500 uppercase">Progression Grade</p>
+                  <p className="mt-1 text-sm font-medium text-slate-200">
+                    {(flight.upt_grades as { progression_grade: string }).progression_grade}
+                  </p>
+                </div>
+              )}
+              {(flight.upt_grades as { overall_grade?: string }).overall_grade && (
+                <div>
+                  <p className="text-xs text-slate-500 uppercase">Overall Grade</p>
+                  <p className="mt-1 text-sm font-medium text-slate-200">
+                    {(flight.upt_grades as { overall_grade: string }).overall_grade}
+                  </p>
+                </div>
+              )}
+            </div>
+            {(flight.upt_grades as { mif_notes?: string }).mif_notes && (
+              <div className="mt-4">
+                <p className="text-xs text-slate-500 uppercase">MIF Notes</p>
+                <p className="mt-1 text-sm text-slate-300 whitespace-pre-wrap">
+                  {(flight.upt_grades as { mif_notes: string }).mif_notes}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Landings */}
       {(flight.day_landings > 0 ||

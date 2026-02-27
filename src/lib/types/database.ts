@@ -54,6 +54,15 @@ export type CertificateType =
   | "atp";
 export type EngineType = "piston" | "turboprop" | "turboshaft" | "turbojet" | "turbofan";
 
+export type UptProgressionGrade = "WB" | "BA" | "SB" | "AV" | "SA" | "AA" | "WA";
+export type UptOverallGrade = "Unsat" | "Fair" | "Good" | "Excellent";
+
+export interface UptGrades {
+  progression_grade: UptProgressionGrade | null;
+  overall_grade: UptOverallGrade | null;
+  mif_notes: string;
+}
+
 export interface PriorHoursInput {
   total_time?: number;
   pic_time?: number;
@@ -73,6 +82,7 @@ export interface FlightLogPreferences {
   showRatingProgress?: boolean;
   showFaaCurrencies?: boolean;
   priorHours?: PriorHoursInput;
+  uptEnabled?: boolean;
 }
 
 export interface Profile {
@@ -222,6 +232,7 @@ export interface Flight {
   combat_time: number;
   combat_sorties: number;
   debrief_items: DebriefItem[];
+  upt_grades: UptGrades | null;
   is_military_flight: boolean;
   is_simulator: boolean;
   simulator_type: string | null;

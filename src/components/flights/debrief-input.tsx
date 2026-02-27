@@ -30,13 +30,18 @@ interface DebriefInputProps {
   control: Control<FlightFormData>;
   register: UseFormRegister<FlightFormData>;
   errors?: FieldErrors<FlightFormData>;
+  extraCategories?: { value: string; label: string }[];
 }
 
-export function DebriefInput({ control, register, errors }: DebriefInputProps) {
+export function DebriefInput({ control, register, errors, extraCategories }: DebriefInputProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "debrief_items",
   });
+
+  const allCategories = extraCategories
+    ? [...DEBRIEF_CATEGORIES, ...extraCategories]
+    : DEBRIEF_CATEGORIES;
 
   return (
     <div className="space-y-3">
@@ -53,7 +58,7 @@ export function DebriefInput({ control, register, errors }: DebriefInputProps) {
                 <Select
                   {...register(`debrief_items.${index}.category`)}
                   label="Category"
-                  options={DEBRIEF_CATEGORIES}
+                  options={allCategories}
                 />
                 <div className="sm:col-span-2">
                   <Input

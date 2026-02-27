@@ -23,6 +23,7 @@ import { FlightLogPreferencesCard } from "@/components/settings/flight-log-prefe
 import { RatingTrackingPreferencesCard } from "@/components/settings/rating-tracking-preferences";
 import { PriorHoursForm } from "@/components/settings/prior-hours-form";
 import { CurrencyPreferencesCard } from "@/components/settings/currency-preferences";
+import { UptPreferencesCard } from "@/components/settings/upt-preferences";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -167,6 +168,14 @@ export default async function SettingsPage() {
       {/* Flight Log Preferences */}
       {profile && (
         <FlightLogPreferencesCard
+          preferences={profile.flight_log_preferences || {}}
+          userId={user.id}
+        />
+      )}
+
+      {/* UPT Preferences — Military only */}
+      {profile && isMilitary && (
+        <UptPreferencesCard
           preferences={profile.flight_log_preferences || {}}
           userId={user.id}
         />

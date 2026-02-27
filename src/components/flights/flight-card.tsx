@@ -38,6 +38,11 @@ export function FlightCard({ flight, onClick }: FlightCardProps) {
             <Badge variant={flight.is_military_flight ? "success" : "default"}>
               {flight.is_military_flight ? "MIL" : "CIV"}
             </Badge>
+            {flight.upt_grades?.progression_grade && (
+              <Badge variant="info">
+                {flight.upt_grades.progression_grade}
+              </Badge>
+            )}
           </div>
           <div className="flex items-center gap-3 text-sm text-slate-400">
             {flight.aircraft_type && (

@@ -25,6 +25,11 @@ import {
   FLIGHT_CONDITIONS,
   FORMATION_POSITIONS,
 } from "@/lib/constants/mission-symbols";
+import {
+  UPT_PROGRESSION_GRADES,
+  UPT_OVERALL_GRADES,
+  UPT_DEBRIEF_CATEGORIES,
+} from "@/lib/constants/upt-grades";
 import type { AircraftType, Flight, FlightLogPreferences, LogbookMode } from "@/lib/types/database";
 
 interface FlightFormProps {
@@ -68,6 +73,7 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
   const isSim = watch("is_simulator");
   const isMilitaryFlight = watch("is_military_flight");
   const hiddenSections = new Set(preferences?.hiddenSections || []);
+  const uptEnabled = !!(preferences?.uptEnabled && isMilitaryFlight);
 
   // Auto-set is_military_flight when aircraft changes (only for new flights)
   useEffect(() => {
@@ -92,6 +98,19 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Clean up UPT grades: store null if no grades set
+      let uptGrades = data.upt_grades;
+      if (uptGrades) {
+        uptGrades = {
+          progression_grade: uptGrades.progression_grade || null,
+          overall_grade: uptGrades.overall_grade || null,
+          mif_notes: uptGrades.mif_notes || "",
+        };
+        if (!uptGrades.progression_grade && !uptGrades.overall_grade && !uptGrades.mif_notes) {
+          uptGrades = null;
+        }
+      }
+
       const payload = {
         ...data,
         user_id: user.id,
@@ -100,6 +119,7 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
         crew_position: data.crew_position || null,
         formation_position: data.formation_position || null,
         air_refueling_type: data.air_refueling_type || null,
+        upt_grades: uptGrades,
       };
 
       if (isEdit) {
@@ -231,6 +251,34 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
         </div>
       </CollapsibleSection>}
 
+      {/* UPT Grading — only when UPT enabled and military flight */}
+      {uptEnabled && (
+        <CollapsibleSection title="UPT Grading" defaultOpen>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Select
+              {...register("upt_grades.progression_grade")}
+              label="Progression Grade"
+              options={[{ value: "", label: "Select grade..." }, ...UPT_PROGRESSION_GRADES]}
+              placeholder="Select grade"
+            />
+            <Select
+              {...register("upt_grades.overall_grade")}
+              label="Overall Grade"
+              options={[{ value: "", label: "Select grade..." }, ...UPT_OVERALL_GRADES]}
+              placeholder="Select grade"
+            />
+          </div>
+          <div className="mt-4">
+            <Textarea
+              {...register("upt_grades.mif_notes")}
+              label="MIF Notes"
+              placeholder="Upgrades, downgrades, and MIF remarks..."
+              rows={2}
+            />
+          </div>
+        </CollapsibleSection>
+      )}
+
       {/* Flight Time */}
       <CollapsibleSection title="Flight Time" defaultOpen>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -241,6 +289,15 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
             step="0.1"
             min="0"
           />
+          {uptEnabled && (
+            <Input
+              {...register("dual_received_time")}
+              label="Student / Dual Received"
+              type="number"
+              step="0.1"
+              min="0"
+            />
+          )}
           <Input
             {...register("pilot_time")}
             label="Pilot"
@@ -495,7 +552,12 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
 
       {/* Debrief */}
       {!hiddenSections.has("debrief") && <CollapsibleSection title="Debrief Items">
-        <DebriefInput control={control} register={register} errors={errors} />
+        <DebriefInput
+          control={control}
+          register={register}
+          errors={errors}
+          extraCategories={uptEnabled ? UPT_DEBRIEF_CATEGORIES : undefined}
+        />
       </CollapsibleSection>}
 
       {/* Remarks */}
