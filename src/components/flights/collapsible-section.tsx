@@ -24,7 +24,7 @@ export function CollapsibleSection({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-slate-800/30 transition-colors"
+        className="flex w-full items-center justify-between px-4 md:px-5 py-4 text-left hover:bg-slate-800/30 transition-colors"
       >
         <div className="flex items-center gap-3">
           <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wide">
@@ -50,7 +50,7 @@ export function CollapsibleSection({
         )}
       >
         <div className="overflow-hidden">
-          <div className="px-5 pb-5 pt-1">{children}</div>
+          <div className="px-4 md:px-5 pb-5 pt-1">{children}</div>
         </div>
       </div>
     </div>

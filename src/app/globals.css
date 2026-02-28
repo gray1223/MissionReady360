@@ -170,6 +170,15 @@ body {
   opacity: 1;
 }
 
+/* ---- Safe area insets for PWA standalone mode ---- */
+@supports (padding: env(safe-area-inset-top)) {
+  @media (display-mode: standalone) {
+    body {
+      padding-top: env(safe-area-inset-top);
+    }
+  }
+}
+
 /* ---- Links ---- */
 a {
   color: var(--primary);

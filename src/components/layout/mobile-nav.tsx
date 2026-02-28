@@ -158,7 +158,7 @@ export function MobileNav() {
       </div>
 
       {/* Bottom bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-800 bg-slate-950 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-800 bg-slate-950 pb-[env(safe-area-inset-bottom)] md:hidden">
         <div className="flex items-center justify-around px-1 py-1">
           {mainNavItems.map((item) => {
             const isActive =

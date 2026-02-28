@@ -29,7 +29,7 @@ export function FlightCard({ flight, onClick }: FlightCardProps) {
     >
       <div className="flex items-start justify-between">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium text-slate-100">
               {format(new Date(flight.flight_date), "dd MMM yyyy")}
             </span>
