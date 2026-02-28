@@ -8,6 +8,9 @@ import {
   Calendar,
   ArrowRight,
   Plus,
+  GraduationCap,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -55,12 +58,14 @@ export default async function DashboardPage() {
   const isMilitaryFilter = isMilitary ? true : false;
 
   // Fetch mode-filtered flights for hours and recent
-  const [{ data: recentFlights }, { data: modeFlights }, { data: allFlights }] =
+  const uptEnabled = !!(isMilitary && ((profile?.flight_log_preferences || {}) as FlightLogPreferences).uptEnabled);
+
+  const [{ data: recentFlights }, { data: modeFlights }, { data: allFlights }, { data: uptFlights }] =
     await Promise.all([
       supabase
         .from("flights")
         .select(
-          "id, flight_date, total_time, sortie_type, tail_number, aircraft_type_id, is_military_flight, aircraft_types(designation, name)"
+          "id, flight_date, total_time, sortie_type, tail_number, aircraft_type_id, is_military_flight, upt_grades, aircraft_types(designation, name)"
         )
         .eq("user_id", user.id)
         .eq("is_military_flight", isMilitaryFilter)
@@ -80,6 +85,16 @@ export default async function DashboardPage() {
           "flight_date, total_time, night_time, instrument_time, sim_instrument_time, pic_time, xc_time, solo_time, dual_received_time, is_simulator"
         )
         .eq("user_id", user.id),
+      // UPT graded flights (last 10)
+      uptEnabled
+        ? supabase
+            .from("flights")
+            .select("id, flight_date, upt_grades")
+            .eq("user_id", user.id)
+            .not("upt_grades", "is", null)
+            .order("flight_date", { ascending: false })
+            .limit(10)
+        : Promise.resolve({ data: [] }),
     ]);
 
   // Greeting: callsign (mil) or first name (civ)
@@ -155,6 +170,28 @@ export default async function DashboardPage() {
   const hasPriorHours = Object.values(flightLogPrefs.priorHours || {}).some(
     (v) => typeof v === "number" && v > 0
   );
+
+  // UPT grade stats
+  interface UptGradeData {
+    progression_grade?: string | null;
+    overall_grade?: string | null;
+    upgrades?: number;
+    downgrades?: number;
+  }
+  const uptGradedFlights = ((uptFlights || []) as Array<{ upt_grades: UptGradeData }>);
+  let totalUpgrades = 0, totalDowngrades = 0;
+  const gradeCounts: Record<string, number> = {};
+  for (const f of uptGradedFlights) {
+    const g = f.upt_grades;
+    if (!g) continue;
+    totalUpgrades += g.upgrades || 0;
+    totalDowngrades += g.downgrades || 0;
+    if (g.progression_grade) {
+      gradeCounts[g.progression_grade] = (gradeCounts[g.progression_grade] || 0) + 1;
+    }
+  }
+  const lastGrade = uptGradedFlights[0]?.upt_grades;
+  const mostCommonGrade = Object.entries(gradeCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
 
   // Format recent flights for display — Supabase joins return arrays
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -337,6 +374,60 @@ export default async function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* UPT Grade Summary */}
+        {uptEnabled && uptGradedFlights.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <span className="flex items-center gap-2">
+                  <GraduationCap className="h-5 w-5 text-primary" />
+                  UPT Grade Summary
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-lg bg-slate-800/30 p-4 text-center">
+                  <p className="text-2xl font-bold text-blue-400">
+                    {lastGrade?.progression_grade || "—"}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-400">Last Grade</p>
+                </div>
+                <div className="rounded-lg bg-slate-800/30 p-4 text-center">
+                  <p className="text-2xl font-bold text-slate-100">
+                    {lastGrade?.overall_grade || "—"}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-400">Last Overall</p>
+                </div>
+              </div>
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-400">Most Common Grade</span>
+                  <span className="font-medium text-blue-400">{mostCommonGrade || "—"}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-1 text-slate-400">
+                    <ArrowUp className="h-3.5 w-3.5 text-emerald-400" />
+                    Total Upgrades
+                  </span>
+                  <span className="font-medium text-emerald-400">{totalUpgrades}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-1 text-slate-400">
+                    <ArrowDown className="h-3.5 w-3.5 text-red-400" />
+                    Total Downgrades
+                  </span>
+                  <span className="font-medium text-red-400">{totalDowngrades}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-400">Graded Flights</span>
+                  <span className="font-medium text-slate-200">{uptGradedFlights.length}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Rating Progress */}
         {ratingProgress.length > 0 && (

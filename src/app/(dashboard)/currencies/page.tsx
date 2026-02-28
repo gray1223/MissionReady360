@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ProgressRing } from "@/components/ui/progress-ring";
+import { HideCurrencyButton } from "@/components/currencies/hide-currency-button";
+import { HiddenCurrencies } from "@/components/currencies/hidden-currencies";
 import type { FlightLogPreferences, CurrencyStatus, LogbookMode } from "@/lib/types/database";
 
 const statusVariant: Record<CurrencyStatus, "success" | "warning" | "danger"> = {
@@ -62,14 +64,34 @@ export default async function CurrenciesPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: profile }, { data: currencies }] = await Promise.all([
+  const [{ data: profile }, { data: currencies }, { data: overrides }] = await Promise.all([
     supabase
       .from("profiles")
       .select("flight_log_preferences, logbook_mode")
       .eq("id", user.id)
       .single(),
     supabase.rpc("compute_user_currencies", { p_user_id: user.id }),
+    supabase
+      .from("user_currency_overrides")
+      .select("currency_rule_id, is_disabled, currency_rules(id, name)")
+      .eq("user_id", user.id)
+      .eq("is_disabled", true),
   ]);
+
+  // Build list of hidden currencies for the restore UI
+  const hiddenCurrencies = ((overrides || []) as Array<{
+    currency_rule_id: string;
+    is_disabled: boolean;
+    currency_rules: { id: string; name: string } | { id: string; name: string }[] | null;
+  }>)
+    .filter((o) => o.is_disabled)
+    .map((o) => {
+      const rule = Array.isArray(o.currency_rules) ? o.currency_rules[0] : o.currency_rules;
+      return {
+        rule_id: o.currency_rule_id,
+        rule_name: rule?.name || "Unknown",
+      };
+    });
 
   const mode: LogbookMode = (profile?.logbook_mode as LogbookMode) || "military";
   const isMilitary = mode === "military";
@@ -217,6 +239,9 @@ export default async function CurrenciesPage() {
               </CardContent>
             </Card>
           )}
+
+          {/* Hidden Currencies */}
+          <HiddenCurrencies currencies={hiddenCurrencies} />
         </>
       )}
     </div>
@@ -277,9 +302,12 @@ function CurrencyItem({ currency }: { currency: CurrencyRow }) {
             </Badge>
           )}
         </div>
-        <Badge variant={statusVariant[currency.status]}>
-          {statusLabel[currency.status]}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant={statusVariant[currency.status]}>
+            {statusLabel[currency.status]}
+          </Badge>
+          <HideCurrencyButton ruleId={currency.rule_id} />
+        </div>
       </div>
 
       {/* Progress bar */}
