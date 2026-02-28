@@ -71,8 +71,8 @@ export function MobileNav() {
       {/* Slide-up more menu */}
       <div
         className={cn(
-          "fixed left-0 right-0 z-50 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] transform transition-transform duration-200 md:hidden",
-          moreOpen ? "translate-y-0" : "translate-y-full"
+          "fixed left-0 right-0 z-50 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] transition-all duration-200 md:hidden",
+          moreOpen ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
         )}
       >
         <div className="mx-3 mb-2 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-lg">
