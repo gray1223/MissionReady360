@@ -71,7 +71,7 @@ export function MobileNav() {
       {/* Slide-up more menu */}
       <div
         className={cn(
-          "fixed bottom-16 left-0 right-0 z-50 transform transition-transform duration-200 md:hidden",
+          "fixed left-0 right-0 z-50 bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] transform transition-transform duration-200 md:hidden",
           moreOpen ? "translate-y-0" : "translate-y-full"
         )}
       >
