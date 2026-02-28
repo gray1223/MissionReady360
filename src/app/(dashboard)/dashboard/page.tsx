@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RatingProgressCard } from "@/components/dashboard/rating-progress-card";
 import { computeRatingProgress } from "@/lib/flights/rating-progress";
+import { InstallAppBanner } from "@/components/pwa/install-prompt";
 import type { FlightLogPreferences, LogbookMode } from "@/lib/types/database";
 
 const statusVariant: Record<string, "success" | "warning" | "danger"> = {
@@ -221,6 +222,9 @@ export default async function DashboardPage() {
         <p className="mt-1 text-sm text-slate-400">{today}</p>
       </div>
 
+      {/* Install App Banner */}
+      <InstallAppBanner />
+
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-3">
         <Link href="/flights/new">
@@ -273,13 +277,13 @@ export default async function DashboardPage() {
                   {currencyList.map((currency) => (
                     <div
                       key={currency.rule_name}
-                      className="flex items-center justify-between rounded-lg bg-slate-800/30 px-3 py-2"
+                      className="flex flex-wrap items-center justify-between gap-1 rounded-lg bg-slate-800/30 px-3 py-2"
                     >
-                      <span className="text-sm text-slate-300">
+                      <span className="text-sm text-slate-300 min-w-0 truncate">
                         {currency.rule_name}
                       </span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500">
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="text-xs text-slate-500 whitespace-nowrap">
                           {currency.days_remaining > 0
                             ? `${currency.days_remaining}d remaining`
                             : `${Math.abs(currency.days_remaining)}d overdue`}
@@ -321,24 +325,24 @@ export default async function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="rounded-lg bg-slate-800/30 p-4 text-center">
-                <p className="text-2xl font-bold text-slate-100">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+              <div className="rounded-lg bg-slate-800/30 p-3 sm:p-4 text-center">
+                <p className="text-lg sm:text-2xl font-bold text-slate-100">
                   {last30.toFixed(1)}
                 </p>
-                <p className="mt-1 text-xs text-slate-400">Last 30 Days</p>
+                <p className="mt-1 text-[10px] sm:text-xs text-slate-400">Last 30d</p>
               </div>
-              <div className="rounded-lg bg-slate-800/30 p-4 text-center">
-                <p className="text-2xl font-bold text-slate-100">
+              <div className="rounded-lg bg-slate-800/30 p-3 sm:p-4 text-center">
+                <p className="text-lg sm:text-2xl font-bold text-slate-100">
                   {last90.toFixed(1)}
                 </p>
-                <p className="mt-1 text-xs text-slate-400">Last 90 Days</p>
+                <p className="mt-1 text-[10px] sm:text-xs text-slate-400">Last 90d</p>
               </div>
-              <div className="rounded-lg bg-slate-800/30 p-4 text-center">
-                <p className="text-2xl font-bold text-slate-100">
+              <div className="rounded-lg bg-slate-800/30 p-3 sm:p-4 text-center">
+                <p className="text-lg sm:text-2xl font-bold text-slate-100">
                   {ytd.toFixed(1)}
                 </p>
-                <p className="mt-1 text-xs text-slate-400">Year to Date</p>
+                <p className="mt-1 text-[10px] sm:text-xs text-slate-400">Year to Date</p>
               </div>
             </div>
 
@@ -458,60 +462,88 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             {recent.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-800">
-                      <th className="pb-2 text-left font-medium text-slate-400">
-                        <span className="flex items-center gap-1.5">
-                          <Calendar className="h-3.5 w-3.5" />
-                          Date
-                        </span>
-                      </th>
-                      <th className="pb-2 text-left font-medium text-slate-400">
-                        Aircraft
-                      </th>
-                      <th className="pb-2 text-right font-medium text-slate-400">
-                        Duration
-                      </th>
-                      <th className="pb-2 pl-3 text-left font-medium text-slate-400">
-                        Type
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recent.map((flight) => (
-                      <tr
-                        key={flight.id}
-                        className="border-b border-slate-800/50 last:border-0"
-                      >
-                        <td className="py-2.5 text-slate-300">
-                          {format(
-                            new Date(flight.flight_date),
-                            "MMM d, yyyy"
-                          )}
-                        </td>
-                        <td className="py-2.5 text-slate-300">
+              <>
+                {/* Mobile: card layout */}
+                <div className="space-y-2 sm:hidden">
+                  {recent.map((flight) => (
+                    <Link
+                      key={flight.id}
+                      href={`/flights/${flight.id}`}
+                      className="flex items-center justify-between rounded-lg bg-slate-800/30 px-3 py-2.5"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm text-slate-200">
+                          {format(new Date(flight.flight_date), "MMM d, yyyy")}
+                        </p>
+                        <p className="text-xs text-slate-500 truncate">
                           {flight.aircraft_types?.designation || "—"}
-                        </td>
-                        <td className="py-2.5 text-right text-slate-300">
-                          {Number(flight.total_time).toFixed(1)} hrs
-                        </td>
-                        <td className="py-2.5 pl-3">
-                          <Badge
-                            variant="default"
-                            className="capitalize whitespace-nowrap"
-                          >
-                            {flight.sortie_type
-                              ? flight.sortie_type.replace(/_/g, " ")
-                              : "—"}
-                          </Badge>
-                        </td>
+                          {flight.sortie_type
+                            ? ` \u00B7 ${flight.sortie_type.replace(/_/g, " ")}`
+                            : ""}
+                        </p>
+                      </div>
+                      <span className="shrink-0 ml-3 text-sm font-medium text-slate-300">
+                        {Number(flight.total_time).toFixed(1)}h
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+                {/* Desktop: table layout */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-800">
+                        <th className="pb-2 text-left font-medium text-slate-400">
+                          <span className="flex items-center gap-1.5">
+                            <Calendar className="h-3.5 w-3.5" />
+                            Date
+                          </span>
+                        </th>
+                        <th className="pb-2 text-left font-medium text-slate-400">
+                          Aircraft
+                        </th>
+                        <th className="pb-2 text-right font-medium text-slate-400">
+                          Duration
+                        </th>
+                        <th className="pb-2 pl-3 text-left font-medium text-slate-400">
+                          Type
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {recent.map((flight) => (
+                        <tr
+                          key={flight.id}
+                          className="border-b border-slate-800/50 last:border-0"
+                        >
+                          <td className="py-2.5 text-slate-300">
+                            {format(
+                              new Date(flight.flight_date),
+                              "MMM d, yyyy"
+                            )}
+                          </td>
+                          <td className="py-2.5 text-slate-300">
+                            {flight.aircraft_types?.designation || "—"}
+                          </td>
+                          <td className="py-2.5 text-right text-slate-300">
+                            {Number(flight.total_time).toFixed(1)} hrs
+                          </td>
+                          <td className="py-2.5 pl-3">
+                            <Badge
+                              variant="default"
+                              className="capitalize whitespace-nowrap"
+                            >
+                              {flight.sortie_type
+                                ? flight.sortie_type.replace(/_/g, " ")
+                                : "—"}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Plane className="h-10 w-10 text-slate-700 mb-3" />

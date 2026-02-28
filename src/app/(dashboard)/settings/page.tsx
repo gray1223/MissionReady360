@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { EditProfileModal } from "@/components/settings/edit-profile-modal";
 import { SignOutButton } from "@/components/settings/sign-out-button";
+import { InstallAppCard } from "@/components/pwa/install-prompt";
 import { FlightLogPreferencesCard } from "@/components/settings/flight-log-preferences";
 import { RatingTrackingPreferencesCard } from "@/components/settings/rating-tracking-preferences";
 import { PriorHoursForm } from "@/components/settings/prior-hours-form";
@@ -245,6 +246,9 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
+      {/* Install App */}
+      <InstallAppCard />
+
       {/* Account Section */}
       <Card>
         <CardHeader>
@@ -274,10 +278,10 @@ export default async function SettingsPage() {
             </div>
 
             {/* Change Password */}
-            <div className="flex items-center justify-between rounded-lg bg-slate-800/30 px-4 py-3">
-              <div className="flex items-center gap-3">
-                <Lock className="h-4 w-4 text-slate-400" />
-                <div>
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-800/30 px-4 py-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <Lock className="h-4 w-4 text-slate-400 shrink-0" />
+                <div className="min-w-0">
                   <p className="text-sm text-slate-200">Password</p>
                   <p className="text-xs text-slate-500">
                     Last changed: Unknown
@@ -285,7 +289,7 @@ export default async function SettingsPage() {
                 </div>
               </div>
               <Button variant="outline" size="sm" disabled>
-                Change Password
+                Change
               </Button>
             </div>
 

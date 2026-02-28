@@ -262,7 +262,7 @@ export default async function ReportsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-end gap-1.5 h-40">
+            <div className="flex items-end gap-1 sm:gap-1.5 h-36 sm:h-40">
               {months.map((m) => {
                 const pct = (m.hours / maxMonthHours) * 100;
                 return (
@@ -270,16 +270,16 @@ export default async function ReportsPage() {
                     key={m.label}
                     className="flex-1 flex flex-col items-center gap-1"
                   >
-                    <span className="text-[10px] text-slate-400">
-                      {m.hours > 0 ? m.hours.toFixed(1) : ""}
+                    <span className="text-[10px] sm:text-xs text-slate-400 truncate max-w-full">
+                      {m.hours > 0 ? m.hours.toFixed(0) : ""}
                     </span>
-                    <div className="w-full flex items-end h-28">
+                    <div className="w-full flex items-end h-24 sm:h-28">
                       <div
                         className="w-full rounded-t bg-primary/80 transition-all min-h-[2px]"
                         style={{ height: `${Math.max(pct, m.hours > 0 ? 4 : 0)}%` }}
                       />
                     </div>
-                    <span className="text-[10px] text-slate-500 -rotate-45 origin-top-left whitespace-nowrap">
+                    <span className="text-[9px] sm:text-[10px] text-slate-500 whitespace-nowrap">
                       {m.label.slice(0, 3)}
                     </span>
                   </div>
@@ -333,11 +333,11 @@ function StatCard({
   value: string;
 }) {
   return (
-    <Card className="flex items-center gap-3">
-      <Icon className="h-5 w-5 text-primary shrink-0" />
-      <div>
-        <p className="text-xl font-bold text-slate-100">{value}</p>
-        <p className="text-xs text-slate-500">{label}</p>
+    <Card className="flex items-center gap-2 sm:gap-3">
+      <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0" />
+      <div className="min-w-0">
+        <p className="text-lg sm:text-xl font-bold text-slate-100 truncate">{value}</p>
+        <p className="text-[10px] sm:text-xs text-slate-500 truncate">{label}</p>
       </div>
     </Card>
   );
