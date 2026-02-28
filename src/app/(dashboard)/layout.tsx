@@ -40,7 +40,7 @@ export default async function DashboardLayout({
         {/* Main content area with sidebar offset */}
         <SidebarOffset>
           <TopNav />
-          <main className="flex-1 px-4 py-6 md:px-6 lg:px-8 pb-20 md:pb-6">
+          <main className="flex-1 px-4 py-6 md:px-6 lg:px-8 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6">
             <div className="mx-auto max-w-7xl">{children}</div>
           </main>
         </SidebarOffset>
