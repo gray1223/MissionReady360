@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FlightCard } from "@/components/flights/flight-card";
 import { FlightsFilter } from "@/components/flights/flights-filter";
 import { FlightsSearch } from "@/components/flights/flights-search";
+import { ExportFlightLogButton } from "@/components/export/export-flight-log-button";
 
 export default async function FlightsPage({
   searchParams,
@@ -112,12 +113,15 @@ export default async function FlightsPage({
             View and manage your flight history
           </p>
         </div>
-        <Link href="/flights/new">
-          <Button>
-            <Plus className="h-4 w-4" />
-            New Flight
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ExportFlightLogButton flights={filteredFlights} />
+          <Link href="/flights/new">
+            <Button>
+              <Plus className="h-4 w-4" />
+              New Flight
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Search */}

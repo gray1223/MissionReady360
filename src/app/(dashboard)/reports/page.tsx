@@ -18,8 +18,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ExportSummaryButton } from "@/components/export/export-summary-button";
+import { Faa8710Report } from "@/components/export/faa8710-report";
 
-import type { LogbookMode } from "@/lib/types/database";
+import type { LogbookMode, Profile } from "@/lib/types/database";
 
 interface FlightRow {
   flight_date: string;
@@ -37,6 +39,7 @@ interface FlightRow {
   sortie_type: string | null;
   is_simulator: boolean;
   is_military_flight: boolean;
+  [key: string]: unknown;
 }
 
 export default async function ReportsPage() {
@@ -48,18 +51,17 @@ export default async function ReportsPage() {
 
   const { data: profileData } = await supabase
     .from("profiles")
-    .select("logbook_mode")
+    .select("*")
     .eq("id", user.id)
     .single();
 
-  const mode: LogbookMode = (profileData?.logbook_mode as LogbookMode) || "military";
+  const profile = profileData as Profile | null;
+  const mode: LogbookMode = (profile?.logbook_mode as LogbookMode) || "military";
   const isMilitary = mode === "military";
 
   const { data: rawFlights } = await supabase
     .from("flights")
-    .select(
-      "flight_date, total_time, night_time, instrument_time, sim_instrument_time, pic_time, sic_time, xc_time, solo_time, dual_received_time, instructor_time, combat_time, sortie_type, is_simulator, is_military_flight"
-    )
+    .select("*, aircraft_type:aircraft_types(*)")
     .eq("user_id", user.id)
     .order("flight_date", { ascending: true });
 
@@ -171,11 +173,21 @@ export default async function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-100">Reports</h2>
-        <p className="mt-1 text-sm text-slate-400">
-          Flight analytics, trends, and hour breakdowns
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-100">Reports</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            Flight analytics, trends, and hour breakdowns
+          </p>
+        </div>
+        {profile && (
+          <ExportSummaryButton
+            profile={profile}
+            career={career}
+            ytd={ytd}
+            year={now.getFullYear()}
+          />
+        )}
       </div>
 
       {/* Career Totals */}
@@ -319,6 +331,11 @@ export default async function ReportsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* FAA 8710-1 Section III */}
+      {profile && (
+        <Faa8710Report flights={allFlightRows as any} profile={profile} />
+      )}
     </div>
   );
 }

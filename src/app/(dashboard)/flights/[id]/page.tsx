@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeleteFlightButton } from "./delete-button";
+import { ExportFlightButton } from "@/components/export/export-flight-button";
 
 interface FlightDetailPageProps {
   params: Promise<{ id: string }>;
@@ -53,6 +54,7 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <ExportFlightButton flight={flight} />
           <Link href={`/flights/${id}/edit`}>
             <Button variant="secondary" size="sm">
               <Pencil className="h-4 w-4" />
