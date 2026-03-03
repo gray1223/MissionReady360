@@ -49,6 +49,9 @@ export function Faa8710Report({ flights, profile }: Faa8710ReportProps) {
     try {
       const { generateFaa8710Pdf } = await import("@/lib/export/faa8710-pdf");
       await generateFaa8710Pdf(categories, pilotName);
+    } catch (err) {
+      console.error("8710 PDF export failed:", err);
+      alert("Failed to generate PDF. Check console for details.");
     } finally {
       setLoading(false);
     }

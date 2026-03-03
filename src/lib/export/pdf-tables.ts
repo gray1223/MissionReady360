@@ -1,15 +1,11 @@
 import type { jsPDF } from "jspdf";
-import type { UserOptions } from "jspdf-autotable";
 import { PDF_COLORS } from "./pdf-theme";
 
-type AutoTableDoc = jsPDF & {
-  autoTable: (options: UserOptions) => void;
-  lastAutoTable: { finalY: number };
-};
-
-async function ensureAutoTable(doc: jsPDF): Promise<AutoTableDoc> {
-  await import("jspdf-autotable");
-  return doc as AutoTableDoc;
+async function callAutoTable(doc: jsPDF, options: Record<string, unknown>) {
+  const autoTableMod = await import("jspdf-autotable");
+  const autoTable = autoTableMod.default || autoTableMod.autoTable;
+  autoTable(doc, options);
+  return (doc as any).lastAutoTable?.finalY ?? (doc as any).previousAutoTable?.finalY ?? 0;
 }
 
 export async function addSectionHeader(
@@ -38,9 +34,7 @@ export async function addKeyValueTable(
   yPos: number,
   data: { label: string; value: string }[]
 ): Promise<number> {
-  const atDoc = await ensureAutoTable(doc);
-
-  atDoc.autoTable({
+  const finalY = await callAutoTable(doc, {
     startY: yPos,
     margin: { left: 10, right: 10 },
     head: [],
@@ -59,7 +53,7 @@ export async function addKeyValueTable(
     alternateRowStyles: { fillColor: PDF_COLORS.rowAlt },
   });
 
-  return atDoc.lastAutoTable.finalY + 4;
+  return finalY + 4;
 }
 
 export async function addFlightLogTable(
@@ -68,9 +62,7 @@ export async function addFlightLogTable(
   rows: string[][],
   headers: string[]
 ): Promise<number> {
-  const atDoc = await ensureAutoTable(doc);
-
-  atDoc.autoTable({
+  const finalY = await callAutoTable(doc, {
     startY: yPos,
     margin: { left: 5, right: 5 },
     head: [headers],
@@ -90,7 +82,6 @@ export async function addFlightLogTable(
     alternateRowStyles: { fillColor: PDF_COLORS.rowAlt },
     styles: { overflow: "linebreak" },
     didDrawPage: (data: any) => {
-      // Re-draw header on new pages
       if (data.pageNumber > 1) {
         doc.setFillColor(...PDF_COLORS.accent);
         doc.rect(0, 0, doc.internal.pageSize.getWidth(), 1, "F");
@@ -98,5 +89,5 @@ export async function addFlightLogTable(
     },
   });
 
-  return atDoc.lastAutoTable.finalY + 4;
+  return finalY + 4;
 }

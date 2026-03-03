@@ -17,6 +17,9 @@ export function ExportFlightButton({ flight }: ExportFlightButtonProps) {
     try {
       const { generateFlightPdf } = await import("@/lib/export/flight-pdf");
       await generateFlightPdf(flight);
+    } catch (err) {
+      console.error("PDF export failed:", err);
+      alert("Failed to generate PDF. Check console for details.");
     } finally {
       setLoading(false);
     }

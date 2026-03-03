@@ -26,6 +26,9 @@ export function ExportSummaryButton({
     try {
       const { generateSummaryPdf } = await import("@/lib/export/summary-pdf");
       await generateSummaryPdf(profile, career, ytd, year);
+    } catch (err) {
+      console.error("Summary PDF export failed:", err);
+      alert("Failed to generate PDF. Check console for details.");
     } finally {
       setLoading(false);
     }

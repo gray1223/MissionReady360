@@ -55,6 +55,9 @@ export function ExportFlightLogButton({ flights }: ExportFlightLogButtonProps) {
         downloadCsv(csv, "MR360_Flight_Log.csv");
       }
       setOpen(false);
+    } catch (err) {
+      console.error("Export failed:", err);
+      alert("Failed to generate export. Check console for details.");
     } finally {
       setLoading(false);
     }

@@ -218,11 +218,11 @@ export async function generateFaa8710Pdf(
   const totals = computeTotalsRow(categories);
   const rows = [...categories.map(catRow), catRow(totals)];
 
-  // autoTable
-  await import("jspdf-autotable");
-  const atDoc = doc as any;
+  // autoTable — use standalone function (not prototype method)
+  const autoTableMod = await import("jspdf-autotable");
+  const autoTable = autoTableMod.default || autoTableMod.autoTable;
 
-  atDoc.autoTable({
+  autoTable(doc, {
     startY: y,
     margin: { left: 5, right: 5 },
     head: [HEADERS_8710],
@@ -245,11 +245,10 @@ export async function generateFaa8710Pdf(
       0: { halign: "left", fontStyle: "bold", cellWidth: 35 },
     },
     alternateRowStyles: { fillColor: PDF_COLORS.rowAlt },
-    // Bold the totals row
     didParseCell: (data: any) => {
       if (data.section === "body" && data.row.index === rows.length - 1) {
         data.cell.styles.fontStyle = "bold";
-        data.cell.styles.fillColor = [226, 232, 240]; // slate-200
+        data.cell.styles.fillColor = [226, 232, 240];
       }
     },
   });
