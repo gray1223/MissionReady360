@@ -1,5 +1,6 @@
 import type { Flight, AircraftType } from "@/lib/types/database";
 import { format } from "date-fns";
+import { formatLabel, formatCondition } from "@/lib/utils/format";
 import { createPdfDocument, finalizePdf } from "./pdf-theme";
 import { addSectionHeader, addKeyValueTable } from "./pdf-tables";
 
@@ -21,10 +22,10 @@ export async function generateFlightPdf(
     { label: "Tail Number", value: flight.tail_number || "—" },
     { label: "Route", value: `${flight.departure_icao || "?"} → ${flight.arrival_icao || "?"}` },
     ...(flight.route ? [{ label: "Via", value: flight.route }] : []),
-    { label: "Condition", value: flight.flight_condition },
+    { label: "Condition", value: formatCondition(flight.flight_condition) },
     { label: "Total Time", value: `${Number(flight.total_time).toFixed(1)} hrs` },
-    ...(flight.sortie_type ? [{ label: "Sortie Type", value: flight.sortie_type.replace(/_/g, " ") }] : []),
-    ...(flight.crew_position ? [{ label: "Crew Position", value: flight.crew_position.replace(/_/g, " ") }] : []),
+    ...(flight.sortie_type ? [{ label: "Sortie Type", value: formatLabel(flight.sortie_type) }] : []),
+    ...(flight.crew_position ? [{ label: "Crew Position", value: formatLabel(flight.crew_position) }] : []),
     ...(flight.mission_number ? [{ label: "Mission #", value: flight.mission_number }] : []),
   ]);
 

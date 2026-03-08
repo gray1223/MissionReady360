@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeleteFlightButton } from "./delete-button";
 import { ExportFlightButton } from "@/components/export/export-flight-button";
+import { formatLabel, formatCondition } from "@/lib/utils/format";
 
 interface FlightDetailPageProps {
   params: Promise<{ id: string }>;
@@ -93,7 +94,7 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
             <div>
               <p className="text-xs text-slate-500 uppercase">Condition</p>
               <Badge variant={conditionVariant[flight.flight_condition as keyof typeof conditionVariant]}>
-                {flight.flight_condition}
+                {formatCondition(flight.flight_condition)}
               </Badge>
             </div>
             <div>
@@ -106,16 +107,16 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
             {flight.sortie_type && (
               <div>
                 <p className="text-xs text-slate-500 uppercase">Sortie Type</p>
-                <p className="mt-1 text-sm text-slate-200 capitalize">
-                  {flight.sortie_type.replace(/_/g, " ")}
+                <p className="mt-1 text-sm text-slate-200">
+                  {formatLabel(flight.sortie_type)}
                 </p>
               </div>
             )}
             {flight.crew_position && (
               <div>
                 <p className="text-xs text-slate-500 uppercase">Crew Position</p>
-                <p className="mt-1 text-sm text-slate-200 capitalize">
-                  {flight.crew_position.replace(/_/g, " ")}
+                <p className="mt-1 text-sm text-slate-200">
+                  {formatLabel(flight.crew_position)}
                 </p>
               </div>
             )}
@@ -302,7 +303,7 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
                   >
                     <div className="flex items-center gap-2 mb-1">
                       {di.category && (
-                        <Badge>{di.category.replace(/_/g, " ")}</Badge>
+                        <Badge>{formatLabel(di.category)}</Badge>
                       )}
                       <span className="text-sm font-medium text-slate-200">
                         {di.item}

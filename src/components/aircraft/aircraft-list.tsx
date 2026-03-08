@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/select";
 import { Modal } from "@/components/ui/modal";
 import { createClient } from "@/lib/supabase/client";
 import type { QualificationLevel } from "@/lib/types/database";
+import { formatLabel } from "@/lib/utils/format";
 
 const QUAL_LEVELS: { value: QualificationLevel; label: string }[] = [
   { value: "initial_qual", label: "Initial Qual" },
@@ -128,12 +129,12 @@ export function AircraftList({
                   </p>
                   {ua.aircraft_types.engine_type && (
                     <p className="text-xs text-slate-500 mt-0.5">
-                      {ua.aircraft_types.engine_count}x {ua.aircraft_types.engine_type}
+                      {ua.aircraft_types.engine_count}x {formatLabel(ua.aircraft_types.engine_type)}
                     </p>
                   )}
                 </div>
                 <Badge variant="info">
-                  {ua.qualification_level.replace(/_/g, " ")}
+                  {formatLabel(ua.qualification_level)}
                 </Badge>
               </div>
 

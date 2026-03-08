@@ -1,4 +1,5 @@
 import type { Flight, AircraftType, PriorHoursInput } from "@/lib/types/database";
+import { formatLabel } from "@/lib/utils/format";
 import { createPdfDocument, finalizePdf } from "./pdf-theme";
 import { addSectionHeader } from "./pdf-tables";
 import { PDF_COLORS } from "./pdf-theme";
@@ -67,7 +68,7 @@ export function aggregateByCategory(
     if (!map.has(key)) {
       map.set(key, {
         category: key,
-        label: CATEGORY_LABELS[key] || key.replace(/_/g, " "),
+        label: CATEGORY_LABELS[key] || formatLabel(key),
         total_time: 0,
         pic: 0,
         sic: 0,

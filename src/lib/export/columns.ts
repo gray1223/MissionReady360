@@ -1,5 +1,6 @@
 import type { Flight, AircraftType } from "@/lib/types/database";
 import { format } from "date-fns";
+import { formatLabel, formatCondition } from "@/lib/utils/format";
 
 export interface FlightColumn {
   key: string;
@@ -194,7 +195,7 @@ export const ALL_COLUMNS: FlightColumn[] = [
     header: "Sortie Type",
     group: "Mission",
     format: (f) =>
-      f.sortie_type ? f.sortie_type.replace(/_/g, " ") : "",
+      f.sortie_type ? formatLabel(f.sortie_type) : "",
   },
   {
     key: "mission_number",
@@ -207,13 +208,13 @@ export const ALL_COLUMNS: FlightColumn[] = [
     header: "Crew Pos",
     group: "Mission",
     format: (f) =>
-      f.crew_position ? f.crew_position.replace(/_/g, " ") : "",
+      f.crew_position ? formatLabel(f.crew_position) : "",
   },
   {
     key: "flight_condition",
     header: "Condition",
     group: "Mission",
-    format: (f) => f.flight_condition || "",
+    format: (f) => f.flight_condition ? formatCondition(f.flight_condition) : "",
   },
 ];
 

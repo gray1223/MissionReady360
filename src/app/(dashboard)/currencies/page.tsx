@@ -24,6 +24,7 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { HideCurrencyButton } from "@/components/currencies/hide-currency-button";
 import { HiddenCurrencies } from "@/components/currencies/hidden-currencies";
 import type { FlightLogPreferences, CurrencyStatus, LogbookMode } from "@/lib/types/database";
+import { formatLabel } from "@/lib/utils/format";
 
 const statusVariant: Record<CurrencyStatus, "success" | "warning" | "danger"> = {
   current: "success",
@@ -315,7 +316,7 @@ function CurrencyItem({ currency }: { currency: CurrencyRow }) {
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs text-slate-500">
             {currency.achieved_count} / {currency.required_count}{" "}
-            {currency.required_event.replace(/_/g, " ")}
+            {formatLabel(currency.required_event)}
           </span>
           <span className="text-xs text-slate-500">{percent}%</span>
         </div>

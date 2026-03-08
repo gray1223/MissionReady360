@@ -20,6 +20,7 @@ import { RatingProgressCard } from "@/components/dashboard/rating-progress-card"
 import { computeRatingProgress } from "@/lib/flights/rating-progress";
 import { InstallAppBanner } from "@/components/pwa/install-prompt";
 import type { FlightLogPreferences, LogbookMode } from "@/lib/types/database";
+import { formatLabel } from "@/lib/utils/format";
 
 const statusVariant: Record<string, "success" | "warning" | "danger"> = {
   current: "success",
@@ -478,7 +479,7 @@ export default async function DashboardPage() {
                         <p className="text-xs text-slate-500 truncate">
                           {flight.aircraft_types?.designation || "—"}
                           {flight.sortie_type
-                            ? ` \u00B7 ${flight.sortie_type.replace(/_/g, " ")}`
+                            ? ` \u00B7 ${formatLabel(flight.sortie_type)}`
                             : ""}
                         </p>
                       </div>
@@ -531,10 +532,10 @@ export default async function DashboardPage() {
                           <td className="py-2.5 pl-3">
                             <Badge
                               variant="default"
-                              className="capitalize whitespace-nowrap"
+                              className="whitespace-nowrap"
                             >
                               {flight.sortie_type
-                                ? flight.sortie_type.replace(/_/g, " ")
+                                ? formatLabel(flight.sortie_type)
                                 : "—"}
                             </Badge>
                           </td>

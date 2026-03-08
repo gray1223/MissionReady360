@@ -3,6 +3,7 @@ import { Plane, Clock, MapPin, Moon, Eye, MessageSquare, ArrowUp, ArrowDown, Use
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils/cn";
 import type { Flight, AircraftType } from "@/lib/types/database";
+import { formatLabel } from "@/lib/utils/format";
 
 interface FlightCardProps {
   flight: Flight & { aircraft_type?: AircraftType | null };
@@ -78,8 +79,8 @@ export function FlightCard({ flight, onClick }: FlightCardProps) {
             {flight.total_time.toFixed(1)}h
           </div>
           {flight.sortie_type && (
-            <span className="text-xs text-slate-500 capitalize">
-              {flight.sortie_type.replace(/_/g, " ")}
+            <span className="text-xs text-slate-500">
+              {formatLabel(flight.sortie_type)}
             </span>
           )}
         </div>

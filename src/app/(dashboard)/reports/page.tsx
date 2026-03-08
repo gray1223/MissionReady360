@@ -22,6 +22,7 @@ import { ExportSummaryButton } from "@/components/export/export-summary-button";
 import { Faa8710Report } from "@/components/export/faa8710-report";
 
 import type { LogbookMode, Profile } from "@/lib/types/database";
+import { formatLabel } from "@/lib/utils/format";
 
 interface FlightRow {
   flight_date: string;
@@ -322,8 +323,8 @@ export default async function ReportsPage() {
                   className="rounded-lg bg-slate-800/30 p-3 text-center"
                 >
                   <p className="text-lg font-bold text-slate-100">{count}</p>
-                  <Badge variant="default" className="capitalize mt-1">
-                    {type.replace(/_/g, " ")}
+                  <Badge variant="default" className="mt-1">
+                    {formatLabel(type)}
                   </Badge>
                 </div>
               ))}
