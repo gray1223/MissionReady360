@@ -16,6 +16,7 @@ const debriefItemSchema = z.object({
   category: z.string().default(""),
   item: z.string().min(1, "Item required"),
   resolution: z.string().default(""),
+  status: z.enum(["open", "in_progress", "resolved"]).default("open"),
 });
 
 const uptGradesSchema = z.object({

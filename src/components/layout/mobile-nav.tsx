@@ -12,6 +12,7 @@ import {
   X,
   Cog,
   BarChart3,
+  ClipboardList,
   Settings,
   LogOut,
   Shield,
@@ -30,6 +31,7 @@ const mainNavItems = [
 const moreNavItems = [
   { href: "/aircraft", label: "Aircraft", icon: Cog },
   { href: "/reports", label: "Reports", icon: BarChart3 },
+  { href: "/debrief", label: "Debrief", icon: ClipboardList },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
 

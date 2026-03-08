@@ -90,7 +90,7 @@ export function DebriefInput({ control, register, errors, extraCategories }: Deb
         type="button"
         variant="ghost"
         size="sm"
-        onClick={() => append({ category: "", item: "", resolution: "" })}
+        onClick={() => append({ category: "", item: "", resolution: "", status: "open" })}
       >
         <Plus className="h-3.5 w-3.5" />
         Add Debrief Item

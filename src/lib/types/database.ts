@@ -53,6 +53,7 @@ export type CertificateType =
   | "commercial"
   | "atp";
 export type EngineType = "piston" | "turboprop" | "turboshaft" | "turbojet" | "turbofan";
+export type DebriefItemStatus = "open" | "in_progress" | "resolved";
 
 export type UptProgressionGrade = "WB" | "BA" | "SB" | "AV" | "SA" | "AA" | "WA";
 export type UptOverallGrade = "Unsat" | "Fair" | "Good" | "Excellent";
@@ -159,6 +160,7 @@ export interface DebriefItem {
   category: string;
   item: string;
   resolution: string;
+  status?: DebriefItemStatus;
 }
 
 export interface Approach {

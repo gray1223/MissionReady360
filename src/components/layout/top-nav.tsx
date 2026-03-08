@@ -17,6 +17,7 @@ const pageTitles: Record<string, string> = {
   "/qualifications": "Qualifications & Certifications",
   "/aircraft": "My Aircraft",
   "/reports": "Reports",
+  "/debrief": "Debrief Summary",
   "/settings": "Settings",
 };
 

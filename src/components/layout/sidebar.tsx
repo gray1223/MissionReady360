@@ -15,6 +15,7 @@ import {
   ChevronRight,
   LogOut,
   Shield,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useUser, useProfile } from "@/components/providers/supabase-provider";
@@ -30,6 +31,7 @@ const navItems = [
   { href: "/qualifications", label: "Qualifications", icon: Award },
   { href: "/aircraft", label: "Aircraft", icon: Cog },
   { href: "/reports", label: "Reports", icon: BarChart3 },
+  { href: "/debrief", label: "Debrief", icon: ClipboardList },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
