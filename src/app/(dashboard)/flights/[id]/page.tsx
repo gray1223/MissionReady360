@@ -295,27 +295,45 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {(flight.debrief_items as { category: string; item: string; resolution: string }[]).map(
-                (di, i) => (
-                  <div
-                    key={i}
-                    className="rounded-lg bg-slate-800/30 px-4 py-3"
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      {di.category && (
-                        <Badge>{formatLabel(di.category)}</Badge>
+              {(flight.debrief_items as { category: string; item: string; resolution: string; status?: string }[]).map(
+                (di, i) => {
+                  const status = di.status || "open";
+                  const statusVariants: Record<string, "danger" | "warning" | "success"> = {
+                    open: "danger",
+                    in_progress: "warning",
+                    resolved: "success",
+                  };
+                  const statusLabels: Record<string, string> = {
+                    open: "Open",
+                    in_progress: "In Progress",
+                    resolved: "Resolved",
+                  };
+                  return (
+                    <div
+                      key={i}
+                      className="rounded-lg bg-slate-800/30 px-4 py-3"
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {di.category && (
+                            <Badge>{formatLabel(di.category)}</Badge>
+                          )}
+                          <span className="text-sm font-medium text-slate-200">
+                            {di.item}
+                          </span>
+                        </div>
+                        <Badge variant={statusVariants[status] || "danger"} className="shrink-0">
+                          {statusLabels[status] || "Open"}
+                        </Badge>
+                      </div>
+                      {di.resolution && (
+                        <p className="text-xs text-slate-400 mt-1">
+                          Resolution: {di.resolution}
+                        </p>
                       )}
-                      <span className="text-sm font-medium text-slate-200">
-                        {di.item}
-                      </span>
                     </div>
-                    {di.resolution && (
-                      <p className="text-xs text-slate-400 mt-1">
-                        Resolution: {di.resolution}
-                      </p>
-                    )}
-                  </div>
-                )
+                  );
+                }
               )}
             </div>
           </CardContent>

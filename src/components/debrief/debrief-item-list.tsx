@@ -3,9 +3,11 @@
 import { useState, useOptimistic, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { format, parseISO } from "date-fns";
+import { Pencil, Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { STATUS_CONFIG, STATUS_CYCLE } from "@/lib/constants/debrief";
 import { createClient } from "@/lib/supabase/client";
+import { formatLabel } from "@/lib/utils/format";
 import type { DebriefItemStatus, DebriefItem } from "@/lib/types/database";
 
 export interface FlatDebriefItem {
@@ -27,43 +29,82 @@ interface DebriefItemListProps {
 export function DebriefItemList({ items }: DebriefItemListProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [editItem, setEditItem] = useState("");
+  const [editResolution, setEditResolution] = useState("");
+
   const [optimisticItems, setOptimisticItems] = useOptimistic(
     items,
-    (state, update: { flightId: string; itemIndex: number; newStatus: DebriefItemStatus }) => {
+    (state, update: { flightId: string; itemIndex: number; patch: Partial<FlatDebriefItem> }) => {
       return state.map((item) =>
         item.flightId === update.flightId && item.itemIndex === update.itemIndex
-          ? { ...item, status: update.newStatus }
+          ? { ...item, ...update.patch }
           : item
       );
     }
   );
 
-  async function cycleStatus(flightId: string, itemIndex: number, currentStatus: DebriefItemStatus) {
+  async function updateItem(
+    flightId: string,
+    itemIndex: number,
+    patch: Partial<Pick<DebriefItem, "status" | "item" | "resolution">>
+  ) {
+    const supabase = createClient();
+    const { data: flight } = await supabase
+      .from("flights")
+      .select("debrief_items")
+      .eq("id", flightId)
+      .single();
+
+    if (!flight) return;
+
+    const debriefItems = (flight.debrief_items as DebriefItem[]) || [];
+    if (itemIndex >= debriefItems.length) return;
+
+    debriefItems[itemIndex] = { ...debriefItems[itemIndex], ...patch };
+
+    await supabase
+      .from("flights")
+      .update({ debrief_items: debriefItems as any })
+      .eq("id", flightId);
+
+    router.refresh();
+  }
+
+  function cycleStatus(flightId: string, itemIndex: number, currentStatus: DebriefItemStatus) {
     const newStatus = STATUS_CYCLE[currentStatus];
-
     startTransition(async () => {
-      setOptimisticItems({ flightId, itemIndex, newStatus });
+      setOptimisticItems({ flightId, itemIndex, patch: { status: newStatus } });
+      await updateItem(flightId, itemIndex, { status: newStatus });
+    });
+  }
 
-      const supabase = createClient();
-      const { data: flight } = await supabase
-        .from("flights")
-        .select("debrief_items")
-        .eq("id", flightId)
-        .single();
+  function startEdit(item: FlatDebriefItem) {
+    const key = `${item.flightId}-${item.itemIndex}`;
+    setEditingKey(key);
+    setEditItem(item.item);
+    setEditResolution(item.resolution);
+  }
 
-      if (!flight) return;
+  function cancelEdit() {
+    setEditingKey(null);
+    setEditItem("");
+    setEditResolution("");
+  }
 
-      const debriefItems = (flight.debrief_items as DebriefItem[]) || [];
-      if (itemIndex >= debriefItems.length) return;
-
-      debriefItems[itemIndex] = { ...debriefItems[itemIndex], status: newStatus };
-
-      await supabase
-        .from("flights")
-        .update({ debrief_items: debriefItems as any })
-        .eq("id", flightId);
-
-      router.refresh();
+  function saveEdit(flightId: string, itemIndex: number) {
+    if (!editItem.trim()) return;
+    startTransition(async () => {
+      setOptimisticItems({
+        flightId,
+        itemIndex,
+        patch: { item: editItem, resolution: editResolution },
+      });
+      setEditingKey(null);
+      await updateItem(flightId, itemIndex, {
+        item: editItem,
+        resolution: editResolution,
+      });
     });
   }
 
@@ -103,25 +144,79 @@ export function DebriefItemList({ items }: DebriefItemListProps) {
             <div className="divide-y divide-slate-800/50">
               {groupItems.map((item) => {
                 const statusConfig = STATUS_CONFIG[item.status];
+                const itemKey = `${item.flightId}-${item.itemIndex}`;
+                const isEditing = editingKey === itemKey;
+
                 return (
                   <div
-                    key={`${item.flightId}-${item.itemIndex}`}
+                    key={itemKey}
                     className="flex items-start justify-between gap-3 px-4 py-3"
                   >
                     <div className="flex items-start gap-2 min-w-0 flex-1">
                       {item.category && (
                         <Badge variant="info" className="shrink-0 mt-0.5">
-                          {item.category}
+                          {formatLabel(item.category)}
                         </Badge>
                       )}
-                      <div className="min-w-0">
-                        <p className="text-sm text-slate-200">{item.item}</p>
-                        {item.resolution && (
-                          <p className="mt-0.5 text-xs text-slate-500">
-                            {item.resolution}
-                          </p>
-                        )}
-                      </div>
+                      {isEditing ? (
+                        <div className="flex-1 space-y-2">
+                          <input
+                            value={editItem}
+                            onChange={(e) => setEditItem(e.target.value)}
+                            className="w-full rounded border border-slate-700 bg-slate-800/50 px-2 py-1 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary"
+                            placeholder="Item"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") saveEdit(item.flightId, item.itemIndex);
+                              if (e.key === "Escape") cancelEdit();
+                            }}
+                          />
+                          <input
+                            value={editResolution}
+                            onChange={(e) => setEditResolution(e.target.value)}
+                            className="w-full rounded border border-slate-700 bg-slate-800/50 px-2 py-1 text-xs text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary"
+                            placeholder="Resolution / action"
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") saveEdit(item.flightId, item.itemIndex);
+                              if (e.key === "Escape") cancelEdit();
+                            }}
+                          />
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => saveEdit(item.flightId, item.itemIndex)}
+                              className="rounded p-1 text-emerald-400 hover:bg-slate-800 transition-colors"
+                              title="Save"
+                            >
+                              <Check className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              onClick={cancelEdit}
+                              className="rounded p-1 text-slate-400 hover:bg-slate-800 transition-colors"
+                              title="Cancel"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="min-w-0 group flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-sm text-slate-200">{item.item}</p>
+                            <button
+                              onClick={() => startEdit(item)}
+                              className="opacity-0 group-hover:opacity-100 rounded p-0.5 text-slate-500 hover:text-slate-300 transition-all"
+                              title="Edit item"
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </button>
+                          </div>
+                          {item.resolution && (
+                            <p className="mt-0.5 text-xs text-slate-500">
+                              {item.resolution}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <button
                       onClick={() => cycleStatus(item.flightId, item.itemIndex, item.status)}

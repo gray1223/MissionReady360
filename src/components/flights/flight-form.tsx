@@ -576,6 +576,8 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
         <DebriefInput
           control={control}
           register={register}
+          setValue={setValue}
+          watch={watch}
           errors={errors}
           extraCategories={uptEnabled ? UPT_DEBRIEF_CATEGORIES : undefined}
         />
