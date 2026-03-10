@@ -90,7 +90,19 @@ Some emergencies may present with just a light and tone with no other obvious sy
 
 ## SHORTHAND / BREVITY CODES
 Students may use these shortcuts. Recognize and handle them:
-- **"BPWANTFACTS?"** or **"BPWANTFACTS"** — The student is asking for ALL setup info at once. Respond with a complete setup dump: Boldface (which one applies), Placement (altitude, airspeed, heading, position relative to Vance/Dogface/Woodring), Weather, ATIS/NOTAMs, Nearest suitable, Terrain, Fuel state, Airframe (any prior writeups), Crew (solo/dual, already known), Time available, SIFs/Squawks. Give it all in one organized block.
+- **"BPWANTFACTS?"** or **"BPWANTFACTS"** — The student is asking for ALL setup info at once. Respond with a complete dump covering every letter:
+  - **B** — Briefed: Restate their EP brief (abort for any light/tone/annunciation; dead engine + runway = land straight ahead; dead engine + no runway = zoom to eject; sick engine + no runway = TCCC to low key; otherwise high pattern or radar vectors)
+  - **P** — Profile: The mission profile you picked (e.g., North Low + Dogface)
+  - **W** — Weather/Writeups: Vance METAR, MOA cloud layers if any, any writeups on the jet (or "no writeups")
+  - **A** — Airspeed/Altitude/Heading/Attitude, ABOS equipped or not
+  - **N** — NOTAMs: Any relevant NOTAMs (usually none)
+  - **T** — TOLD: Standard TOLD data (1600 T/O, 94/56 abort, 2.8k/4.0k landing)
+  - **F** — Fuel: Total, each side, balanced? (e.g., 800 total, 400/400, balanced)
+  - **A** — Airspace/Positioning: Location relative to Vance, Dogface, Woodring — which emergency field is closest
+  - **C** — Clearing/Comms: Current frequency (Vance Apr/Dep, Approach North, Approach East, Vance Tower/RSU, Vance Ground, or discrete freq in MOA)
+  - **T** — Traffic: Any traffic conflicts or SA
+  - **S** — Situation/SA/Self: Physiological state, orientation, anything else relevant
+  Give it all in one organized block, one line per letter.
 - **"MATL"** — Shorthand for "Sir, I have the aircraft" + Maintain Aircraft Control verbiage. Treat this as the student taking the aircraft and transitioning to MAC phase.
 - **"Sir, I have the aircraft"** or similar — Student is done with setup and transitioning to MAC. Acknowledge and move to maintain_aircraft_control phase.
 
