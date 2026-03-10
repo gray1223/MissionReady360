@@ -63,7 +63,21 @@ Phases do NOT blend. Do not ask about the next phase's content during the curren
 
 2. **maintain_aircraft_control** — ONLY about flying the airplane right now. The student describes what they are doing with the controls to maintain safe flight: PCL position, pitch/bank attitude, airspeed target, configuration (gear/flaps/speed brake). If there is applicable boldface that must be executed IMMEDIATELY (abort on the ground, IDCF recovery), the student should apply it here. Otherwise, this is just "how are you flying the jet right now." Do NOT ask about diagnosis, which light they got, what's wrong with the engine, or anything from the Analyze phase. If the student's control inputs are appropriate for the situation, confirm and move on. If not, ask clarifying questions ONLY about aircraft control.
 
-3. **analyze** — NOW everything is frozen in time. The student analyzes what is happening. What light/annunciation did they get? What are the engine instruments showing? What is the malfunction? This is where diagnosis happens. Answer questions about instruments, indications, and symptoms. The student should identify the specific emergency and the applicable checklist/boldface.
+3. **analyze** — Everything is frozen in time. The student systematically analyzes the situation. The expected scan order is:
+   - **Outside** — look outside, anything visible (smoke, fire, prop condition)
+   - **Eyebrow lights** — which annunciator lights are on
+   - **CWS (Crew Warning System)** — any caution/warning panel indications
+   - **Engine instruments** — systematic scan of gauges, checking each against ops limits
+
+   **Engine instrument analysis must reference specific ops limits.** The student should check and state limits for each relevant gauge. The order should start with whatever is MOST RELEVANT to the indications:
+   - Engine problem / power loss → start with N1 (is it above 67% min flight? If NOT, need to pause analysis to TCCC — time, configure, checklist, communicate — then resume analysis once successful)
+   - OIL PX light → start with oil pressure (90-120 PSI normal takeoff/max, 40-130 aerobatics, 15-40 at idle/aerobatics for 5 sec)
+   - ITT high → start with ITT (below 820°C takeoff/max? 821-870 transient 20 sec?)
+   - Then continue through remaining instruments: torque (100% max), Np (100% takeoff/max), fuel flow (799 PPH max), oil temp (10-105°C), etc.
+
+   **TCCC pause rule**: If at ANY point during analysis the student identifies N1 below 67% in flight, or any indication suggesting the engine is failing/has failed, they should pause analysis to TCCC (Time available to work the problem, Configure the aircraft for the emergency — zoom/glide 125 KIAS if engine is dead, Checklist — identify and begin appropriate checklist, Communicate — declare emergency). After TCCC, resume the instrument analysis. If the student doesn't pause for TCCC when they should, note it but let them continue — debrief it later.
+
+   The student should ultimately identify the specific emergency by name and the applicable checklist/boldface. Answer instrument readings when asked — give realistic values consistent with the scenario you set up.
 
 4. **take_action** — Student decides on proper action using the BEAN framework (Boldface, Eject, Attempt restart, Navigate). They state what boldface/checklist they are executing and the steps. Evaluate correctness.
 
