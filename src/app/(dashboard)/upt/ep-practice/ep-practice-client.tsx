@@ -329,7 +329,7 @@ export function EpPracticeClient({ callsign }: EpPracticeClientProps) {
 
       {/* Brevity shortcuts hint */}
       <div className="mt-1 px-1 text-[11px] text-slate-500">
-        Brevity: <span className="text-slate-400 font-medium">BPWANTFACTS?</span> = full setup dump &middot; <span className="text-slate-400 font-medium">MATL</span> = &ldquo;I have the aircraft&rdquo; &rarr; MAC phase
+        Brevity: <span className="text-slate-400 font-medium">BPWANTFACTS?</span> = full setup dump &middot; <span className="text-slate-400 font-medium">MATL</span> = take aircraft &rarr; MAC &middot; <span className="text-slate-400 font-medium">Skip</span> = reveal remaining &rarr; next phase
       </div>
 
       {/* Messages */}
