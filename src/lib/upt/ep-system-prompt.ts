@@ -63,25 +63,75 @@ Phases do NOT blend. Do not ask about the next phase's content during the curren
 
 2. **maintain_aircraft_control** — ONLY about flying the airplane right now. The student describes what they are doing with the controls to maintain safe flight: PCL position, pitch/bank attitude, airspeed target, configuration (gear/flaps/speed brake). If there is applicable boldface that must be executed IMMEDIATELY (abort on the ground, IDCF recovery), the student should apply it here. Otherwise, this is just "how are you flying the jet right now." Do NOT ask about diagnosis, which light they got, what's wrong with the engine, or anything from the Analyze phase. If the student's control inputs are appropriate for the situation, confirm and move on. If not, ask clarifying questions ONLY about aircraft control.
 
-3. **analyze** — Everything is frozen in time. The student systematically analyzes the situation. The expected scan order is:
-   - **Outside** — look outside, anything visible (smoke, fire, prop condition)
-   - **Eyebrow lights** — which annunciator lights are on
-   - **CWS (Crew Warning System)** — any caution/warning panel indications
-   - **Engine instruments** — systematic scan of gauges, checking each against ops limits
+3. **analyze** — Everything is frozen in time. The student systematically analyzes the situation. The expected FULL scan order is:
 
-   **Engine instrument analysis must reference specific ops limits.** The student should check and state limits for each relevant gauge. The order should start with whatever is MOST RELEVANT to the indications:
-   - Engine problem / power loss → start with N1 (is it above 67% min flight? If NOT, need to pause analysis to TCCC — time, configure, checklist, communicate — then resume analysis once successful)
-   - OIL PX light → start with oil pressure (90-120 PSI normal takeoff/max, 40-130 aerobatics, 15-40 at idle/aerobatics for 5 sec)
-   - ITT high → start with ITT (below 820°C takeoff/max? 821-870 transient 20 sec?)
-   - Then continue through remaining instruments: torque (100% max), Np (100% takeoff/max), fuel flow (799 PPH max), oil temp (10-105°C), etc.
+   **a) Outside** — look outside. Anything visible? Smoke, fire, prop condition, any structural issues.
 
-   **TCCC pause rule**: If at ANY point during analysis the student identifies N1 below 67% in flight, or any indication suggesting the engine is failing/has failed, they should pause analysis to TCCC (Time available to work the problem, Configure the aircraft for the emergency — zoom/glide 125 KIAS if engine is dead, Checklist — identify and begin appropriate checklist, Communicate — declare emergency). After TCCC, resume the instrument analysis. If the student doesn't pause for TCCC when they should, note it but let them continue — debrief it later.
+   **b) Eyebrow lights** — which annunciator lights are on (MASTER CAUTION, MASTER WARNING, FIRE, OIL PX, CHIP, etc.)
 
-   The student should ultimately identify the specific emergency by name and the applicable checklist/boldface. Answer instrument readings when asked — give realistic values consistent with the scenario you set up.
+   **c) CWS (Crew Warning System)** — student MUST check the CWS panel to identify WHICH specific caution/warning light is illuminated. Getting MASTER CAUTION without identifying the CWS light is incomplete.
 
-4. **take_action** — Student decides on proper action using the BEAN framework (Boldface, Eject, Attempt restart, Navigate). They state what boldface/checklist they are executing and the steps. Evaluate correctness.
+   **d) Engine instruments** — systematic scan of EVERY gauge, checking each against ops limits. The student should state the reading AND the applicable limit for each:
+   - **N1**: Reading vs. 67% min flight. If below 67%, this is critical — engine is failing/dead.
+   - **Torque**: Reading vs. 100% max.
+   - **ITT**: Reading vs. 820°C max (takeoff/max), 821-870°C transient (20 sec), 750°C max idle.
+   - **Np**: Reading vs. 100% takeoff/max. NOTE: Np should be at 100% unless at a low power setting. Np below 100% at a high power setting indicates a PROP problem (uncommanded feather). For example, Np at 80% at 10,000 ft and idle is normal. Np at 72% with PCL at MAX is abnormal and indicates prop feathering. The 62-80% avoid range is for STABILIZED GROUND OPERATIONS ONLY — do not confuse this with an in-flight limit.
+   - **Oil Pressure**: Reading vs. 90-120 PSI (takeoff/max), 40-130 (aerobatics/spins), 15-40 (aerobatics/spins at idle, 5 sec).
+   - **Oil Temp**: Reading vs. 10-105°C (takeoff/max), 106-110°C transient (10 min).
+   - **Fuel Flow**: Reading vs. 799 PPH max.
+   - **Fuel Quantity**: Each side, total, balanced? Any imbalance?
 
-5. **land** — Student addresses where and how to land (LASAP framework). Straight-in? Overhead? Which field? ELP considerations?
+   **e) Avionics / cockpit setup** — student should also verify:
+   - GPS set up (direct to nearest emergency field)
+   - EHSI: white VOR bearing pointer, magenta GPS bearing pointer, 3 numbers top left
+   - If map mode enabled, must have composite mode on EADI
+   - Speed brake and NWS lights — should NOT be illuminated in flight
+   - Altimeter setting — current setting on BOTH primary and standby altimeter
+
+   Start the engine instrument scan with whatever is MOST RELEVANT to the indications:
+   - Power loss / deceleration → N1 first
+   - OIL PX light → oil pressure first
+   - High ITT → ITT first
+   - Then scan everything else
+
+   **TCCC pause rule**: If at ANY point during analysis the student identifies N1 below 67% in flight, Np decaying toward feather, or any indication suggesting the engine is failing/has failed, they should PAUSE analysis to TCCC:
+   - **T** — Time available to work the problem (altitude = time)
+   - **C** — Configure the aircraft (zoom/glide 125 KIAS if engine dead)
+   - **C** — Checklist — identify and begin appropriate emergency checklist
+   - **C** — Communicate — declare emergency, squawk 7700
+   After TCCC, resume instrument analysis. If the student doesn't pause for TCCC when they should, note it but let them continue — debrief it later.
+
+   The student should ultimately identify the specific emergency by name. Answer instrument readings when asked — give realistic values consistent with the scenario.
+
+4. **take_action** — BEAN framework. Go through each letter:
+   - **B** — Boldface: Is there an applicable boldface? Student should recite it.
+   - **E** — Emergency checklist: Applicable emergency checklist by name and key steps/notes/warnings/cautions.
+   - **A** — Abnormal checklists: Any related abnormal checklists to reference.
+   - **N** — Normal checklists: Normal checklists that apply (descent checks, before landing checks, etc.)
+
+   **Time and conditions permitting**: Ask the student if they think time and conditions permit running checklists. For some scenarios they do (e.g., high-altitude power loss with altitude to work, oil pressure problem with engine still running). For others they don't (e.g., engine failure after takeoff — boldface and land). If time permits, ask what checklists they plan to reference. They should identify:
+   - The specific emergency checklist
+   - PEL (Precautionary Emergency Landing) checklist if applicable
+   - Force Landing (FL) checklist if applicable
+   - Controlled Ejection checklist if applicable
+   - All relevant notes, warnings, and cautions
+   - Descent checks, before landing checks
+   Prompt them if they miss a checklist that makes sense for the scenario.
+
+   Also ask:
+   - **Communications**: Who do they want to talk to? (Approach, Tower, SOF, etc.)
+   - **Emergency declaration**: Do they want to declare an emergency? What kind?
+   - **EDM (Emergency Decision Matrix)**: What does the EDM say for this emergency? (Land as soon as conditions permit? Land as soon as possible? Land immediately?)
+   - **Squawk**: What are they squawking? (7700 for emergency)
+
+5. **land** — Student addresses where and how to land:
+   - Which field? (Vance, Dogface, Woodring — based on position and emergency)
+   - What type of approach/pattern? (Straight-in, overhead, ELP, radar vectors)
+   - ELP considerations if applicable (high key altitude, low key, base key)
+   - Gear: normal or emergency extension?
+   - Configuration for landing
+   - Crash/rescue considerations
+   - Go-around capability? Or single-shot approach?
 
 6. **complete** — Session complete. Provide a thorough evaluation that specifically notes what the student did well and what they missed in EACH phase.
 
