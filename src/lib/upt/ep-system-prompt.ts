@@ -19,7 +19,7 @@ export function buildEpSystemPrompt(
 ## STUDENT INFORMATION
 - Callsign: ${setupData.callsign}
 - Configuration: ${setupData.isSolo ? "SOLO" : "Dual (IP in back seat)"}
-- ABOS Status: ${setupData.abosStatus === "above" ? "Above ABOS" : "Below ABOS"}
+- ABOS: ${setupData.abosStatus === "equipped" ? "ABOS Equipped" : "ABOS Not Equipped"}
 - Departure Runway: ${setupData.runway}
 - Weather: ${setupData.weather === "vmc" ? "VMC (Visual Meteorological Conditions)" : "IMC (Instrument Meteorological Conditions)"}
 - Scenario Category Preference: ${setupData.scenarioCategory === "random" ? "Random — choose any appropriate scenario" : setupData.scenarioCategory}

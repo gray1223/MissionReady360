@@ -11,7 +11,7 @@ interface EpSetupFormProps {
 export function EpSetupForm({ defaultCallsign, onSubmit }: EpSetupFormProps) {
   const [callsign, setCallsign] = useState(defaultCallsign);
   const [isSolo, setIsSolo] = useState(false);
-  const [abosStatus, setAbosStatus] = useState<"above" | "below">("above");
+  const [abosStatus, setAbosStatus] = useState<"equipped" | "not_equipped">("equipped");
   const [runway, setRunway] = useState("17L");
   const [weather, setWeather] = useState<"vmc" | "imc">("vmc");
   const [scenarioCategory, setScenarioCategory] =
@@ -94,30 +94,30 @@ export function EpSetupForm({ defaultCallsign, onSubmit }: EpSetupFormProps) {
         {/* ABOS */}
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-1.5">
-            ABOS Status
+            ABOS
           </label>
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => setAbosStatus("above")}
+              onClick={() => setAbosStatus("equipped")}
               className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                abosStatus === "above"
+                abosStatus === "equipped"
                   ? "bg-primary/20 text-primary border border-primary/40"
                   : "bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600"
               }`}
             >
-              Above
+              Equipped
             </button>
             <button
               type="button"
-              onClick={() => setAbosStatus("below")}
+              onClick={() => setAbosStatus("not_equipped")}
               className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                abosStatus === "below"
+                abosStatus === "not_equipped"
                   ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
                   : "bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600"
               }`}
             >
-              Below
+              Not Equipped
             </button>
           </div>
         </div>

@@ -57,7 +57,7 @@ export const SCENARIO_CATEGORIES: { value: ScenarioCategory; label: string }[] =
 export interface EpSetupData {
   callsign: string;
   isSolo: boolean;
-  abosStatus: "above" | "below";
+  abosStatus: "equipped" | "not_equipped";
   runway: string;
   weather: "vmc" | "imc";
   scenarioCategory: ScenarioCategory;
