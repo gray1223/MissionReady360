@@ -320,11 +320,16 @@ export function EpPracticeClient({ callsign }: EpPracticeClientProps) {
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <EpDisclaimer />
 
-      <div className="mt-2">
+      <div className="mt-2 flex items-center gap-3">
         <EpPhaseIndicator
           currentPhase={currentPhase}
           phasesCompleted={phasesCompleted}
         />
+      </div>
+
+      {/* Brevity shortcuts hint */}
+      <div className="mt-1 px-1 text-[11px] text-slate-500">
+        Shortcuts: <span className="text-slate-400 font-medium">BPWANTFACTS?</span> = get all setup info &middot; <span className="text-slate-400 font-medium">MATL</span> = &ldquo;I have the aircraft&rdquo; + transition to MAC
       </div>
 
       {/* Messages */}
