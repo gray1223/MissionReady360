@@ -16,6 +16,7 @@ import {
   LogOut,
   Shield,
   ClipboardList,
+  GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useUser, useProfile } from "@/components/providers/supabase-provider";
@@ -24,7 +25,9 @@ import { ModeSwitcher } from "./mode-switcher";
 
 const STORAGE_KEY = "mr360-sidebar-collapsed";
 
-const navItems = [
+type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
+
+const baseNavItems: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/flights", label: "Flights", icon: Plane },
   { href: "/currencies", label: "Currencies", icon: Clock },
@@ -32,8 +35,10 @@ const navItems = [
   { href: "/aircraft", label: "Aircraft", icon: Cog },
   { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/debrief", label: "Debrief", icon: ClipboardList },
-  { href: "/settings", label: "Settings", icon: Settings },
-] as const;
+];
+
+const uptNavItem: NavItem = { href: "/upt", label: "UPT Training", icon: GraduationCap };
+const settingsNavItem: NavItem = { href: "/settings", label: "Settings", icon: Settings };
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -108,7 +113,11 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
-        {navItems.map((item) => {
+        {[
+          ...baseNavItems,
+          ...(profile?.flight_log_preferences?.uptEnabled ? [uptNavItem] : []),
+          settingsNavItem,
+        ].map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;

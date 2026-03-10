@@ -16,9 +16,10 @@ import {
   Settings,
   LogOut,
   Shield,
+  GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { useUser, useLogbookMode } from "@/components/providers/supabase-provider";
+import { useUser, useLogbookMode, useProfile } from "@/components/providers/supabase-provider";
 import { createClient } from "@/lib/supabase/client";
 
 const mainNavItems = [
@@ -28,18 +29,29 @@ const mainNavItems = [
   { href: "/qualifications", label: "Quals", icon: Award },
 ] as const;
 
-const moreNavItems = [
+type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
+
+const baseMoreNavItems: NavItem[] = [
   { href: "/aircraft", label: "Aircraft", icon: Cog },
   { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/debrief", label: "Debrief", icon: ClipboardList },
-  { href: "/settings", label: "Settings", icon: Settings },
-] as const;
+];
+
+const uptNavItem: NavItem = { href: "/upt", label: "UPT Training", icon: GraduationCap };
+const settingsNavItem: NavItem = { href: "/settings", label: "Settings", icon: Settings };
 
 export function MobileNav() {
   const [moreOpen, setMoreOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
+  const { profile } = useProfile();
+
+  const moreNavItems: NavItem[] = [
+    ...baseMoreNavItems,
+    ...(profile?.flight_log_preferences?.uptEnabled ? [uptNavItem] : []),
+    settingsNavItem,
+  ];
 
   const isMoreActive = moreNavItems.some(
     (item) =>
