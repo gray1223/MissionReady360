@@ -58,10 +58,14 @@ export async function POST(request: NextRequest) {
   const systemPrompt = buildEpSystemPrompt(setupData, currentPhase);
 
   // Convert our messages to Anthropic format
-  const anthropicMessages: Anthropic.MessageParam[] = messages.map((msg) => ({
-    role: msg.role === "ip" ? "assistant" : "user",
-    content: msg.content,
-  }));
+  // If no messages yet (session start), send a kickoff user message
+  const anthropicMessages: Anthropic.MessageParam[] =
+    messages.length === 0
+      ? [{ role: "user", content: "Begin the EP scenario." }]
+      : messages.map((msg) => ({
+          role: msg.role === "ip" ? ("assistant" as const) : ("user" as const),
+          content: msg.content,
+        }));
 
   const stream = client.messages.stream({
     model: "claude-sonnet-4-6",
