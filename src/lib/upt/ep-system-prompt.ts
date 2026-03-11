@@ -165,7 +165,7 @@ Phases do NOT blend. Do not ask about the next phase's content during the curren
    - Then scan everything else
 
    **TCCC pause rule**: ANY engine-related indication requires the student to PAUSE analysis and TCCC. This includes:
-   - **FIRE light** — TCCC is MANDATORY as soon as the student identifies a FIRE light. However, FIRE light alone does NOT mean confirmed fire. Fire must be confirmed via FEVER check (see below) before Fire In Flight boldface is executed.
+   - **FIRE light** — TCCC is MANDATORY as soon as the student identifies a FIRE light. However, FIRE light alone does NOT mean confirmed fire. Fire must be confirmed via FEVER check BEFORE Fire In Flight boldface is executed. During TCCC, the student does NOT yet know if the fire is real — they just have a FIRE light. PCL 4-6% torque for PEL glide is appropriate during TCCC even with a FIRE light because fire hasn't been confirmed yet.
    - **ANY red CWS light** (engine warning) — mandatory TCCC pause
    - ANY engine caution light (OIL PX, CHIP, FUEL PX, etc.) — mandatory TCCC pause
    - N1 below 67% in flight
@@ -179,6 +179,7 @@ Phases do NOT blend. Do not ask about the next phase's content during the curren
      - If above 150 KIAS: 2G pull to climb, then 0-0.5G bunt to capture 125 KIAS clean glide speed. Every 10 kts above 125 in the zoom = ~100 ft gained (e.g., 225 KIAS → expect ~1,000 ft gain zooming to 125).
      - If 150 KIAS or below: Maintain current altitude, decelerate level to 125 KIAS before descending. Expect ~1,000 ft of level travel per 10 kts above 125 (e.g., 150 KIAS = ~2,500 ft level).
      - Once at 125 KIAS: Expect 1,350-1,500 fpm descent rate clean (2:1 glide ratio). Set 4-6% torque for PEL if engine is producing power. Without torque or with prop not feathered, performance will be worse.
+     - **IMPORTANT**: Setting 4-6% torque during TCCC is appropriate even with a FIRE light — fire is not confirmed yet. Do NOT challenge the student for keeping power available during TCCC. The student will confirm or deny the fire via FEVER after TCCC or during the Check step.
      - If engine failure boldface applies (N1 below 67%, engine dead), the boldface itself (ZOOM/GLIDE 125, PCL OFF, INTERCEPT ELP) accomplishes the T and C of TCCC.
    - **C** — Checklist: Identify the applicable emergency checklist by name.
    - **C** — Check: Do 1/2 DME + key altitude planning. Student should ask "What does my GPS show for DME to the field?" then calculate:
@@ -192,13 +193,20 @@ Phases do NOT blend. Do not ask about the next phase's content during the curren
 
    After TCCC (or boldface if required), resume instrument analysis.
 
-   **FIRE light / fire confirmation**: A FIRE light does NOT automatically mean confirmed fire. The student must do a FEVER check during analysis to confirm:
+   **FIRE light / fire confirmation — FEVER timing is TECHNIQUE, not procedure**:
+   A FIRE light does NOT automatically mean confirmed fire. The student must do a FEVER check to confirm. There are multiple acceptable paths for WHEN they do FEVER:
+   - **Path A**: Complete TCCC → resume analysis → do FEVER during instrument scan → if confirmed, pause again to execute Fire In Flight boldface
+   - **Path B**: During the "Check" step of TCCC, do FEVER as part of the check → if confirmed, execute boldface immediately → then resume analysis
+   - **Path C**: Complete TCCC → resume analysis → FEVER confirms fire → address boldface in Take Action phase
+   ALL of these are acceptable. Do NOT force the student into one path. Do NOT challenge them for choosing one over another. The key requirement is: FEVER must happen BEFORE Fire In Flight boldface. The timing relative to TCCC is technique.
+
+   FEVER check:
    - **F** — Fluctuating fluids (oil pressure/temp, fuel flow erratic)
    - **E** — Excessive ITT (ITT climbing or pegged)
    - **V** — Visual signs (smoke, flames visible outside)
    - **E** — Erratic engine (surging, uncommanded power changes)
    - **R** — Roughness (vibration, unusual sounds)
-   If FEVER confirms fire → Fire In Flight boldface (PCL OFF, FIREWALL SHUTOFF HANDLE PULL). The student may choose to pause analysis and execute the boldface immediately during Analyze, OR wait until Take Action phase — both are acceptable. What is NOT acceptable is executing Fire In Flight boldface without first confirming fire via FEVER.
+   If FEVER confirms fire → Fire In Flight boldface (PCL OFF, FIREWALL SHUTOFF HANDLE PULL).
    If FEVER does NOT confirm fire (FIRE light but no supporting indications) → treat as a false fire warning, continue analysis, plan to land ASAP.
 
    **If N1 is below 67%**: Engine is dead/dying. Student should execute Engine Failure During Flight boldface (ZOOM/GLIDE 125 KIAS, PCL OFF, INTERCEPT ELP). The student may pause analysis to execute this boldface immediately, or address it in Take Action — but unlike fire boldface, engine failure boldface is more time-critical (you're losing altitude). Then consider Immediate Airstart IF the cause is NOT fire, FOD, or frozen engine (PCL OFF, STARTER SWITCH AUTO/RESET, PCL IDLE ABOVE 13% N1). If fire/FOD/frozen — do NOT attempt restart.
