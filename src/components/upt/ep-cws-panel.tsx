@@ -1,20 +1,17 @@
 "use client";
 
 /**
- * T-6A CWS (Central Warning System) Annunciator Panel mockup.
- * Rendered as SVG to show lit/unlit annunciator lights during EP practice.
+ * T-6A CWS (Central Warning System) panel components.
+ * Split into two separate cockpit mockups:
+ *   - EpEyebrowPanel: Glareshield eyebrow lights (MASTER WARN, FIRE, MASTER CAUTION)
+ *   - EpCwsPanel: CWS annunciator grid (red/amber/green lights)
  *
  * Source: Milviz T-6A User Guide (public, non-CUI).
- *
- * Glareshield eyebrow lights (MASTER WARN, MASTER CAUTION, FIRE) are
- * shown above the CWS panel as a separate row.
  */
 
+import type { EyebrowLightId } from "@/lib/types/ep-practice";
+
 export type CwsLightId =
-  // Glareshield eyebrow lights
-  | "MASTER_WARN"
-  | "MASTER_CAUTION"
-  | "FIRE"
   // Red (warning)
   | "BAT_BUS"
   | "GEN_BUS"
@@ -49,20 +46,20 @@ export type CwsLightId =
   | "TRIM_OFF";
 
 interface LightDef {
-  id: CwsLightId;
+  id: string;
   label: string;
   color: "red" | "amber" | "green";
 }
 
 // Glareshield eyebrow lights
-const EYEBROW_LIGHTS: LightDef[] = [
+const EYEBROW_LIGHTS: (LightDef & { id: EyebrowLightId })[] = [
   { id: "MASTER_WARN", label: "MASTER\nWARN", color: "red" },
   { id: "FIRE", label: "FIRE", color: "red" },
   { id: "MASTER_CAUTION", label: "MASTER\nCAUTION", color: "amber" },
 ];
 
 // CWS panel lights in grid order (4 columns)
-const CWS_GRID: LightDef[][] = [
+const CWS_GRID: (LightDef & { id: CwsLightId })[][] = [
   // Row 1 — Red warnings
   [
     { id: "BAT_BUS", label: "BAT\nBUS", color: "red" },
@@ -119,14 +116,30 @@ const CWS_GRID: LightDef[][] = [
 ];
 
 const COLOR_MAP = {
-  red: { lit: "#ef4444", dim: "#451a1a", text: "#fca5a5" },
-  amber: { lit: "#f59e0b", dim: "#451a03", text: "#fcd34d" },
-  green: { lit: "#10b981", dim: "#052e16", text: "#6ee7b7" },
+  red: {
+    lit: "#ef4444",
+    glow: "rgba(239, 68, 68, 0.35)",
+    dim: "#2a1215",
+    text: "#fca5a5",
+    litText: "#1a0000",
+  },
+  amber: {
+    lit: "#f59e0b",
+    glow: "rgba(245, 158, 11, 0.35)",
+    dim: "#2a1f0a",
+    text: "#fcd34d",
+    litText: "#1a1000",
+  },
+  green: {
+    lit: "#10b981",
+    glow: "rgba(16, 185, 129, 0.35)",
+    dim: "#0a2a1a",
+    text: "#6ee7b7",
+    litText: "#001a0d",
+  },
 };
 
-interface EpCwsPanelProps {
-  litLights: CwsLightId[];
-}
+/* ---------- Shared SVG light cell ---------- */
 
 function LightCell({
   light,
@@ -135,6 +148,7 @@ function LightCell({
   y,
   w,
   h,
+  fontSize = 7.5,
 }: {
   light: LightDef;
   isLit: boolean;
@@ -142,50 +156,62 @@ function LightCell({
   y: number;
   w: number;
   h: number;
+  fontSize?: number;
 }) {
   const colors = COLOR_MAP[light.color];
   const fill = isLit ? colors.lit : colors.dim;
-  const textColor = isLit ? "#000" : colors.text;
-  const opacity = isLit ? 1 : 0.3;
+  const textColor = isLit ? colors.litText : colors.text;
+  const opacity = isLit ? 1 : 0.25;
   const lines = light.label.split("\n");
 
   return (
     <g opacity={opacity}>
-      {/* Light background */}
+      {/* Outer bevel / inset shadow */}
       <rect
         x={x}
         y={y}
         width={w}
         height={h}
+        rx={3}
+        fill="#0d0d0d"
+        stroke="#333"
+        strokeWidth={0.5}
+      />
+      {/* Inner light face */}
+      <rect
+        x={x + 1.5}
+        y={y + 1.5}
+        width={w - 3}
+        height={h - 3}
         rx={2}
         fill={fill}
-        stroke={isLit ? colors.lit : "#334155"}
-        strokeWidth={isLit ? 1.5 : 0.5}
+        stroke={isLit ? colors.lit : "#222"}
+        strokeWidth={isLit ? 1 : 0.5}
       />
-      {/* Glow effect when lit */}
+      {/* Glow when lit */}
       {isLit && (
         <rect
-          x={x - 1}
-          y={y - 1}
-          width={w + 2}
-          height={h + 2}
-          rx={3}
+          x={x - 2}
+          y={y - 2}
+          width={w + 4}
+          height={h + 4}
+          rx={5}
           fill="none"
-          stroke={colors.lit}
-          strokeWidth={1}
-          opacity={0.4}
+          stroke={colors.glow}
+          strokeWidth={2}
+          opacity={0.6}
         />
       )}
-      {/* Label text */}
+      {/* Label */}
       {lines.map((line, i) => (
         <text
           key={i}
           x={x + w / 2}
-          y={y + h / 2 + (i - (lines.length - 1) / 2) * 10}
+          y={y + h / 2 + (i - (lines.length - 1) / 2) * (fontSize + 2)}
           textAnchor="middle"
           dominantBaseline="central"
           fill={textColor}
-          fontSize={7.5}
+          fontSize={fontSize}
           fontWeight={isLit ? "bold" : "normal"}
           fontFamily="monospace"
         >
@@ -196,84 +222,198 @@ function LightCell({
   );
 }
 
-export function EpCwsPanel({ litLights }: EpCwsPanelProps) {
-  const litSet = new Set(litLights);
+/* ========================================================
+   EpEyebrowPanel — Glareshield eyebrow lights only
+   ======================================================== */
 
-  const cellW = 56;
-  const cellH = 30;
-  const gap = 4;
-  const cols = 4;
-  const panelPadX = 12;
-  const panelPadY = 8;
-  const gridW = cols * cellW + (cols - 1) * gap;
-  const svgW = gridW + panelPadX * 2;
+interface EpEyebrowPanelProps {
+  litLights: EyebrowLightId[];
+}
 
-  // Eyebrow section height
-  const eyebrowH = 36;
-  const eyebrowGap = 12;
+export function EpEyebrowPanel({ litLights }: EpEyebrowPanelProps) {
+  const litSet = new Set<string>(litLights);
 
-  // CWS grid rows
-  const rows = CWS_GRID.length;
-  const gridH = rows * cellH + (rows - 1) * gap;
+  // Layout constants
+  const cellW = 80;
+  const cellH = 32;
+  const fireCellW = 64;
+  const fireCellH = 38;
+  const gapX = 10;
+  // Total width: MASTER WARN + gap + FIRE + gap + MASTER CAUTION
+  const totalContentW = cellW + gapX + fireCellW + gapX + cellW;
+  const padX = 14;
+  const padY = 10;
+  const svgW = totalContentW + padX * 2;
+  const labelH = 14;
+  const svgH = padY + labelH + 4 + Math.max(cellH, fireCellH) + padY;
 
-  const totalH =
-    eyebrowH + eyebrowGap + 16 /* label */ + panelPadY * 2 + gridH + 8;
-
-  const eyebrowY = 4;
-  const panelLabelY = eyebrowY + eyebrowH + eyebrowGap;
-  const gridStartY = panelLabelY + 16 + panelPadY;
+  const bezelColor = "#1a1a1a";
 
   return (
     <svg
-      viewBox={`0 0 ${svgW} ${totalH}`}
-      className="w-full rounded-lg border border-slate-700 bg-slate-950"
-      style={{ maxWidth: svgW * 1.4 }}
+      viewBox={`0 0 ${svgW} ${svgH}`}
+      className="w-full rounded-lg"
+      style={{ maxWidth: svgW * 1.6, background: bezelColor }}
     >
-      {/* Glareshield eyebrow lights */}
+      {/* Panel frame */}
+      <rect
+        x={0}
+        y={0}
+        width={svgW}
+        height={svgH}
+        rx={6}
+        fill={bezelColor}
+        stroke="#333"
+        strokeWidth={1.5}
+      />
+      {/* Raised edge highlight */}
+      <rect
+        x={1}
+        y={1}
+        width={svgW - 2}
+        height={svgH - 2}
+        rx={5}
+        fill="none"
+        stroke="#2a2a2a"
+        strokeWidth={0.5}
+      />
+
+      {/* Label */}
       <text
         x={svgW / 2}
-        y={eyebrowY + 6}
+        y={padY + labelH / 2}
         textAnchor="middle"
-        fill="#64748b"
-        fontSize={7}
+        dominantBaseline="central"
+        fill="#555"
+        fontSize={8}
         fontFamily="monospace"
+        letterSpacing={2}
       >
         GLARESHIELD
       </text>
-      {EYEBROW_LIGHTS.map((light, i) => {
-        const totalEyebrowW = 3 * 72 + 2 * 8;
-        const startX = (svgW - totalEyebrowW) / 2;
+
+      {/* MASTER WARN (left) */}
+      {(() => {
+        const light = EYEBROW_LIGHTS[0]; // MASTER_WARN
+        const yPos = padY + labelH + 4 + (Math.max(cellH, fireCellH) - cellH) / 2;
         return (
           <LightCell
-            key={light.id}
             light={light}
             isLit={litSet.has(light.id)}
-            x={startX + i * (72 + 8)}
-            y={eyebrowY + 10}
-            w={72}
-            h={eyebrowH - 14}
+            x={padX}
+            y={yPos}
+            w={cellW}
+            h={cellH}
           />
         );
-      })}
+      })()}
 
-      {/* CWS Panel border */}
+      {/* FIRE (center, larger) */}
+      {(() => {
+        const light = EYEBROW_LIGHTS[1]; // FIRE
+        const xPos = padX + cellW + gapX;
+        const yPos = padY + labelH + 4 + (Math.max(cellH, fireCellH) - fireCellH) / 2;
+        return (
+          <LightCell
+            light={light}
+            isLit={litSet.has(light.id)}
+            x={xPos}
+            y={yPos}
+            w={fireCellW}
+            h={fireCellH}
+            fontSize={9}
+          />
+        );
+      })()}
+
+      {/* MASTER CAUTION (right) */}
+      {(() => {
+        const light = EYEBROW_LIGHTS[2]; // MASTER_CAUTION
+        const xPos = padX + cellW + gapX + fireCellW + gapX;
+        const yPos = padY + labelH + 4 + (Math.max(cellH, fireCellH) - cellH) / 2;
+        return (
+          <LightCell
+            light={light}
+            isLit={litSet.has(light.id)}
+            x={xPos}
+            y={yPos}
+            w={cellW}
+            h={cellH}
+          />
+        );
+      })()}
+    </svg>
+  );
+}
+
+/* ========================================================
+   EpCwsPanel — CWS annunciator grid only (no eyebrow)
+   ======================================================== */
+
+interface EpCwsPanelProps {
+  litLights: CwsLightId[];
+}
+
+export function EpCwsPanel({ litLights }: EpCwsPanelProps) {
+  const litSet = new Set<string>(litLights);
+
+  const cellW = 58;
+  const cellH = 34;
+  const gap = 4;
+  const cols = 4;
+  const padX = 14;
+  const padY = 10;
+  const labelH = 16;
+  const gridW = cols * cellW + (cols - 1) * gap;
+  const svgW = gridW + padX * 2;
+
+  const rows = CWS_GRID.length;
+  const gridH = rows * cellH + (rows - 1) * gap;
+
+  const gridStartY = padY + labelH + 8;
+  const svgH = gridStartY + gridH + padY;
+
+  const bezelColor = "#1a1a1a";
+
+  return (
+    <svg
+      viewBox={`0 0 ${svgW} ${svgH}`}
+      className="w-full rounded-lg"
+      style={{ maxWidth: svgW * 1.4, background: bezelColor }}
+    >
+      {/* Panel frame */}
       <rect
-        x={panelPadX - 4}
-        y={panelLabelY - 2}
-        width={gridW + 8}
-        height={gridH + panelPadY * 2 + 18}
-        rx={4}
-        fill="none"
-        stroke="#334155"
-        strokeWidth={1}
+        x={0}
+        y={0}
+        width={svgW}
+        height={svgH}
+        rx={6}
+        fill={bezelColor}
+        stroke="#333"
+        strokeWidth={1.5}
       />
+      {/* Raised edge highlight */}
+      <rect
+        x={1}
+        y={1}
+        width={svgW - 2}
+        height={svgH - 2}
+        rx={5}
+        fill="none"
+        stroke="#2a2a2a"
+        strokeWidth={0.5}
+      />
+
+      {/* Panel label */}
       <text
         x={svgW / 2}
-        y={panelLabelY + 10}
+        y={padY + labelH / 2}
         textAnchor="middle"
-        fill="#64748b"
+        dominantBaseline="central"
+        fill="#555"
         fontSize={8}
         fontFamily="monospace"
+        letterSpacing={2}
       >
         CWS ANNUNCIATOR PANEL
       </text>
@@ -285,7 +425,7 @@ export function EpCwsPanel({ litLights }: EpCwsPanelProps) {
             key={light.id}
             light={light}
             isLit={litSet.has(light.id)}
-            x={panelPadX + ci * (cellW + gap)}
+            x={padX + ci * (cellW + gap)}
             y={gridStartY + ri * (cellH + gap)}
             w={cellW}
             h={cellH}

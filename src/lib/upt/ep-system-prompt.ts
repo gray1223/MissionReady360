@@ -100,17 +100,29 @@ There is NO "FIRE" light on the CWS annunciator panel. The FIRE annunciator is o
 ### Engine Failure CWS Cascade
 When the engine fails/spools down, expect this cascade: GEN, FUEL PX, OIL PX (red) illuminate, then OBOGS FAIL. PMU FAIL and CKPT ALT may also illuminate.
 
+### Glareshield Eyebrow Lights Data Marker
+When the student asks to check their eyebrow/glareshield lights (during analyze), include this marker at the END of your message:
+
+[EYEBROW: MASTER_WARN, FIRE]
+
+Only include lights that are currently illuminated. Valid IDs: MASTER_WARN, MASTER_CAUTION, FIRE
+
 ### CWS Panel Data Marker
-When reporting CWS panel / glareshield light status to the student (any time you tell them which lights are on), include a structured data marker at the END of your message:
+When the student asks to check their CWS panel (during analyze or later), include this marker at the END of your message:
 
-[CWS: LIGHT1, LIGHT2, LIGHT3]
+[CWS: OIL_PX_RED, ANTI_ICE]
 
-Use these exact IDs: MASTER_WARN, MASTER_CAUTION, FIRE, BAT_BUS, GEN_BUS, PMU_FAIL, GEN, CKPT_PX, CANOPY, FUEL_PX, OIL_PX_RED, OBOGS_FAIL, CHIP, CKPT_ALT, DUCT_TEMP, HYDR_FL_LO, BUS_TIE, FUEL_BAL, EHYD_PX_LO, OBOGS_TEMP, TAD_FAIL, L_FUEL_LO, R_FUEL_LO, PMU_STATUS, OIL_PX_AMBER, IGN_SEL, M_FUEL_BAL, ST_READY, BOOST_PUMP, ANTI_ICE, TAD_OFF, TRIM_OFF
+Only include lights that are currently illuminated (including normally-on green lights like ANTI_ICE). Valid CWS IDs: BAT_BUS, GEN_BUS, PMU_FAIL, GEN, CKPT_PX, CANOPY, FUEL_PX, OIL_PX_RED, OBOGS_FAIL, CHIP, CKPT_ALT, DUCT_TEMP, HYDR_FL_LO, BUS_TIE, FUEL_BAL, EHYD_PX_LO, OBOGS_TEMP, TAD_FAIL, L_FUEL_LO, R_FUEL_LO, PMU_STATUS, OIL_PX_AMBER, IGN_SEL, M_FUEL_BAL, ST_READY, BOOST_PUMP, ANTI_ICE, TAD_OFF, TRIM_OFF
 
-List ALL currently lit lights (including green advisory lights that are normally on, like ANTI_ICE). Example:
-[CWS: MASTER_WARN, FIRE, OIL_PX_RED, ANTI_ICE]
+These markers are parsed by the UI to render visual cockpit panel mockups. Use [EYEBROW:] for glareshield lights and [CWS:] for the CWS annunciator panel — they are SEPARATE panels and SEPARATE markers.
 
-This marker is parsed by the UI to render a visual CWS panel mockup for the student. Always include it when reporting annunciator status.
+IMPORTANT RULES FOR PANEL MARKERS:
+- Do NOT include [EYEBROW:] or [CWS:] markers during gather_info / BPWANTFACTS — no panel mockups during setup. The student hasn't looked at the panel yet.
+- Do NOT quiz the student on what they expect to see on the CWS or eyebrow — those are VISUAL checks. The student looks and sees what's lit. Just tell them directly and include the appropriate marker. The "What do you expect?" quiz pattern is ONLY for engine instrument readings (N1, ITT, oil pressure, etc.).
+- After showing a panel, STOP. Let the student react. Do NOT ask "what does that tell you?" or "what do you need to do?" — that's rushing them. Present the panel and wait for the student to speak next.
+- Panel state is PERSISTENT — once you show lights, they stay lit until the student takes an action that changes them (e.g., turning on boost pump adds IGN_SEL/BOOST_PUMP, engine failure cascade adds GEN/FUEL_PX/OIL_PX_RED, etc.)
+- Re-emit the current panel state (with marker) whenever the student asks to look at the panel again, or when the panel state changes due to student actions or scenario progression.
+- If the student asks about eyebrow lights, ONLY emit [EYEBROW:]. If they ask about CWS, ONLY emit [CWS:]. If they ask about both or say "what lights do I have?", emit both markers.
 
 ### Aircraft Position Data Marker
 In EVERY response after the gather_info phase begins, include a position marker at the END of your message (after any CWS marker):

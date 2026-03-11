@@ -61,6 +61,8 @@ export interface AircraftPosition {
   altitude: number;
 }
 
+export type EyebrowLightId = "MASTER_WARN" | "MASTER_CAUTION" | "FIRE";
+
 export interface EpSetupData {
   callsign: string;
   isSolo: boolean;

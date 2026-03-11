@@ -1,14 +1,32 @@
 import { cn } from "@/lib/utils/cn";
-import type { EpMessage } from "@/lib/types/ep-practice";
-import { EpCwsPanel, type CwsLightId } from "./ep-cws-panel";
+import type { EpMessage, EyebrowLightId } from "@/lib/types/ep-practice";
+import { EpEyebrowPanel, EpCwsPanel, type CwsLightId } from "./ep-cws-panel";
 
 interface EpChatMessageProps {
   message: EpMessage;
   isStreaming?: boolean;
 }
 
+/** Parse [EYEBROW: LIGHT1, LIGHT2, ...] marker from text */
+function parseEyebrowMarker(text: string): {
+  cleaned: string;
+  lights: EyebrowLightId[];
+} {
+  const match = text.match(/\[EYEBROW:\s*([^\]]+)\]/);
+  if (!match) return { cleaned: text, lights: [] };
+  const lights = match[1]
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean) as EyebrowLightId[];
+  const cleaned = text.replace(/\s*\[EYEBROW:\s*[^\]]+\]\s*/g, "");
+  return { cleaned, lights };
+}
+
 /** Parse [CWS: LIGHT1, LIGHT2, ...] marker from text */
-function parseCwsMarker(text: string): { cleaned: string; lights: CwsLightId[] } {
+function parseCwsMarker(text: string): {
+  cleaned: string;
+  lights: CwsLightId[];
+} {
   const match = text.match(/\[CWS:\s*([^\]]+)\]/);
   if (!match) return { cleaned: text, lights: [] };
   const lights = match[1]
@@ -21,10 +39,11 @@ function parseCwsMarker(text: string): { cleaned: string; lights: CwsLightId[] }
 
 /** Very basic markdown-ish rendering: bold, line breaks */
 function renderContent(text: string) {
-  // Strip phase markers, CWS markers, and position markers from display
+  // Strip phase markers, CWS markers, eyebrow markers, and position markers from display
   const cleaned = text
     .replace(/\[PHASE:\s*\w+\]\s*/g, "")
     .replace(/\s*\[CWS:\s*[^\]]+\]\s*/g, "")
+    .replace(/\s*\[EYEBROW:\s*[^\]]+\]\s*/g, "")
     .replace(/\s*\[POSITION:\s*[^\]]+\]\s*/g, "");
 
   return cleaned.split("\n").map((line, i) => {
@@ -52,7 +71,16 @@ function renderContent(text: string) {
 
 export function EpChatMessage({ message, isStreaming }: EpChatMessageProps) {
   const isIp = message.role === "ip";
-  const { lights: cwsLights } = isIp ? parseCwsMarker(message.content) : { lights: [] };
+
+  // Parse both panel markers (only from IP messages)
+  const { lights: eyebrowLights } = isIp
+    ? parseEyebrowMarker(message.content)
+    : { lights: [] as EyebrowLightId[] };
+  const { lights: cwsLights } = isIp
+    ? parseCwsMarker(message.content)
+    : { lights: [] as CwsLightId[] };
+
+  const hasPanel = (eyebrowLights.length > 0 || cwsLights.length > 0) && !isStreaming;
 
   return (
     <div
@@ -80,12 +108,24 @@ export function EpChatMessage({ message, isStreaming }: EpChatMessageProps) {
             <span className="inline-block ml-0.5 w-1.5 h-4 bg-emerald-400 animate-pulse align-middle" />
           )}
         </div>
-        {cwsLights.length > 0 && !isStreaming && (
-          <div className="mt-3 border-t border-slate-700 pt-3">
-            <div className="mb-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-              Cockpit Annunciator Panel
-            </div>
-            <EpCwsPanel litLights={cwsLights} />
+        {hasPanel && (
+          <div className="mt-3 border-t border-slate-700 pt-3 space-y-3">
+            {eyebrowLights.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                  Glareshield Eyebrow Lights
+                </div>
+                <EpEyebrowPanel litLights={eyebrowLights} />
+              </div>
+            )}
+            {cwsLights.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                  CWS Annunciator Panel
+                </div>
+                <EpCwsPanel litLights={cwsLights} />
+              </div>
+            )}
           </div>
         )}
       </div>
