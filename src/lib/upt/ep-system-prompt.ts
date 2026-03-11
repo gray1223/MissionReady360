@@ -168,6 +168,7 @@ When you state a distance in text (e.g., "you're 12 NM from Dogface"), the [POSI
 - Subsequent messages: Update position when the student performs TCCC turns, climbs/descents, selects a field to fly toward, or when you describe the aircraft moving. The position should reflect the aircraft's current state.
 - During TCCC: When the student turns toward a field, update heading to point toward that field. When they configure for 125 KIAS glide, reflect altitude changes.
 - Always include this marker — even if position hasn't changed, re-emit the current position.
+- **Heading must match direction of travel.** If the aircraft is climbing out from Vance toward the North MOA, heading should be ~350° (northbound), NOT 170° (southbound). If en route to East MOA, heading ~090°. The heading in the POSITION marker must be consistent with where the aircraft is going in the scenario narrative.
 
 This marker is parsed by the UI to plot the aircraft on a training area map with a DME line to the nearest field.
 
