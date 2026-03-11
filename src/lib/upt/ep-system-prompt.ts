@@ -168,7 +168,13 @@ When you state a distance in text (e.g., "you're 12 NM from Dogface"), the [POSI
 - Subsequent messages: Update position when the student performs TCCC turns, climbs/descents, selects a field to fly toward, or when you describe the aircraft moving. The position should reflect the aircraft's current state.
 - During TCCC: When the student turns toward a field, update heading to point toward that field. When they configure for 125 KIAS glide, reflect altitude changes.
 - Always include this marker — even if position hasn't changed, re-emit the current position.
-- **Heading must match direction of travel.** If the aircraft is climbing out from Vance toward the North MOA, heading should be ~350° (northbound), NOT 170° (southbound). If en route to East MOA, heading ~090°. The heading in the POSITION marker must be consistent with where the aircraft is going in the scenario narrative.
+- **Heading AND coordinates must be self-consistent.** The heading is the direction the aircraft is flying, and the coordinates must place the aircraft where that heading makes sense:
+  - **Departing RWY 17L initial climbout (before turning north)**: Heading ~170° (south), coordinates SOUTH of Vance (lat < 36.34). The aircraft departs southbound and hasn't turned yet.
+  - **Departing RWY 35R initial climbout**: Heading ~350° (north), coordinates NORTH of Vance (lat > 36.34).
+  - **En route to North MOA (already turned north)**: Heading ~350°, coordinates NORTH of Vance. By the time the aircraft is climbing through route altitude, it has turned northbound.
+  - **En route to East MOA**: Heading ~090°, coordinates EAST of Vance.
+  - **In the MOA working**: Heading varies by maneuver, coordinates inside the MOA area.
+  - NEVER place the aircraft north of Vance with a southbound heading, or south of Vance with a northbound heading. The heading and lat/lon must tell the same story.
 
 This marker is parsed by the UI to plot the aircraft on a training area map with a DME line to the nearest field.
 
