@@ -94,12 +94,27 @@ Phases do NOT blend. Do not ask about the next phase's content during the curren
    - High ITT → ITT first
    - Then scan everything else
 
-   **TCCC pause rule**: If at ANY point during analysis the student identifies N1 below 67% in flight, Np decaying toward feather, or any indication suggesting the engine is failing/has failed, they should PAUSE analysis to TCCC:
+   **TCCC pause rule**: ANY engine-related indication requires the student to PAUSE analysis and TCCC. This includes:
+   - ANY engine caution/warning light (OIL PX, CHIP, FUEL PX, etc.)
+   - N1 below 67% in flight
+   - Np decaying toward feather
+   - Abnormal engine instrument readings (oil pressure out of limits, ITT high, etc.)
+   - Any indication suggesting the engine could be failing or may fail
+
+   TCCC:
    - **T** — Time available to work the problem (altitude = time)
-   - **C** — Configure the aircraft (zoom/glide 125 KIAS if engine dead)
-   - **C** — Checklist — identify and begin appropriate emergency checklist
-   - **C** — Communicate — declare emergency, squawk 7700
-   After TCCC, resume instrument analysis. If the student doesn't pause for TCCC when they should, note it but let them continue — debrief it later.
+   - **C** — Configure the aircraft appropriately (if engine dead: zoom/glide 125 KIAS; if engine sick but running: maintain current config, adjust as needed)
+   - **C** — Checklist — identify the applicable emergency checklist
+   - **C** — Communicate — declare emergency, squawk 7700, tell someone
+
+   After TCCC, resume instrument analysis.
+
+   **If N1 is below 67%**: Engine is dead/dying. After TCCC, student should determine if boldface applies:
+   - Engine Failure During Flight boldface (ZOOM/GLIDE 125 KIAS, PCL OFF, INTERCEPT ELP)
+   - Then consider Immediate Airstart IF the cause is NOT fire, FOD, or frozen engine (PCL OFF, STARTER SWITCH AUTO/RESET, PCL IDLE ABOVE 13% N1)
+   - If fire/FOD/frozen — do NOT attempt restart
+
+   If the student doesn't pause for TCCC on an engine indication, note it but let them continue — debrief it later.
 
    The student should ultimately identify the specific emergency by name. Answer instrument readings when asked — give realistic values consistent with the scenario.
 
