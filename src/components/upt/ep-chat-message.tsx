@@ -1,10 +1,13 @@
 import { cn } from "@/lib/utils/cn";
-import type { EpMessage, EyebrowLightId } from "@/lib/types/ep-practice";
+import type { EpMessage, EyebrowLightId, AircraftPosition } from "@/lib/types/ep-practice";
 import { EpEyebrowPanel, EpCwsPanel, type CwsLightId } from "./ep-cws-panel";
+import { EpAreaMap } from "./ep-area-map";
 
 interface EpChatMessageProps {
   message: EpMessage;
   isStreaming?: boolean;
+  /** Runway for map rendering */
+  runway?: string;
 }
 
 /** Parse [EYEBROW: LIGHT1, LIGHT2, ...] marker from text */
@@ -35,6 +38,15 @@ function parseCwsMarker(text: string): {
     .filter(Boolean) as CwsLightId[];
   const cleaned = text.replace(/\s*\[CWS:\s*[^\]]+\]\s*/g, "");
   return { cleaned, lights };
+}
+
+/** Parse [POSITION: lat,lon,heading,altitude] marker from text */
+function parsePositionMarker(text: string): AircraftPosition | null {
+  const match = text.match(/\[POSITION:\s*([^\]]+)\]/);
+  if (!match) return null;
+  const parts = match[1].split(",").map((s) => parseFloat(s.trim()));
+  if (parts.length < 4 || parts.some(isNaN)) return null;
+  return { lat: parts[0], lon: parts[1], heading: parts[2], altitude: parts[3] };
 }
 
 /** Very basic markdown-ish rendering: bold, line breaks */
@@ -69,7 +81,7 @@ function renderContent(text: string) {
   });
 }
 
-export function EpChatMessage({ message, isStreaming }: EpChatMessageProps) {
+export function EpChatMessage({ message, isStreaming, runway }: EpChatMessageProps) {
   const isIp = message.role === "ip";
 
   // Parse both panel markers (only from IP messages)
@@ -79,8 +91,10 @@ export function EpChatMessage({ message, isStreaming }: EpChatMessageProps) {
   const { lights: cwsLights } = isIp
     ? parseCwsMarker(message.content)
     : { lights: [] as CwsLightId[] };
+  const position = isIp ? parsePositionMarker(message.content) : null;
 
   const hasPanel = (eyebrowLights.length > 0 || cwsLights.length > 0) && !isStreaming;
+  const hasMap = position !== null && !isStreaming;
 
   return (
     <div
@@ -126,6 +140,14 @@ export function EpChatMessage({ message, isStreaming }: EpChatMessageProps) {
                 <EpCwsPanel litLights={cwsLights} />
               </div>
             )}
+          </div>
+        )}
+        {hasMap && (
+          <div className={cn("mt-3 pt-3", hasPanel ? "" : "border-t border-slate-700")}>
+            <div className="mb-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+              Position — {(position.altitude / 1000).toFixed(1)}K ft, HDG {Math.round(position.heading)}°
+            </div>
+            <EpAreaMap runway={runway || "17L"} aircraft={position} compact />
           </div>
         )}
       </div>
