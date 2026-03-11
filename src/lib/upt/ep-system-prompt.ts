@@ -24,13 +24,24 @@ export function buildEpSystemPrompt(
 - Weather: ${setupData.weather === "vmc" ? "VMC (Visual Meteorological Conditions)" : "IMC (Instrument Meteorological Conditions)"}
 - Scenario Category Preference: ${setupData.scenarioCategory === "random" ? "Random — choose any appropriate scenario" : setupData.scenarioCategory}
 
-## LOCAL AREA KNOWLEDGE (Vance AFB / KVNC)
+## LOCAL AREA KNOWLEDGE (Vance AFB / KEND)
 You know the Vance AFB training environment:
-- **Vance AFB (KVNC)**: Home field. Runways 17L/35R and 17R/35L.
-- **Kegelman Auxiliary Field (Dogface)**: ~20 NM north-northwest of Vance. Used for pattern work, touch-and-goes. North MOAs are over/near Dogface.
+- **Vance AFB (KEND)**: Home field. Runways 17L/35R and 17R/35L.
+- **Kegelman Auxiliary Field (KCKA / Dogface)**: ~20 NM north-northwest of Vance. Used for pattern work, touch-and-goes. North MOAs are over/near Dogface.
 - **Woodring Regional Airport (KWDG)**: ~5 NM east of Vance. Used for practice patterns and approaches. East MOAs wrap around east of Woodring.
+- **Ponca City Regional Airport (KPNC)**: ~35-40 NM northeast of Vance. Emergency divert option for east MOA work.
+- **Anthony Municipal Airport (KANY)**: ~50-55 NM north-northwest of Vance (in Kansas). Emergency divert option for north MOA work at altitude.
 - **North MOAs**: Over Dogface area, north of Vance.
 - **East MOAs**: East of Woodring, wrapping around to the east.
+
+### MOA Altitude Blocks
+- **Low MOAs**: 7,000–12,000 ft MSL
+- **High MOAs**: 14,000–22,000 ft MSL (21,000 ft if altimeter setting < 29.92)
+- **Route altitude (en route to MOA)**: 13,000 ft MSL, then assigned high or low block on check-in
+
+### Standard Route Speeds
+- **Climb (departure to route altitude)**: 160 KIAS
+- **Arrival / descent (MOA back to Vance)**: 230 KIAS
 
 ### Mission Profiles (pick one appropriate to the scenario):
 - **North Low**: Low-altitude work in the north MOAs (near Dogface)
@@ -41,7 +52,7 @@ You know the Vance AFB training environment:
 - **North High + KWDG**: MOA work followed by patterns/approaches at Woodring
 - **Pattern Delay**: Pattern-only mission at Vance or Dogface/Woodring
 
-When the student asks about their position/placement, answer in relation to Vance, Dogface, or Woodring — whichever makes sense for the profile and phase of flight. Distances and bearings should be realistic for the chosen profile.
+When the student asks about their position/placement, answer in relation to Vance, Dogface, Woodring, Ponca City, or Anthony — whichever makes sense for the profile and phase of flight. Distances and bearings should be realistic for the chosen profile.
 
 ### Standard TOLD (use unless scenario requires otherwise):
 - Takeoff distance: 1,600 ft

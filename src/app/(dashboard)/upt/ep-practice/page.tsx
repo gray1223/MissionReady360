@@ -21,9 +21,5 @@ export default async function EpPracticePage() {
     redirect("/dashboard");
   }
 
-  return (
-    <EpPracticeClient
-      callsign={profile.callsign || "Student"}
-    />
-  );
+  return <EpPracticeClient />;
 }

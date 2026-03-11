@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { SCENARIO_CATEGORIES, type EpSetupData, type ScenarioCategory } from "@/lib/types/ep-practice";
+import { EpAreaMap } from "./ep-area-map";
 
 interface EpSetupFormProps {
-  defaultCallsign: string;
   onSubmit: (data: EpSetupData) => void;
 }
 
-export function EpSetupForm({ defaultCallsign, onSubmit }: EpSetupFormProps) {
-  const [callsign, setCallsign] = useState(defaultCallsign);
+export function EpSetupForm({ onSubmit }: EpSetupFormProps) {
+  const [callsign, setCallsign] = useState(
+    () => `LOST${String(Math.floor(Math.random() * 100)).padStart(2, "0")}`
+  );
   const [isSolo, setIsSolo] = useState(false);
   const [abosStatus, setAbosStatus] = useState<"equipped" | "not_equipped">("equipped");
   const [runway, setRunway] = useState("17L");
@@ -51,13 +53,14 @@ export function EpSetupForm({ defaultCallsign, onSubmit }: EpSetupFormProps) {
           <label className="block text-sm font-medium text-slate-300 mb-1.5">
             Departure Runway
           </label>
-          <input
-            type="text"
+          <select
             value={runway}
             onChange={(e) => setRunway(e.target.value)}
-            placeholder="17L"
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-          />
+            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          >
+            <option value="17L">17L</option>
+            <option value="35R">35R</option>
+          </select>
         </div>
 
         {/* Solo/Dual */}
@@ -172,6 +175,14 @@ export function EpSetupForm({ defaultCallsign, onSubmit }: EpSetupFormProps) {
             ))}
           </select>
         </div>
+      </div>
+
+      {/* Training area map */}
+      <div>
+        <label className="block text-sm font-medium text-slate-300 mb-1.5">
+          Training Area
+        </label>
+        <EpAreaMap runway={runway} />
       </div>
 
       <button

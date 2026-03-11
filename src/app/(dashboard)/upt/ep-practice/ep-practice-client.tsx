@@ -7,6 +7,7 @@ import { EpDisclaimer } from "@/components/upt/ep-disclaimer";
 import { EpPhaseIndicator } from "@/components/upt/ep-phase-indicator";
 import { EpChatMessage } from "@/components/upt/ep-chat-message";
 import { EpSetupForm } from "@/components/upt/ep-setup-form";
+import { EpAreaMap } from "@/components/upt/ep-area-map";
 import { createEpSession, updateEpSession } from "../actions";
 import {
   EP_PHASES,
@@ -15,10 +16,6 @@ import {
   type EpSetupData,
   type EpEvaluation,
 } from "@/lib/types/ep-practice";
-
-interface EpPracticeClientProps {
-  callsign: string;
-}
 
 function parsePhaseFromText(text: string): EpPhase | null {
   const match = text.match(/\[PHASE:\s*(\w+)\]/);
@@ -59,7 +56,7 @@ function parseEvaluation(text: string): EpEvaluation | null {
   };
 }
 
-export function EpPracticeClient({ callsign }: EpPracticeClientProps) {
+export function EpPracticeClient() {
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [setupData, setSetupData] = useState<EpSetupData | null>(null);
@@ -309,7 +306,7 @@ export function EpPracticeClient({ callsign }: EpPracticeClientProps) {
           <p className="text-sm text-slate-400 mb-6">
             Configure your tabletop EP session parameters.
           </p>
-          <EpSetupForm defaultCallsign={callsign} onSubmit={handleSetup} />
+          <EpSetupForm onSubmit={handleSetup} />
         </div>
       </div>
     );
@@ -331,6 +328,16 @@ export function EpPracticeClient({ callsign }: EpPracticeClientProps) {
       <div className="mt-1 px-1 text-[11px] text-slate-500">
         Brevity: <span className="text-slate-400 font-medium">BPWANTFACTS?</span> = full setup dump &middot; <span className="text-slate-400 font-medium">MATL</span> = take aircraft &rarr; MAC &middot; <span className="text-slate-400 font-medium">Skip</span> = reveal remaining &rarr; next phase
       </div>
+
+      {/* Collapsible training area map */}
+      <details className="mt-2">
+        <summary className="cursor-pointer text-xs text-slate-500 hover:text-slate-400 transition-colors select-none">
+          Training Area Map
+        </summary>
+        <div className="mt-1">
+          <EpAreaMap runway={setupData.runway} compact />
+        </div>
+      </details>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto mt-3 space-y-3 px-1">
