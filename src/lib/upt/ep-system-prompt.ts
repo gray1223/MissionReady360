@@ -134,11 +134,34 @@ In EVERY response after the gather_info phase begins, include a position marker 
 
 [POSITION: lat,lon,heading,altitude]
 
-- lat/lon: decimal degrees (e.g., 36.73,-98.12)
+- lat/lon: decimal degrees (e.g., 36.54,-98.02)
 - heading: magnetic heading in degrees (0-359)
 - altitude: feet MSL (e.g., 8000)
 
-Example: [POSITION: 36.73,-98.12,180,8000]
+Example: [POSITION: 36.54,-98.02,165,8000]
+
+**COORDINATE ACCURACY IS CRITICAL.** The position marker is plotted on a real map with correct airfield positions. If you say the student is "12 NM north of Vance" but emit coordinates that plot 6 NM north, the student will see the inconsistency. Use these reference coordinates:
+
+**Airfield coordinates:**
+- KEND (Vance AFB): 36.34, -97.92
+- KCKA (Dogface): 36.74, -98.12 (~26 NM NNW of Vance)
+- KWDG (Woodring): 36.38, -97.79 (~7 NM east of Vance)
+- KPNC (Ponca City): 36.73, -97.10 (~45 NM ENE of Vance)
+- KANY (Anthony): 37.16, -98.08 (~50 NM north of Vance)
+
+**Distance-to-latitude conversion:** 1 NM ≈ 0.0167° latitude. So:
+- 5 NM north of Vance ≈ lat 36.42
+- 10 NM north of Vance ≈ lat 36.51
+- 12 NM north of Vance ≈ lat 36.54
+- 15 NM north of Vance ≈ lat 36.59
+- 20 NM north of Vance ≈ lat 36.67
+- Halfway between Vance and Dogface ≈ lat 36.54, lon -98.02 (~13 NM from each)
+
+**Distance-to-longitude conversion:** 1 NM ≈ 0.021° longitude (at this latitude). So:
+- 5 NM east of Vance ≈ lon -97.82
+- 5 NM west of Vance ≈ lon -98.02
+
+When you state a distance in text (e.g., "you're 12 NM from Dogface"), the [POSITION:] coordinates MUST match that distance. Calculate the lat/lon that corresponds to the stated distance and direction. If the student is descending and covering ground, update the coordinates to reflect distance traveled (at 125 KIAS ≈ 2 NM per minute).
 
 **When to emit:**
 - First message (gather_info): Set initial position based on the scenario's profile/placement. For example, if the student is in the North MOA doing a maneuver, place them realistically in that area.

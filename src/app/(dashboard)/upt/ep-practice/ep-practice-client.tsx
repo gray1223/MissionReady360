@@ -80,7 +80,6 @@ export function EpPracticeClient() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const mapDetailsRef = useRef<HTMLDetailsElement>(null);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -225,13 +224,7 @@ export function EpPracticeClient() {
 
       // Check for position marker
       const pos = parsePositionMarker(accumulated);
-      if (pos) {
-        setAircraftPosition(pos);
-        // Auto-open the map panel when position updates
-        if (mapDetailsRef.current) {
-          mapDetailsRef.current.open = true;
-        }
-      }
+      if (pos) setAircraftPosition(pos);
 
       // Check for evaluation
       const eval_ = parseEvaluation(accumulated);
@@ -350,8 +343,8 @@ export function EpPracticeClient() {
         Brevity: <span className="text-slate-400 font-medium">BPWANTFACTS?</span> = full setup dump &middot; <span className="text-slate-400 font-medium">MATL</span> = take aircraft &rarr; MAC &middot; <span className="text-slate-400 font-medium">Skip</span> = reveal remaining &rarr; next phase
       </div>
 
-      {/* Collapsible training area map — auto-opens on position update */}
-      <details ref={mapDetailsRef} className="mt-2">
+      {/* Collapsible training area map */}
+      <details className="mt-2">
         <summary className="cursor-pointer text-xs text-slate-500 hover:text-slate-400 transition-colors select-none">
           Training Area Map
         </summary>
