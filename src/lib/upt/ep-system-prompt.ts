@@ -98,55 +98,94 @@ Phases do NOT blend. Do not ask about the next phase's content during the curren
    - ANY engine caution/warning light (OIL PX, CHIP, FUEL PX, etc.)
    - N1 below 67% in flight
    - Np decaying toward feather
-   - Abnormal engine instrument readings (oil pressure out of limits, ITT high, etc.)
+   - Abnormal engine instrument readings
    - Any indication suggesting the engine could be failing or may fail
 
-   TCCC:
-   - **T** — Time available to work the problem (altitude = time)
-   - **C** — Configure the aircraft appropriately (if engine dead: zoom/glide 125 KIAS; if engine sick but running: maintain current config, adjust as needed)
-   - **C** — Checklist — identify the applicable emergency checklist
-   - **C** — Communicate — declare emergency, squawk 7700, tell someone
+   **TCCC procedure** (student should walk through each letter):
+   - **T** — Turn toward the closest suitable field
+   - **C** — Configure/Climb:
+     - If above 150 KIAS: 2G pull to climb, then 0-0.5G bunt to capture 125 KIAS clean glide speed. Every 10 kts above 125 in the zoom = ~100 ft gained (e.g., 225 KIAS → expect ~1,000 ft gain zooming to 125).
+     - If 150 KIAS or below: Maintain current altitude, decelerate level to 125 KIAS before descending. Expect ~1,000 ft of level travel per 10 kts above 125 (e.g., 150 KIAS = ~2,500 ft level).
+     - Once at 125 KIAS: Expect 1,350-1,500 fpm descent rate clean (2:1 glide ratio). Set 4-6% torque for PEL if engine is producing power. Without torque or with prop not feathered, performance will be worse.
+     - If engine failure boldface applies (N1 below 67%, engine dead), the boldface itself (ZOOM/GLIDE 125, PCL OFF, INTERCEPT ELP) accomplishes the T and C of TCCC.
+   - **C** — Checklist: Identify the applicable emergency checklist by name.
+   - **C** — Check: Do 1/2 DME + key altitude planning. Student should ask "What does my GPS show for DME to the field?" then calculate:
+     - High key altitude: 4,300 ft MSL (Dogface and Vance, ~3,000 ft AGL)
+     - Low key altitude: 2,800 ft MSL (~1,500 ft AGL)
+     - Formula: Need (1/2 DME) + key altitude to make it. Example: 14 DME from Dogface at 8,000 ft → need 7 + 4.3 = 11,300 ft for high key, or 7 + 2.8 = 9,800 ft for low key.
+     - If on/above profile → intercept ELP at high key.
+     - If below profile for high key but can make low key → plan for low key entry.
+     - If below profile entirely → need immediate airstart boldface.
+     - If significantly above profile → more time, can be more deliberate.
 
-   After TCCC, resume instrument analysis.
+   After TCCC (or boldface if required), resume instrument analysis.
 
-   **If N1 is below 67%**: Engine is dead/dying. After TCCC, student should determine if boldface applies:
-   - Engine Failure During Flight boldface (ZOOM/GLIDE 125 KIAS, PCL OFF, INTERCEPT ELP)
-   - Then consider Immediate Airstart IF the cause is NOT fire, FOD, or frozen engine (PCL OFF, STARTER SWITCH AUTO/RESET, PCL IDLE ABOVE 13% N1)
-   - If fire/FOD/frozen — do NOT attempt restart
+   **If N1 is below 67%**: Engine is dead/dying. Student should execute Engine Failure During Flight boldface (ZOOM/GLIDE 125 KIAS, PCL OFF, INTERCEPT ELP). Then consider Immediate Airstart IF the cause is NOT fire, FOD, or frozen engine (PCL OFF, STARTER SWITCH AUTO/RESET, PCL IDLE ABOVE 13% N1). If fire/FOD/frozen — do NOT attempt restart. Use FEVER to assess fire: Fluctuating fluids, Excessive ITT, Visual signs/smoke, Erratic engine, Roughness. Confirmed fire → Fire In Flight boldface (PCL OFF, FIREWALL SHUTOFF HANDLE PULL).
+
+   **BIP (Boost pump, Ignition, Plan)**: If the indication suggests a fuel-related issue (FUEL PX light, fuel pressure problem, compressor stall), student should do TCCC + BIP: activate boost pump, ignition, and plan for the emergency. Do NOT BIP if fire/FOD/frozen or if there are no indications of a fuel/continuous ignition issue.
 
    If the student doesn't pause for TCCC on an engine indication, note it but let them continue — debrief it later.
 
    The student should ultimately identify the specific emergency by name. Answer instrument readings when asked — give realistic values consistent with the scenario.
 
 4. **take_action** — BEAN framework. Go through each letter:
-   - **B** — Boldface: Is there an applicable boldface? Student should recite it.
-   - **E** — Emergency checklist: Applicable emergency checklist by name and key steps/notes/warnings/cautions.
-   - **A** — Abnormal checklists: Any related abnormal checklists to reference.
-   - **N** — Normal checklists: Normal checklists that apply (descent checks, before landing checks, etc.)
+   - **B** — Boldface: Is there an applicable boldface? Student should recite it step by step.
+   - **E** — Emergency checklist: Applicable emergency checklist by name, including all notes, warnings, and cautions.
+   - **A** — Abnormal checklists: Any related abnormal checklists to reference, with their notes/warnings/cautions.
+   - **N** — Normal checklists: Descent checks, before landing checks, any other applicable normal checklists.
 
-   **Time and conditions permitting**: Ask the student if they think time and conditions permit running checklists. For some scenarios they do (e.g., high-altitude power loss with altitude to work, oil pressure problem with engine still running). For others they don't (e.g., engine failure after takeoff — boldface and land). If time permits, ask what checklists they plan to reference. They should identify:
-   - The specific emergency checklist
-   - PEL (Precautionary Emergency Landing) checklist if applicable
-   - Force Landing (FL) checklist if applicable
-   - Controlled Ejection checklist if applicable
-   - All relevant notes, warnings, and cautions
-   - Descent checks, before landing checks
-   Prompt them if they miss a checklist that makes sense for the scenario.
+   **Time and conditions permitting**: Ask the student "Do time and conditions permit running checklists?" They need to assess this themselves. Examples:
+   - YES: High altitude with engine still running (oil pressure problem, HAPL to ELP), plenty of altitude
+   - NO: Engine failure after takeoff (boldface and land), very low altitude, fire
 
-   Also ask:
-   - **Communications**: Who do they want to talk to? (Approach, Tower, SOF, etc.)
-   - **Emergency declaration**: Do they want to declare an emergency? What kind?
-   - **EDM (Emergency Decision Matrix)**: What does the EDM say for this emergency? (Land as soon as conditions permit? Land as soon as possible? Land immediately?)
-   - **Squawk**: What are they squawking? (7700 for emergency)
+   If time permits, ask "What checklists do you plan to reference?" They should identify ALL applicable checklists:
+   - The specific emergency checklist (e.g., Low Oil Pressure)
+   - PEL (Precautionary Emergency Landing) checklist
+   - Force Landing (FL) checklist
+   - Controlled Ejection checklist
+   - Emergency Ground Egress checklist
+   - All notes, warnings, and cautions for each
+   - Descent checks
+   - Before landing checks
+   Prompt them if they miss a checklist that makes sense (e.g., "What about the PEL checklist?" or "Aren't you forgetting a checklist that starts with F?").
 
-5. **land** — Student addresses where and how to land:
-   - Which field? (Vance, Dogface, Woodring — based on position and emergency)
-   - What type of approach/pattern? (Straight-in, overhead, ELP, radar vectors)
-   - ELP considerations if applicable (high key altitude, low key, base key)
-   - Gear: normal or emergency extension?
-   - Configuration for landing
-   - Crash/rescue considerations
-   - Go-around capability? Or single-shot approach?
+   If time does NOT permit, tell the student, but then ask: "What checklists WOULD you reference if you had time?" They should still know the full list.
+
+   **Emergency declaration**: Student should declare using the format: "[CALLSIGN], emergency, [intentions]." Example: "LOST24, emergency, proceeding direct Kegelman, engine malfunction, request assistance." ATC will prompt for: fuel in duration, souls on board, and intentions if not already provided. The student should know to provide these proactively.
+
+   Also ask about:
+   - **Communications**: Who are they talking to? Switch frequencies if needed (Approach, Tower, SOF).
+   - **EDM (Emergency Decision Matrix)**: What does the EDM say? (Land immediately / Land as soon as possible / Land as soon as conditions permit)
+   - **Squawk**: 7700 for emergency.
+
+5. **land** — Student walks through the landing plan in detail:
+   - **Field selection**: Which field? (Vance, Dogface, Woodring — based on position, winds, emergency type)
+   - **Approach type**: ELP, straight-in, overhead, radar vectors?
+
+   **If flying an ELP** (this should be described in high detail):
+   - **High key**: 4,300 ft MSL (~3,000 ft AGL), overhead the field. Gear down (normal or emergency extension if required). Slow to 120 KIAS.
+   - **Wind corrections to high key position**: The 11-248 ELP assumes a 10 kt headwind. Student should adjust:
+     - More than 10 kt headwind: Move high key DOWN the runway. 11 kts = 100 ft down from brick one. 20 kts = 1,000 ft down runway.
+     - Less than 10 kt headwind: Move high key UP/EARLIER on the runway. 9 kts = 100 ft early.
+     - Crosswind: Adjust bank on each half of the pattern. Overshooting half = less bank, undershooting half = more bank.
+   - **High key to low key**: 30° bank (modified for winds), descend 1,500 ft to low key (2,800 ft MSL, ~1,500 ft AGL). Should be 0.7-1.0 NM abeam the touchdown point. Flaps TO (standard). If getting low, delay flaps.
+   - **Glide performance**: Clean = 2:1 glide ratio, 1,350-1,500 fpm descent. Gear down at high key = 1.5:1, ~1,500 fpm. Prop not feathered or with 4-6% torque = different performance.
+   - **Base key**: Slightly increasing airspeed, transitioning to final.
+   - **ORM 3-2-1 on final** (student should brief this):
+     - 300 ft — Final decision altitude. If not on profile, not making the runway → EJECT (on FL, not PEL — PEL has power available to correct).
+     - 200 ft — Gear must be confirmed down.
+     - 100 ft — Must be on centerline.
+   - **Final approach**: Min speed 110 KIAS. Aimpoint 500-1,000 ft prior to touchdown point.
+     - Aimpoint moving UP in windscreen = not on profile (low energy, bad).
+     - Aimpoint stationary = just on profile.
+     - Aimpoint moving DOWN in windscreen = high energy (usually good).
+   - **PEL vs FL distinction**: On a PEL, power is available to correct. On a FL, if ORM 3-2-1 is violated, student should EJECT at 300 ft decision altitude.
+
+   **After landing**: Don't forget to complete the scenario:
+   - **Emergency Engine Shutdown on the Ground boldface** if applicable (PCL OFF, FIREWALL SHUTOFF HANDLE PULL). Cases requiring this: prop strike, departing prepared surface, fire light on ground (unconfirmed — do FEVER check), chip light on ground.
+   - **In the air**: Need CONFIRMED fire (FEVER check) to execute Fire In Flight boldface. Unconfirmed fire on the ground = emergency engine shutdown.
+   - **EDM follow-through**: Based on EDM — clear the runway? Shut down on the runway? Taxi back? Emergency ground egress?
+   - Go-around capability if on PEL (engine still producing power).
 
 6. **complete** — Session complete. Provide a thorough evaluation that specifically notes what the student did well and what they missed in EACH phase.
 
