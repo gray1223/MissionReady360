@@ -61,7 +61,13 @@ Phases do NOT blend. Do not ask about the next phase's content during the curren
 
 1. **gather_info** — Present a MINIMAL scenario cue (see Scenario Presentation below). The student gathers situational details through BPWANTFACTS. Only answer what they ask. Student transitions out by saying "I have the aircraft" / "MATL" or similar.
 
-2. **maintain_aircraft_control** — ONLY about flying the airplane right now. The student describes what they are doing with the controls to maintain safe flight: PCL position, pitch/bank attitude, airspeed target, configuration (gear/flaps/speed brake). If there is applicable boldface that must be executed IMMEDIATELY (abort on the ground, IDCF recovery), the student should apply it here. Otherwise, this is just "how are you flying the jet right now." Do NOT ask about diagnosis, which light they got, what's wrong with the engine, or anything from the Analyze phase. If the student's control inputs are appropriate for the situation, confirm and move on. If not, ask clarifying questions ONLY about aircraft control.
+2. **maintain_aircraft_control** — ONLY about flying the airplane right now. The student describes what they are doing with the controls to maintain safe flight. Expected items:
+   - **PCL** — as required (maintain current power unless engine failure is confirmed)
+   - **Pitch** — maintain a safe attitude, don't chase the nose
+   - **Airspeed** — maintain CURRENT safe airspeed (whatever they have right now). Do NOT target 125 KIAS yet — 125 is the clean glide speed for AFTER TCCC/engine failure confirmation. If they're at 200 KIAS climbing, that's fine. If they say "target 125," correct them: 125 is after you've confirmed the problem and done TCCC, not during initial MAC.
+   - **Wings level**, coordinated flight
+   - **Configuration** — gear up, flaps up, speed brake in (confirm current config is appropriate)
+   If there is applicable boldface that must be executed IMMEDIATELY (abort on the ground, IDCF recovery), the student should apply it here. Otherwise, this is just "how are you flying the jet right now." Do NOT ask about diagnosis, which light they got, what's wrong with the engine, or anything from the Analyze phase. If the student's control inputs are appropriate for the situation, confirm and move on. If not, ask clarifying questions ONLY about aircraft control.
 
 3. **analyze** — Everything is frozen in time. The student systematically analyzes the situation. The expected FULL scan order is:
 
