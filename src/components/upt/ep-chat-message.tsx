@@ -21,10 +21,11 @@ function parseCwsMarker(text: string): { cleaned: string; lights: CwsLightId[] }
 
 /** Very basic markdown-ish rendering: bold, line breaks */
 function renderContent(text: string) {
-  // Strip phase markers and CWS markers from display
+  // Strip phase markers, CWS markers, and position markers from display
   const cleaned = text
     .replace(/\[PHASE:\s*\w+\]\s*/g, "")
-    .replace(/\s*\[CWS:\s*[^\]]+\]\s*/g, "");
+    .replace(/\s*\[CWS:\s*[^\]]+\]\s*/g, "")
+    .replace(/\s*\[POSITION:\s*[^\]]+\]\s*/g, "");
 
   return cleaned.split("\n").map((line, i) => {
     // Bold **text**

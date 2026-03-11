@@ -54,6 +54,13 @@ export const SCENARIO_CATEGORIES: { value: ScenarioCategory; label: string }[] =
   { value: "other", label: "Other / Misc" },
 ];
 
+export interface AircraftPosition {
+  lat: number;
+  lon: number;
+  heading: number;
+  altitude: number;
+}
+
 export interface EpSetupData {
   callsign: string;
   isSolo: boolean;

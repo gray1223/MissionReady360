@@ -112,6 +112,25 @@ List ALL currently lit lights (including green advisory lights that are normally
 
 This marker is parsed by the UI to render a visual CWS panel mockup for the student. Always include it when reporting annunciator status.
 
+### Aircraft Position Data Marker
+In EVERY response after the gather_info phase begins, include a position marker at the END of your message (after any CWS marker):
+
+[POSITION: lat,lon,heading,altitude]
+
+- lat/lon: decimal degrees (e.g., 36.73,-98.12)
+- heading: magnetic heading in degrees (0-359)
+- altitude: feet MSL (e.g., 8000)
+
+Example: [POSITION: 36.73,-98.12,180,8000]
+
+**When to emit:**
+- First message (gather_info): Set initial position based on the scenario's profile/placement. For example, if the student is in the North MOA doing a maneuver, place them realistically in that area.
+- Subsequent messages: Update position when the student performs TCCC turns, climbs/descents, selects a field to fly toward, or when you describe the aircraft moving. The position should reflect the aircraft's current state.
+- During TCCC: When the student turns toward a field, update heading to point toward that field. When they configure for 125 KIAS glide, reflect altitude changes.
+- Always include this marker — even if position hasn't changed, re-emit the current position.
+
+This marker is parsed by the UI to plot the aircraft on a training area map with a DME line to the nearest field.
+
 ## REFERENCE DATA
 ${referenceData}
 

@@ -2,7 +2,8 @@
 
 /**
  * Training area map for Vance AFB EP practice.
- * Pure SVG — zero external dependencies.
+ * VFR sectional chart background with SVG overlay for
+ * airfield labels, MOA outlines, aircraft position, and DME line.
  *
  * Airfield coordinates (AirNav):
  *   KEND  36.3398 -97.9172   (Vance AFB)
@@ -12,8 +13,11 @@
  *   KANY  37.1583 -98.0794   (Anthony)
  */
 
+import type { AircraftPosition } from "@/lib/types/ep-practice";
+
 interface EpAreaMapProps {
   runway: string; // "17L" or "35R"
+  aircraft?: AircraftPosition | null;
   compact?: boolean;
 }
 
@@ -26,7 +30,7 @@ const FIELDS = [
   { id: "KANY", name: "Anthony", lat: 37.1583, lon: -98.0794 },
 ] as const;
 
-// Bounding box for projection (with padding)
+// Bounding box matching the sectional chart crop
 const LAT_MIN = 36.2;
 const LAT_MAX = 37.3;
 const LON_MIN = -98.3;
@@ -36,14 +40,30 @@ function project(
   lat: number,
   lon: number,
   width: number,
-  height: number,
-  pad: number
+  height: number
 ): [number, number] {
-  const x = pad + ((lon - LON_MIN) / (LON_MAX - LON_MIN)) * (width - 2 * pad);
+  const x = ((lon - LON_MIN) / (LON_MAX - LON_MIN)) * width;
   // lat is inverted (higher lat = higher on screen = lower y)
-  const y =
-    pad + ((LAT_MAX - lat) / (LAT_MAX - LAT_MIN)) * (height - 2 * pad);
+  const y = ((LAT_MAX - lat) / (LAT_MAX - LAT_MIN)) * height;
   return [x, y];
+}
+
+/** Haversine distance in nautical miles */
+function distanceNm(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 3440.065; // Earth radius in NM
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
 }
 
 // Approximate MOA polygon coordinates (simplified)
@@ -61,16 +81,15 @@ const EAST_MOA = [
   { lat: 36.75, lon: -97.65 },
 ];
 
-export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
-  const w = compact ? 320 : 480;
-  const h = compact ? 260 : 380;
-  const pad = compact ? 28 : 40;
+export function EpAreaMap({ runway, aircraft, compact }: EpAreaMapProps) {
+  const w = compact ? 400 : 510;
+  const h = compact ? 392 : 500;
   const fontSize = compact ? 9 : 11;
-  const markerR = compact ? 3 : 4;
+  const markerR = compact ? 3.5 : 5;
   const homeR = compact ? 5 : 7;
 
   function proj(lat: number, lon: number) {
-    return project(lat, lon, w, h, pad);
+    return project(lat, lon, w, h);
   }
 
   function moaPath(coords: { lat: number; lon: number }[]) {
@@ -86,58 +105,69 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
   // Runway direction indicator at KEND
   const [hx, hy] = proj(FIELDS[0].lat, FIELDS[0].lon);
   const rwyLen = compact ? 16 : 22;
-  // 17L heading ≈ 170°, 35R heading ≈ 350°
   const headingDeg = runway === "17L" ? 170 : 350;
   const headingRad = ((headingDeg - 90) * Math.PI) / 180;
   const rwyDx = Math.cos(headingRad) * rwyLen;
   const rwyDy = Math.sin(headingRad) * rwyLen;
 
-  // Scale bar: approximate NM for 1 degree of longitude at this latitude
-  // At ~36.5° lat, 1° lon ≈ 48 NM. Our lon range is 1.4°, so total ≈ 67 NM.
-  // Pixel range = w - 2*pad. 20 NM in pixels:
+  // Scale bar: ~48 NM per degree of longitude at this latitude
   const nmPerDegLon = 48;
-  const pixelsPerDeg = (w - 2 * pad) / (LON_MAX - LON_MIN);
+  const pixelsPerDeg = w / (LON_MAX - LON_MIN);
   const twentyNmPx = (20 / nmPerDegLon) * pixelsPerDeg;
+
+  // Aircraft position & nearest field
+  let acX = 0,
+    acY = 0,
+    nearestField: (typeof FIELDS)[number] | null = null,
+    nearestDist = Infinity,
+    nfX = 0,
+    nfY = 0;
+
+  if (aircraft) {
+    [acX, acY] = proj(aircraft.lat, aircraft.lon);
+    for (const f of FIELDS) {
+      const d = distanceNm(aircraft.lat, aircraft.lon, f.lat, f.lon);
+      if (d < nearestDist) {
+        nearestDist = d;
+        nearestField = f;
+        [nfX, nfY] = proj(f.lat, f.lon);
+      }
+    }
+  }
+
+  // DME label position (midpoint of the line)
+  const dmeMidX = aircraft ? (acX + nfX) / 2 : 0;
+  const dmeMidY = aircraft ? (acY + nfY) / 2 : 0;
 
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`}
-      className="w-full rounded-lg border border-slate-700 bg-slate-950"
+      className="w-full rounded-lg border border-slate-700"
       style={{ maxWidth: w }}
     >
-      {/* Grid lines */}
-      {[0.25, 0.5, 0.75].map((f) => (
-        <g key={f} opacity={0.15}>
-          <line
-            x1={pad}
-            y1={pad + f * (h - 2 * pad)}
-            x2={w - pad}
-            y2={pad + f * (h - 2 * pad)}
-            stroke="#94a3b8"
-            strokeWidth={0.5}
-          />
-          <line
-            x1={pad + f * (w - 2 * pad)}
-            y1={pad}
-            x2={pad + f * (w - 2 * pad)}
-            y2={h - pad}
-            stroke="#94a3b8"
-            strokeWidth={0.5}
-          />
-        </g>
-      ))}
+      {/* Sectional chart background */}
+      <image
+        href="/maps/vance-sectional.jpg"
+        x={0}
+        y={0}
+        width={w}
+        height={h}
+        preserveAspectRatio="none"
+      />
+
+      {/* Darken overlay for readability */}
+      <rect x={0} y={0} width={w} height={h} fill="black" opacity={0.25} />
 
       {/* North MOA */}
       <path
         d={moaPath(NORTH_MOA)}
         fill="#10b981"
-        fillOpacity={0.08}
+        fillOpacity={0.12}
         stroke="#10b981"
-        strokeWidth={1}
+        strokeWidth={1.5}
         strokeDasharray="6 3"
-        strokeOpacity={0.5}
+        strokeOpacity={0.7}
       />
-      {/* North MOA label */}
       {(() => {
         const [cx, cy] = proj(36.75, -98.065);
         return (
@@ -147,7 +177,8 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
             textAnchor="middle"
             fill="#10b981"
             fontSize={fontSize}
-            opacity={0.7}
+            fontWeight="bold"
+            opacity={0.9}
           >
             NORTH MOA
           </text>
@@ -158,13 +189,12 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
       <path
         d={moaPath(EAST_MOA)}
         fill="#3b82f6"
-        fillOpacity={0.08}
+        fillOpacity={0.12}
         stroke="#3b82f6"
-        strokeWidth={1}
+        strokeWidth={1.5}
         strokeDasharray="6 3"
-        strokeOpacity={0.5}
+        strokeOpacity={0.7}
       />
-      {/* East MOA label */}
       {(() => {
         const [cx, cy] = proj(36.5, -97.375);
         return (
@@ -174,12 +204,49 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
             textAnchor="middle"
             fill="#3b82f6"
             fontSize={fontSize}
-            opacity={0.7}
+            fontWeight="bold"
+            opacity={0.9}
           >
             EAST MOA
           </text>
         );
       })()}
+
+      {/* DME line from aircraft to nearest field */}
+      {aircraft && nearestField && (
+        <g>
+          <line
+            x1={acX}
+            y1={acY}
+            x2={nfX}
+            y2={nfY}
+            stroke="#fbbf24"
+            strokeWidth={1.5}
+            strokeDasharray="4 3"
+            strokeOpacity={0.9}
+          />
+          {/* DME distance label */}
+          <rect
+            x={dmeMidX - 22}
+            y={dmeMidY - 7}
+            width={44}
+            height={14}
+            rx={3}
+            fill="#000"
+            fillOpacity={0.7}
+          />
+          <text
+            x={dmeMidX}
+            y={dmeMidY + 4}
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize={fontSize - 1}
+            fontWeight="bold"
+          >
+            {nearestDist.toFixed(1)} NM
+          </text>
+        </g>
+      )}
 
       {/* Runway direction indicator at KEND */}
       <line
@@ -191,7 +258,6 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
         strokeWidth={2}
         strokeLinecap="round"
       />
-      {/* Arrow tip showing active runway direction */}
       <polygon
         points={`${hx + rwyDx},${hy + rwyDy} ${hx + rwyDx - 4 * Math.cos(headingRad - 0.5)},${hy + rwyDy - 4 * Math.sin(headingRad - 0.5)} ${hx + rwyDx - 4 * Math.cos(headingRad + 0.5)},${hy + rwyDy - 4 * Math.sin(headingRad + 0.5)}`}
         fill="#10b981"
@@ -201,8 +267,23 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
       {FIELDS.map((f) => {
         const [x, y] = proj(f.lat, f.lon);
         const isHome = "home" in f && f.home;
+        const isNearest =
+          aircraft && nearestField && f.id === nearestField.id;
         return (
           <g key={f.id}>
+            {/* Highlight ring for nearest field */}
+            {isNearest && (
+              <circle
+                cx={x}
+                cy={y}
+                r={homeR + 5}
+                fill="none"
+                stroke="#fbbf24"
+                strokeWidth={1.5}
+                strokeDasharray="3 2"
+                opacity={0.8}
+              />
+            )}
             {/* Outer ring for home field */}
             {isHome && (
               <circle
@@ -213,24 +294,41 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
                 stroke="#10b981"
                 strokeWidth={1}
                 strokeDasharray="3 2"
-                opacity={0.5}
+                opacity={0.6}
               />
             )}
             <circle
               cx={x}
               cy={y}
               r={isHome ? homeR : markerR}
-              fill={isHome ? "#10b981" : "#94a3b8"}
-              fillOpacity={isHome ? 0.9 : 0.7}
+              fill={isHome ? "#10b981" : "#e2e8f0"}
+              fillOpacity={0.95}
+              stroke="#000"
+              strokeWidth={0.5}
+              strokeOpacity={0.5}
             />
-            {/* Label */}
+            {/* Label background for readability */}
             <text
               x={x}
               y={y - (isHome ? homeR + 5 : markerR + 4)}
               textAnchor="middle"
-              fill={isHome ? "#10b981" : "#cbd5e1"}
+              fill="#000"
               fontSize={fontSize}
-              fontWeight={isHome ? "bold" : "normal"}
+              fontWeight="bold"
+              stroke="#000"
+              strokeWidth={3}
+              strokeOpacity={0.6}
+              paintOrder="stroke"
+            >
+              {f.id}
+            </text>
+            <text
+              x={x}
+              y={y - (isHome ? homeR + 5 : markerR + 4)}
+              textAnchor="middle"
+              fill={isHome ? "#10b981" : "#f1f5f9"}
+              fontSize={fontSize}
+              fontWeight="bold"
             >
               {f.id}
             </text>
@@ -238,7 +336,20 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
               x={x}
               y={y + (isHome ? homeR + fontSize + 2 : markerR + fontSize + 1)}
               textAnchor="middle"
-              fill="#64748b"
+              fill="#000"
+              fontSize={fontSize - 1}
+              stroke="#000"
+              strokeWidth={3}
+              strokeOpacity={0.5}
+              paintOrder="stroke"
+            >
+              {f.name}
+            </text>
+            <text
+              x={x}
+              y={y + (isHome ? homeR + fontSize + 2 : markerR + fontSize + 1)}
+              textAnchor="middle"
+              fill="#94a3b8"
               fontSize={fontSize - 1}
             >
               {f.name}
@@ -247,27 +358,80 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
         );
       })}
 
+      {/* Aircraft marker */}
+      {aircraft && (
+        <g
+          transform={`translate(${acX},${acY}) rotate(${aircraft.heading})`}
+        >
+          {/* Triangle pointing up (nose), rotated to heading */}
+          <polygon
+            points="0,-10 -5,6 5,6"
+            fill="#ef4444"
+            stroke="#fff"
+            strokeWidth={1}
+            strokeOpacity={0.8}
+          />
+          {/* Small dot at center */}
+          <circle cx={0} cy={0} r={1.5} fill="#fff" />
+        </g>
+      )}
+
+      {/* Aircraft altitude label */}
+      {aircraft && (
+        <g>
+          <rect
+            x={acX + 10}
+            y={acY - 16}
+            width={52}
+            height={14}
+            rx={3}
+            fill="#000"
+            fillOpacity={0.7}
+          />
+          <text
+            x={acX + 36}
+            y={acY - 5}
+            textAnchor="middle"
+            fill="#ef4444"
+            fontSize={fontSize - 1}
+            fontWeight="bold"
+          >
+            {(aircraft.altitude / 1000).toFixed(1)}K ft
+          </text>
+        </g>
+      )}
+
       {/* North arrow */}
       <g>
+        <rect
+          x={w - 22}
+          y={4}
+          width={18}
+          height={34}
+          rx={4}
+          fill="#000"
+          fillOpacity={0.5}
+        />
         <line
-          x1={w - pad + 10}
-          y1={pad + 30}
-          x2={w - pad + 10}
-          y2={pad + 6}
-          stroke="#94a3b8"
+          x1={w - 13}
+          y1={32}
+          x2={w - 13}
+          y2={12}
+          stroke="#e2e8f0"
           strokeWidth={1.5}
         />
         <polygon
-          points={`${w - pad + 10},${pad + 2} ${w - pad + 6},${pad + 10} ${w - pad + 14},${pad + 10}`}
-          fill="#94a3b8"
+          points={`${w - 13},${8} ${w - 17},${16} ${w - 9},${16}`}
+          fill="#e2e8f0"
         />
         <text
-          x={w - pad + 10}
-          y={pad + 42}
+          x={w - 13}
+          y={28}
           textAnchor="middle"
-          fill="#94a3b8"
-          fontSize={fontSize - 1}
+          fill="#e2e8f0"
+          fontSize={8}
           fontWeight="bold"
+          opacity={0.8}
         >
           N
         </text>
@@ -275,35 +439,44 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
 
       {/* Scale bar — 20 NM */}
       <g>
+        <rect
+          x={6}
+          y={h - 22}
+          width={twentyNmPx + 14}
+          height={18}
+          rx={4}
+          fill="#000"
+          fillOpacity={0.5}
+        />
         <line
-          x1={pad}
-          y1={h - 10}
-          x2={pad + twentyNmPx}
-          y2={h - 10}
-          stroke="#64748b"
+          x1={13}
+          y1={h - 8}
+          x2={13 + twentyNmPx}
+          y2={h - 8}
+          stroke="#e2e8f0"
           strokeWidth={1}
         />
         <line
-          x1={pad}
-          y1={h - 13}
-          x2={pad}
-          y2={h - 7}
-          stroke="#64748b"
+          x1={13}
+          y1={h - 11}
+          x2={13}
+          y2={h - 5}
+          stroke="#e2e8f0"
           strokeWidth={1}
         />
         <line
-          x1={pad + twentyNmPx}
-          y1={h - 13}
-          x2={pad + twentyNmPx}
-          y2={h - 7}
-          stroke="#64748b"
+          x1={13 + twentyNmPx}
+          y1={h - 11}
+          x2={13 + twentyNmPx}
+          y2={h - 5}
+          stroke="#e2e8f0"
           strokeWidth={1}
         />
         <text
-          x={pad + twentyNmPx / 2}
-          y={h - 14}
+          x={13 + twentyNmPx / 2}
+          y={h - 12}
           textAnchor="middle"
-          fill="#64748b"
+          fill="#e2e8f0"
           fontSize={fontSize - 2}
         >
           ~20 NM
@@ -317,7 +490,11 @@ export function EpAreaMap({ runway, compact }: EpAreaMapProps) {
         textAnchor={runway === "17L" ? "start" : "end"}
         fill="#10b981"
         fontSize={fontSize - 1}
-        opacity={0.8}
+        fontWeight="bold"
+        stroke="#000"
+        strokeWidth={2.5}
+        strokeOpacity={0.6}
+        paintOrder="stroke"
       >
         RWY {runway}
       </text>

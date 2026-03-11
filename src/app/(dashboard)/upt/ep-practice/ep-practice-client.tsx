@@ -11,6 +11,7 @@ import { EpAreaMap } from "@/components/upt/ep-area-map";
 import { createEpSession, updateEpSession } from "../actions";
 import {
   EP_PHASES,
+  type AircraftPosition,
   type EpMessage,
   type EpPhase,
   type EpSetupData,
@@ -22,6 +23,14 @@ function parsePhaseFromText(text: string): EpPhase | null {
   if (!match) return null;
   const phase = match[1] as EpPhase;
   return EP_PHASES.includes(phase) ? phase : null;
+}
+
+function parsePositionMarker(text: string): AircraftPosition | null {
+  const match = text.match(/\[POSITION:\s*([^\]]+)\]/);
+  if (!match) return null;
+  const parts = match[1].split(",").map((s) => parseFloat(s.trim()));
+  if (parts.length < 4 || parts.some(isNaN)) return null;
+  return { lat: parts[0], lon: parts[1], heading: parts[2], altitude: parts[3] };
 }
 
 function parseEvaluation(text: string): EpEvaluation | null {
@@ -64,6 +73,7 @@ export function EpPracticeClient() {
   const [currentPhase, setCurrentPhase] = useState<EpPhase>("setup");
   const [phasesCompleted, setPhasesCompleted] = useState<EpPhase[]>([]);
   const [evaluation, setEvaluation] = useState<EpEvaluation | null>(null);
+  const [aircraftPosition, setAircraftPosition] = useState<AircraftPosition | null>(null);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [startTime] = useState<number>(Date.now());
@@ -212,6 +222,10 @@ export function EpPracticeClient() {
         newPhase = detectedPhase;
       }
 
+      // Check for position marker
+      const pos = parsePositionMarker(accumulated);
+      if (pos) setAircraftPosition(pos);
+
       // Check for evaluation
       const eval_ = parseEvaluation(accumulated);
       if (eval_) {
@@ -335,7 +349,7 @@ export function EpPracticeClient() {
           Training Area Map
         </summary>
         <div className="mt-1">
-          <EpAreaMap runway={setupData.runway} compact />
+          <EpAreaMap runway={setupData.runway} aircraft={aircraftPosition} compact />
         </div>
       </details>
 
