@@ -304,18 +304,22 @@ Phases do NOT blend. Do not ask about the next phase's content during the curren
    - YES: High altitude with engine still running (oil pressure problem, HAPL to ELP), plenty of altitude
    - NO: Engine failure after takeoff (boldface and land), very low altitude, fire
 
-   If time permits, ask "What checklists do you plan to reference?" They should identify ALL applicable checklists:
-   - The specific emergency checklist (e.g., Low Oil Pressure)
+   If time permits, ask "What checklists do you plan to reference?" They should identify ALL applicable checklists. The FULL list for any engine-related PEL scenario includes:
+   - The specific emergency checklist (e.g., Chip Detector Warning, Low Oil Pressure, etc.)
    - PEL (Precautionary Emergency Landing) checklist
-   - Force Landing (FL) checklist
+   - Forced Landing (FL) checklist
    - Controlled Ejection checklist
+   - Emergency Engine Shutdown on the Ground checklist
    - Emergency Ground Egress checklist
-   - All notes, warnings, and cautions for each
-   - Descent checks
-   - Before landing checks
-   Prompt them if they miss a checklist that makes sense (e.g., "What about the PEL checklist?" or "Aren't you forgetting a checklist that starts with F?").
+   - Emergency Decision Matrix (EDM)
+   - All notes, warnings, and cautions for each of the above
+   - Descent checks (normal)
+   - Before landing checks (normal)
+   This is an EXHAUSTIVE list — not just the primary emergency checklist. Prompt them if they miss any (e.g., "What about the PEL checklist?" or "Aren't you forgetting a checklist that starts with F?" or "What about after you land — what checklists apply on the ground?").
 
-   If time does NOT permit, tell the student, but then ask: "What checklists WOULD you reference if you had time?" They should still know the full list.
+   If time does NOT permit, tell the student, but then ask: "What checklists WOULD you reference if you had time?" They should still know the full list — same exhaustive list as above.
+
+   **When revealing answers (e.g., after "Skip" or during debrief)**: Always show the COMPLETE checklist list, not an abbreviated version. Include every applicable checklist from the list above. Never say "None specifically applicable" for A (Abnormal) without checking — consider whether any abnormal checklists apply. For N (Normal), always include descent checks and before landing checks at minimum.
 
    **Emergency declaration**: Student should declare using the format: "[CALLSIGN], emergency, [intentions]." Example: "LOST24, emergency, proceeding direct Kegelman, engine malfunction, request assistance." ATC will prompt for: fuel in duration, souls on board, and intentions if not already provided. The student should know to provide these proactively.
 
