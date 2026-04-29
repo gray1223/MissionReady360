@@ -23,7 +23,14 @@ import { Badge } from "@/components/ui/badge";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { HideCurrencyButton } from "@/components/currencies/hide-currency-button";
 import { HiddenCurrencies } from "@/components/currencies/hidden-currencies";
-import type { FlightLogPreferences, CurrencyStatus, LogbookMode } from "@/lib/types/database";
+import { CurrencyForecastCard } from "@/components/currencies/currency-forecast-card";
+import { buildForecasts } from "@/lib/currencies/forecast";
+import type {
+  FlightLogPreferences,
+  CurrencyStatus,
+  LogbookMode,
+  ComputedCurrency,
+} from "@/lib/types/database";
 import { formatLabel } from "@/lib/utils/format";
 
 const statusVariant: Record<CurrencyStatus, "success" | "warning" | "danger"> = {
@@ -192,6 +199,9 @@ export default async function CurrenciesPage() {
               color="text-red-400"
             />
           </div>
+
+          {/* Forecast — actionable suggestions to stay current */}
+          <CurrencyForecastCard forecasts={buildForecasts(all as ComputedCurrency[])} />
 
           {/* FAA Currencies */}
           {faaCurrencies.length > 0 && (
