@@ -25,6 +25,7 @@ import type {
   CompactTrackPoint,
 } from "@/lib/fr24/types";
 import { FR24_PENDING_KEY } from "@/components/flights/fr24-import-bar";
+import { TrackPlot } from "@/components/flights/track-plot";
 
 type Mode = "live" | "historical";
 type SearchType = "callsign" | "registration" | "flight";
@@ -214,8 +215,8 @@ export function TrackingClient() {
     loadTrack({
       fr24Id: p.fr24_id,
       callsign: p.callsign ?? p.flight ?? "—",
-      origin: p.orig_icao ?? p.orig_iata,
-      destination: p.dest_icao ?? p.dest_iata,
+      origin: p.orig_icao ?? p.orig_iata ?? undefined,
+      destination: p.dest_icao ?? p.dest_iata ?? undefined,
     });
   }
 
@@ -227,8 +228,9 @@ export function TrackingClient() {
     loadTrack({
       fr24Id: f.fr24_id,
       callsign: f.callsign ?? f.flight ?? "—",
-      origin: f.orig_icao ?? f.orig_iata,
-      destination: f.dest_icao_actual ?? f.dest_icao ?? f.dest_iata,
+      origin: f.orig_icao ?? f.orig_iata ?? undefined,
+      destination:
+        f.dest_icao_actual ?? f.dest_icao ?? f.dest_iata ?? undefined,
     });
   }
 
@@ -402,9 +404,9 @@ export function TrackingClient() {
                         </p>
                       </div>
                       <div className="grid grid-cols-3 gap-x-3 text-right text-[11px] text-slate-400">
-                        <span>{fmt(p.altitude, " ft")}</span>
-                        <span>{fmt(p.ground_speed, " kt")}</span>
-                        <span>{fmt(p.heading, "°")}</span>
+                        <span>{fmt(p.alt, " ft")}</span>
+                        <span>{fmt(p.gspeed, " kt")}</span>
+                        <span>{fmt(p.track, "°")}</span>
                       </div>
                     </div>
                   </li>
@@ -518,7 +520,7 @@ export function TrackingClient() {
             )}
             {track && track.length > 0 && (
               <>
-                <SimpleTrackPlot points={track} />
+                <TrackPlot points={track} />
                 <div className="mt-3 max-h-64 overflow-y-auto rounded-md border border-slate-800 bg-slate-900/40">
                   <table className="w-full text-[11px]">
                     <thead className="sticky top-0 bg-slate-900/95 text-text-muted">
@@ -564,57 +566,3 @@ export function TrackingClient() {
   );
 }
 
-/**
- * Compact SVG plot of the track. Equirectangular projection — adequate for
- * the short-distance airline / GA tracks we typically see, not a real chart.
- */
-function SimpleTrackPlot({ points }: { points: CompactTrackPoint[] }) {
-  if (points.length < 2) return null;
-
-  const lats = points.map((p) => p.lat);
-  const lons = points.map((p) => p.lon);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-  const minLon = Math.min(...lons);
-  const maxLon = Math.max(...lons);
-  const padLat = (maxLat - minLat) * 0.1 + 0.01;
-  const padLon = (maxLon - minLon) * 0.1 + 0.01;
-
-  const W = 600;
-  const H = 220;
-  const projX = (lon: number) =>
-    ((lon - (minLon - padLon)) / (maxLon - minLon + 2 * padLon)) * W;
-  const projY = (lat: number) =>
-    H - ((lat - (minLat - padLat)) / (maxLat - minLat + 2 * padLat)) * H;
-
-  const path = points
-    .map(
-      (p, i) =>
-        `${i === 0 ? "M" : "L"} ${projX(p.lon).toFixed(2)} ${projY(p.lat).toFixed(2)}`,
-    )
-    .join(" ");
-
-  const last = points[points.length - 1];
-
-  return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      className="h-48 w-full rounded-md border border-slate-800 bg-slate-900/40"
-      preserveAspectRatio="xMidYMid meet"
-    >
-      <path d={path} fill="none" stroke="hsl(var(--primary))" strokeWidth="2" />
-      <circle
-        cx={projX(points[0].lon)}
-        cy={projY(points[0].lat)}
-        r={4}
-        fill="#10b981"
-      />
-      <circle
-        cx={projX(last.lon)}
-        cy={projY(last.lat)}
-        r={4}
-        fill="#f59e0b"
-      />
-    </svg>
-  );
-}

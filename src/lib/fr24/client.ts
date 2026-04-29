@@ -14,6 +14,7 @@
 
 import type {
   FR24FlightSummary,
+  FR24FlightTrackEnvelope,
   FR24LivePosition,
   FR24TrackPoint,
 } from "./types";
@@ -127,15 +128,25 @@ export async function searchFlightSummary(opts: {
   return unwrapArray(env);
 }
 
-/** Get the position track for a single flight by FR24 ID (hex). */
+/**
+ * Get the position track for a single flight by FR24 ID (hex).
+ *
+ * The /flight-tracks endpoint returns an array of envelopes, each with a
+ * nested `tracks` array. We flatten that to a single FR24TrackPoint[] for
+ * the caller.
+ */
 export async function getFlightTracks(
   flightId: string,
 ): Promise<FR24TrackPoint[]> {
-  const env = await fr24Get<FR24TrackPoint[] | FR24EnvelopeArray<FR24TrackPoint>>(
-    "/flight-tracks",
-    { flight_id: flightId },
-  );
-  return unwrapArray(env);
+  const raw = await fr24Get<
+    FR24FlightTrackEnvelope[] | FR24EnvelopeArray<FR24FlightTrackEnvelope>
+  >("/flight-tracks", { flight_id: flightId });
+  const envelopes = unwrapArray(raw);
+  const out: FR24TrackPoint[] = [];
+  for (const env of envelopes) {
+    if (Array.isArray(env.tracks)) out.push(...env.tracks);
+  }
+  return out;
 }
 
 /** Live flight positions (for the tracking page). */

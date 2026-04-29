@@ -28,38 +28,54 @@ export interface FR24FlightSummary {
   [key: string]: unknown;
 }
 
+// Live position fields — verified against /live/flight-positions/full.
+// FR24 uses `alt`, `gspeed`, `vspeed`, `track` here (same as flight-tracks).
 export interface FR24LivePosition {
   fr24_id?: string;
-  flight?: string;
-  callsign?: string;
-  reg?: string;
-  type?: string;
+  flight?: string | null;
+  callsign?: string | null;
+  reg?: string | null;
+  type?: string | null;
+  hex?: string | null;
   lat?: number;
   lon?: number;
-  altitude?: number;           // feet MSL
-  ground_speed?: number;       // knots
-  vertical_speed?: number;     // ft/min
-  heading?: number;            // degrees true
+  alt?: number;                // feet MSL
+  gspeed?: number;             // ground speed, knots
+  vspeed?: number;             // vertical speed, ft/min
+  track?: number;              // heading / track, degrees true
   squawk?: string;
   timestamp?: string;          // ISO 8601
-  orig_iata?: string;
-  dest_iata?: string;
-  orig_icao?: string;
-  dest_icao?: string;
+  source?: string;
+  painted_as?: string | null;
+  operating_as?: string | null;
+  orig_iata?: string | null;
+  dest_iata?: string | null;
+  orig_icao?: string | null;
+  dest_icao?: string | null;
+  eta?: string | null;
   [key: string]: unknown;
 }
 
+// Field names in /flight-tracks responses (verified against the live API):
+//   alt, gspeed, vspeed, track (heading)  — NOT altitude/ground_speed/etc.
 export interface FR24TrackPoint {
   timestamp?: string;          // ISO 8601
   lat?: number;
   lon?: number;
-  altitude?: number;           // feet MSL
-  ground_speed?: number;       // knots
-  vertical_speed?: number;     // ft/min
-  heading?: number;            // degrees true
+  alt?: number;                // feet MSL
+  gspeed?: number;             // ground speed, knots
+  vspeed?: number;             // vertical speed, ft/min
+  track?: number;              // heading / track, degrees true
   squawk?: string;
+  callsign?: string;
   source?: string;
   [key: string]: unknown;
+}
+
+// Shape of one element in the /flight-tracks response array
+export interface FR24FlightTrackEnvelope {
+  fr24_id?: string;
+  tracks?: FR24TrackPoint[];
 }
 
 // Compact track-point format we store in flights.track_log JSONB
@@ -86,9 +102,9 @@ export function compactTrackPoint(p: FR24TrackPoint): CompactTrackPoint | null {
     lat: p.lat,
     lon: p.lon,
   };
-  if (typeof p.altitude === "number") out.alt = p.altitude;
-  if (typeof p.ground_speed === "number") out.gs = p.ground_speed;
-  if (typeof p.heading === "number") out.hdg = p.heading;
-  if (typeof p.vertical_speed === "number") out.vs = p.vertical_speed;
+  if (typeof p.alt === "number") out.alt = p.alt;
+  if (typeof p.gspeed === "number") out.gs = p.gspeed;
+  if (typeof p.track === "number") out.hdg = p.track;
+  if (typeof p.vspeed === "number") out.vs = p.vspeed;
   return out;
 }

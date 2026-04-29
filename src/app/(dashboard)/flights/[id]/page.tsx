@@ -8,7 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeleteFlightButton } from "./delete-button";
 import { ExportFlightButton } from "@/components/export/export-flight-button";
+import { TrackPlot } from "@/components/flights/track-plot";
 import { formatLabel, formatCondition } from "@/lib/utils/format";
+import type { CompactTrackPoint } from "@/lib/fr24/types";
 
 interface FlightDetailPageProps {
   params: Promise<{ id: string }>;
@@ -129,6 +131,27 @@ export default async function FlightDetailPage({ params }: FlightDetailPageProps
           </div>
         </CardContent>
       </Card>
+
+      {/* Route preview from imported track log */}
+      {Array.isArray(flight.track_log) && flight.track_log.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <span className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-primary" />
+                Route
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TrackPlot points={flight.track_log as CompactTrackPoint[]} />
+            <p className="mt-2 text-[11px] text-text-muted">
+              {(flight.track_log as CompactTrackPoint[]).length} positions imported from Flightradar24
+              {flight.fr24_flight_id && ` · FR24 ID ${flight.fr24_flight_id}`}.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Time Breakdown */}
       <Card>
