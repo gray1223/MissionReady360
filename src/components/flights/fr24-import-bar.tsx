@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Radar, Loader2, Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 import type { FR24FlightSummary } from "@/lib/fr24/types";
 import type { CompactTrackPoint } from "@/lib/fr24/types";
 import type { AiParsePayload } from "@/lib/templates/ai-parse-fields";
+
+/** sessionStorage key used to hand off an FR24 summary from /tracking. */
+export const FR24_PENDING_KEY = "mr360_fr24_pending";
 
 interface Props {
   /** Apply pre-filled fields back to the flight form. */
@@ -93,6 +96,7 @@ export function Fr24ImportBar({ onApply, onTrackImported }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<FR24FlightSummary[]>([]);
   const [appliedId, setAppliedId] = useState<string | null>(null);
+  const handoffApplied = useRef(false);
 
   async function handleSearch() {
     if (!callsign.trim() || busy) return;
@@ -159,6 +163,27 @@ export function Fr24ImportBar({ onApply, onTrackImported }: Props) {
     setAppliedId(f.fr24_id ?? `${f.callsign}-${f.datetime_takeoff}`);
     setBusy(false);
   }
+
+  // Pick up a pending FR24 summary handed off from /tracking on mount.
+  useEffect(() => {
+    if (handoffApplied.current) return;
+    if (typeof window === "undefined") return;
+    const raw = sessionStorage.getItem(FR24_PENDING_KEY);
+    if (!raw) return;
+    sessionStorage.removeItem(FR24_PENDING_KEY);
+    handoffApplied.current = true;
+
+    try {
+      const summary = JSON.parse(raw) as FR24FlightSummary;
+      setOpen(true);
+      setResults([summary]);
+      // Defer to next tick so React state has settled before applying.
+      setTimeout(() => handlePick(summary), 0);
+    } catch {
+      // ignore malformed payload
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="rounded-lg border border-sky-500/30 bg-sky-500/5 p-3">
