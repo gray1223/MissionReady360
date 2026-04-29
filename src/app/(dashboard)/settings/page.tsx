@@ -25,6 +25,9 @@ import { RatingTrackingPreferencesCard } from "@/components/settings/rating-trac
 import { PriorHoursForm } from "@/components/settings/prior-hours-form";
 import { CurrencyPreferencesCard } from "@/components/settings/currency-preferences";
 import { UptPreferencesCard } from "@/components/settings/upt-preferences";
+import { SquadronPresetCard } from "@/components/settings/squadron-preset-card";
+import { FlightTemplatesCard } from "@/components/settings/flight-templates-card";
+import type { FlightTemplate } from "@/lib/templates/flight-template-fields";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -33,11 +36,15 @@ export default async function SettingsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { data: templatesData }] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", user.id).single(),
+    supabase
+      .from("flight_templates")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }),
+  ]);
+  const flightTemplates = (templatesData ?? []) as FlightTemplate[];
 
   const mode: LogbookMode = (profile?.logbook_mode as LogbookMode) || "military";
   const isMilitary = mode === "military";
@@ -166,6 +173,15 @@ export default async function SettingsPage() {
         </Card>
       )}
 
+      {/* Squadron Preset — quick defaults per branch + airframe */}
+      {profile && (
+        <SquadronPresetCard
+          preferences={profile.flight_log_preferences || {}}
+          userId={user.id}
+          mode={mode === "civilian" ? "civilian" : "military"}
+        />
+      )}
+
       {/* Flight Log Preferences */}
       {profile && (
         <FlightLogPreferencesCard
@@ -173,6 +189,9 @@ export default async function SettingsPage() {
           userId={user.id}
         />
       )}
+
+      {/* Quick-log Templates */}
+      <FlightTemplatesCard templates={flightTemplates} />
 
       {/* UPT Preferences — Military only */}
       {profile && isMilitary && (

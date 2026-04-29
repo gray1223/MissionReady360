@@ -14,11 +14,23 @@ import { CollapsibleSection } from "./collapsible-section";
 import { ApproachInput } from "./approach-input";
 import { CrewInput } from "./crew-input";
 import { DebriefInput } from "./debrief-input";
+import { FlightTemplatesBar } from "./flight-templates-bar";
+import { AiQuickEntryBar } from "./ai-quick-entry-bar";
 import {
   flightSchema,
   flightDefaults,
   type FlightFormData,
 } from "@/lib/flights/validation";
+import {
+  TEMPLATE_FIELDS,
+  pickTemplatePayload,
+  type FlightTemplate,
+  type FlightTemplatePayload,
+} from "@/lib/templates/flight-template-fields";
+import {
+  AI_PARSE_FIELDS,
+  type AiParsePayload,
+} from "@/lib/templates/ai-parse-fields";
 import {
   SORTIE_TYPES,
   CREW_POSITIONS,
@@ -38,9 +50,17 @@ interface FlightFormProps {
   flightId?: string;
   preferences?: FlightLogPreferences;
   logbookMode?: LogbookMode;
+  templates?: FlightTemplate[];
 }
 
-export function FlightForm({ aircraft, initialData, flightId, preferences, logbookMode = "military" }: FlightFormProps) {
+export function FlightForm({
+  aircraft,
+  initialData,
+  flightId,
+  preferences,
+  logbookMode = "military",
+  templates = [],
+}: FlightFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -53,6 +73,7 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
     control,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<FlightFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,6 +107,35 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
     value: a.id,
     label: `${a.designation} - ${a.name}`,
   }));
+
+  function applyTemplatePayload(payload: FlightTemplatePayload) {
+    for (const key of TEMPLATE_FIELDS) {
+      const value = payload[key];
+      if (value === undefined) continue;
+      // setValue typing is broad; FlightFormData keys are valid
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setValue(key as any, value as any, {
+        shouldDirty: true,
+        shouldValidate: false,
+      });
+    }
+  }
+
+  function getCurrentTemplatePayload(): FlightTemplatePayload {
+    return pickTemplatePayload(getValues());
+  }
+
+  function applyAiParsePayload(payload: AiParsePayload) {
+    for (const key of AI_PARSE_FIELDS) {
+      const value = payload[key];
+      if (value === undefined) continue;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setValue(key as any, value as any, {
+        shouldDirty: true,
+        shouldValidate: false,
+      });
+    }
+  }
 
   async function onSubmit(data: FlightFormData) {
     setSaving(true);
@@ -152,6 +202,17 @@ export function FlightForm({ aircraft, initialData, flightId, preferences, logbo
         <div className="rounded-lg border border-red-800 bg-red-900/30 p-3 text-sm text-red-400">
           {error}
         </div>
+      )}
+
+      {!isEdit && (
+        <>
+          <AiQuickEntryBar onApply={applyAiParsePayload} />
+          <FlightTemplatesBar
+            templates={templates}
+            onApply={applyTemplatePayload}
+            getCurrentPayload={getCurrentTemplatePayload}
+          />
+        </>
       )}
 
       {/* Basic Flight Info - Always open */}

@@ -15,7 +15,12 @@ import type {
   AircraftType,
   LogbookMode,
   CertificateType,
+  FlightLogPreferences,
 } from "@/lib/types/database";
+import {
+  applyPresetToPreferences,
+  getRecommendedPreset,
+} from "@/lib/presets/squadron-presets";
 import {
   ChevronLeft,
   ChevronRight,
@@ -414,6 +419,27 @@ function OnboardingContent() {
         showFaaCurrencies: true,
         priorHours: Object.keys(priorHours).length > 0 ? priorHours : undefined,
       };
+    }
+
+    // Auto-apply squadron preset matching branch + primary aircraft
+    if (primaryAircraft) {
+      const presetBranch = isMilitary
+        ? (form.branch as "USAF" | "USN" | "USA" | "USMC" | "USCG" | null) || null
+        : ("CIVILIAN" as const);
+      const recommendedPreset = getRecommendedPreset(
+        presetBranch,
+        primaryAircraft.designation,
+      );
+      if (recommendedPreset) {
+        const existing =
+          (profilePayload.flight_log_preferences as
+            | FlightLogPreferences
+            | undefined) ?? {};
+        profilePayload.flight_log_preferences = applyPresetToPreferences(
+          recommendedPreset,
+          existing,
+        );
+      }
     }
 
     // Insert profile
@@ -1134,6 +1160,47 @@ function OnboardingContent() {
                 </ul>
               )}
             </div>
+
+            {/* Squadron Preset preview */}
+            {(() => {
+              const primaryAircraft = form.selectedAircraft.find(
+                (a) => a.is_primary,
+              );
+              if (!primaryAircraft) return null;
+              const presetBranch = isMilitary
+                ? (form.branch as
+                    | "USAF"
+                    | "USN"
+                    | "USA"
+                    | "USMC"
+                    | "USCG"
+                    | null) || null
+                : ("CIVILIAN" as const);
+              const matched = getRecommendedPreset(
+                presetBranch,
+                primaryAircraft.designation,
+              );
+              if (!matched) {
+                return (
+                  <div className="rounded-lg border border-slate-700/50 bg-bg-base/50 p-4 text-xs text-text-muted">
+                    No squadron preset matched <strong>{primaryAircraft.designation}</strong>.
+                    You&apos;ll start with the default form layout — customize it in
+                    Settings later.
+                  </div>
+                );
+              }
+              return (
+                <div className="space-y-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm">
+                  <h4 className="font-medium text-emerald-300">
+                    Squadron Preset — auto-applied
+                  </h4>
+                  <p className="text-emerald-200/90">{matched.label}</p>
+                  <p className="text-xs text-emerald-200/70">
+                    {matched.description}
+                  </p>
+                </div>
+              );
+            })()}
 
             {/* FAA Summary */}
             <div className="space-y-2 rounded-lg border border-slate-700/50 bg-bg-base/50 p-4">

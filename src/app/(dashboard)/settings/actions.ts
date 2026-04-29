@@ -2,6 +2,10 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { FlightLogPreferences } from "@/lib/types/database";
+import {
+  applyPresetToPreferences,
+  getPresetById,
+} from "@/lib/presets/squadron-presets";
 
 export async function updateFlightLogPreferences(
   userId: string,
@@ -16,6 +20,56 @@ export async function updateFlightLogPreferences(
   if (error) {
     return { error: error.message };
   }
+  return { error: null };
+}
+
+export async function applySquadronPreset(userId: string, presetId: string) {
+  const preset = getPresetById(presetId);
+  if (!preset) return { error: "Unknown preset" };
+
+  const supabase = await createClient();
+  const { data: profile, error: loadError } = await supabase
+    .from("profiles")
+    .select("flight_log_preferences")
+    .eq("id", userId)
+    .single();
+
+  if (loadError) return { error: loadError.message };
+
+  const existing = (profile?.flight_log_preferences ||
+    {}) as FlightLogPreferences;
+  const merged = applyPresetToPreferences(preset, existing);
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ flight_log_preferences: merged })
+    .eq("id", userId);
+
+  if (error) return { error: error.message };
+  return { error: null, preferences: merged };
+}
+
+export async function clearSquadronPreset(userId: string) {
+  const supabase = await createClient();
+  const { data: profile, error: loadError } = await supabase
+    .from("profiles")
+    .select("flight_log_preferences")
+    .eq("id", userId)
+    .single();
+
+  if (loadError) return { error: loadError.message };
+
+  const existing = (profile?.flight_log_preferences ||
+    {}) as FlightLogPreferences;
+  const { presetId: _omit, ...rest } = existing;
+  void _omit;
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ flight_log_preferences: rest })
+    .eq("id", userId);
+
+  if (error) return { error: error.message };
   return { error: null };
 }
 

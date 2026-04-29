@@ -86,6 +86,7 @@ export interface FlightLogPreferences {
   showFaaCurrencies?: boolean;
   priorHours?: PriorHoursInput;
   uptEnabled?: boolean;
+  presetId?: string;
 }
 
 export interface Profile {

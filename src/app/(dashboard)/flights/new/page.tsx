@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FlightForm } from "@/components/flights/flight-form";
+import type { FlightTemplate } from "@/lib/templates/flight-template-fields";
 
 export default async function NewFlightPage() {
   const supabase = await createClient();
@@ -9,14 +10,20 @@ export default async function NewFlightPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: aircraft }, { data: profile }] = await Promise.all([
-    supabase.from("aircraft_types").select("*").order("designation"),
-    supabase
-      .from("profiles")
-      .select("flight_log_preferences, logbook_mode")
-      .eq("id", user.id)
-      .single(),
-  ]);
+  const [{ data: aircraft }, { data: profile }, { data: templates }] =
+    await Promise.all([
+      supabase.from("aircraft_types").select("*").order("designation"),
+      supabase
+        .from("profiles")
+        .select("flight_log_preferences, logbook_mode")
+        .eq("id", user.id)
+        .single(),
+      supabase
+        .from("flight_templates")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false }),
+    ]);
 
   return (
     <div className="space-y-6">
@@ -30,6 +37,7 @@ export default async function NewFlightPage() {
         aircraft={aircraft || []}
         preferences={profile?.flight_log_preferences}
         logbookMode={profile?.logbook_mode || "military"}
+        templates={(templates ?? []) as FlightTemplate[]}
       />
     </div>
   );
