@@ -9,7 +9,7 @@ import {
   Swords,
   Users,
   Target,
-  BookOpen,
+  Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -59,10 +59,10 @@ const FEATURES = [
       "Your military time counts toward civilian ratings. Track PPL, Instrument, Commercial, and ATP progress.",
   },
   {
-    icon: BookOpen,
-    title: "Boldface Drills (T-6A)",
+    icon: Award,
+    title: "Qualification Management",
     description:
-      "Adaptive Leitner-box drilling for T-6A USAF boldface. Misses come back fast; correct items space out.",
+      "Aircraft qualifications, evaluation dates, upgrade status, and instructor certifications in one place.",
   },
 ];
 
@@ -108,17 +108,16 @@ export default function MilitaryLandingPage() {
             FAA rating progress — all in one logbook built for military aviators.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <div className="flex items-center justify-center gap-4 pt-2">
             <Link href="/signup?mode=military">
               <Button variant="primary" size="lg">
                 Get Started
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/boldface">
+            <Link href="/login">
               <Button variant="outline" size="lg">
-                <BookOpen className="h-4 w-4" />
-                Study T-6A Boldface — Free
+                Sign In
               </Button>
             </Link>
           </div>

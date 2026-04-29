@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types/database";
 import type { EpPracticeSession } from "@/lib/types/ep-practice";
-import { Zap, BookOpen, Clock, Trophy } from "lucide-react";
+import { Zap, Clock, Trophy } from "lucide-react";
 
 export default async function UptPage() {
   const supabase = await createClient();
@@ -75,22 +75,6 @@ export default async function UptPage() {
             Control, Analyze, Take Action, Land ASAP.
           </p>
         </Link>
-
-        {/* Shotgun (coming soon) */}
-        <div className="rounded-xl border border-slate-800/50 bg-slate-900/30 p-5 opacity-60 cursor-not-allowed">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700/30 text-slate-500">
-              <BookOpen className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-slate-400">Shotgun Quiz</h3>
-              <p className="text-xs text-slate-500">Coming soon</p>
-            </div>
-          </div>
-          <p className="mt-3 text-sm text-slate-500">
-            Quick-fire boldface, ops limits, and systems knowledge quiz.
-          </p>
-        </div>
       </div>
 
       {/* Recent Sessions */}

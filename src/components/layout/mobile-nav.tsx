@@ -17,7 +17,6 @@ import {
   LogOut,
   Shield,
   GraduationCap,
-  BookOpen,
   Radar,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
@@ -41,7 +40,6 @@ const baseMoreNavItems: NavItem[] = [
 ];
 
 const uptNavItem: NavItem = { href: "/upt", label: "EP Practice", icon: GraduationCap };
-const boldfaceNavItem: NavItem = { href: "/upt/boldface", label: "Boldface Drills", icon: BookOpen };
 const settingsNavItem: NavItem = { href: "/settings", label: "Settings", icon: Settings };
 
 export function MobileNav() {
@@ -53,9 +51,7 @@ export function MobileNav() {
 
   const moreNavItems: NavItem[] = [
     ...baseMoreNavItems,
-    ...(profile?.flight_log_preferences?.uptEnabled
-      ? [uptNavItem, boldfaceNavItem]
-      : []),
+    ...(profile?.flight_log_preferences?.uptEnabled ? [uptNavItem] : []),
     settingsNavItem,
   ];
 
