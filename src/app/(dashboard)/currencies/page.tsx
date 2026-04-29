@@ -63,6 +63,9 @@ interface CurrencyRow {
   days_remaining: number;
   is_faa: boolean;
   branch: string | null;
+  regulation_citation: string | null;
+  regulation_url: string | null;
+  notes: string | null;
 }
 
 export default async function CurrenciesPage() {
@@ -356,6 +359,34 @@ function CurrencyItem({ currency }: { currency: CurrencyRow }) {
             : `${Math.abs(currency.days_remaining)}d overdue`}
         </span>
       </div>
+
+      {/* Citation */}
+      {(currency.regulation_citation || currency.notes) && (
+        <div className="mt-2 border-t border-slate-800 pt-2 space-y-1">
+          {currency.regulation_citation && (
+            <p className="text-[11px] text-slate-500">
+              Source:{" "}
+              {currency.regulation_url ? (
+                <a
+                  href={currency.regulation_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-400 hover:text-primary underline-offset-2 hover:underline"
+                >
+                  {currency.regulation_citation}
+                </a>
+              ) : (
+                <span className="text-slate-400">{currency.regulation_citation}</span>
+              )}
+            </p>
+          )}
+          {currency.notes && (
+            <p className="text-[11px] text-slate-500 leading-snug">
+              {currency.notes}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

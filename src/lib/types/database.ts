@@ -314,4 +314,7 @@ export interface ComputedCurrency {
   days_remaining: number;
   is_faa: boolean;
   branch: MilitaryBranch | null;
+  regulation_citation: string | null;
+  regulation_url: string | null;
+  notes: string | null;
 }

@@ -1,17 +1,23 @@
 /**
  * T-6A USAF Boldface Emergency Procedures.
  *
- * Source: drafted from publicly published CNATRA / 80th FTW / 71st FTW boldface
- * lists. Boldface text changes with TO updates — the user MUST verify against
- * their current squadron / FTU publication before using these for graded
+ * Conservative starter set. Boldface text changes with TO updates and varies
+ * across squadrons / FTUs — the user MUST verify against their current
+ * squadron's authoritative publication before relying on these for graded
  * recitation. The drill UI surfaces a verification banner.
+ *
+ * Items are intentionally limited to procedures that are commonly recognized
+ * as boldface across multiple T-6A units. Items the schoolhouse calls
+ * "non-bold checklist" or "underlined" steps are intentionally NOT included
+ * (e.g. smoke/fumes/fire of unknown origin, engine failure when no immediate
+ * airstart is possible). Add unit-specific items by editing this file.
  */
 
 export type BoldfaceItem = {
   id: string;
   airframe: "t6a";
   title: string;
-  steps: string[]; // each step like "Power Lever — OFF"
+  steps: string[]; // each step like "PCL — OFF"
   notes?: string;
 };
 
@@ -66,17 +72,6 @@ export const T6A_BOLDFACE: BoldfaceItem[] = [
     ],
   },
   {
-    id: "engine-failure-airstart-not-possible",
-    airframe: "t6a",
-    title: "Engine Failure During Flight — When Immediate Airstart Not Possible",
-    steps: [
-      "Zoom — As Required",
-      "PCL — OFF",
-      "Set Up for Forced Landing or Ejection",
-      "Emergency Engine Shutdown — Complete",
-    ],
-  },
-  {
     id: "engine-fire-during-flight",
     airframe: "t6a",
     title: "Engine Fire During Flight",
@@ -86,36 +81,6 @@ export const T6A_BOLDFACE: BoldfaceItem[] = [
       "Boost Pump — OFF",
       "Battery — OFF (After Engine Has Stopped)",
       "If Fire Persists — Eject",
-    ],
-  },
-  {
-    id: "uncommanded-power-changes",
-    airframe: "t6a",
-    title: "Uncommanded Power Changes / Loss of Thrust / Uncommanded Power Reduction",
-    steps: [
-      "PCL — As Required",
-      "PMU — OFF (As Required)",
-    ],
-  },
-  {
-    id: "smoke-fumes-fire-unknown-origin",
-    airframe: "t6a",
-    title: "Smoke / Fumes / Fire of Unknown Origin",
-    steps: [
-      "Oxygen — 100%, Emergency",
-      "Vent Air — Closed",
-      "Defog — Off",
-      "Cabin Air — Off",
-    ],
-  },
-  {
-    id: "emergency-engine-shutdown-flight",
-    airframe: "t6a",
-    title: "Emergency Engine Shutdown During Flight",
-    steps: [
-      "PCL — OFF",
-      "FW Shutoff — Pull",
-      "Boost Pump — OFF",
     ],
   },
   {
