@@ -44,22 +44,33 @@ function deriveFlightFields(f: FR24FlightSummary): AiParsePayload {
   if (typeof f.reg === "string" && f.reg) out.tail_number = f.reg.toUpperCase();
   if (typeof f.orig_icao === "string" && f.orig_icao)
     out.departure_icao = f.orig_icao.toUpperCase();
-  if (typeof f.dest_icao === "string" && f.dest_icao)
-    out.arrival_icao = f.dest_icao.toUpperCase();
+  // Prefer dest_icao_actual (diversion) over scheduled dest_icao
+  const arrivalIcao =
+    (typeof f.dest_icao_actual === "string" && f.dest_icao_actual) ||
+    (typeof f.dest_icao === "string" && f.dest_icao) ||
+    null;
+  if (arrivalIcao) out.arrival_icao = arrivalIcao.toUpperCase();
   if (typeof f.orig_iata === "string" && typeof f.dest_iata === "string") {
     out.route = `${f.orig_iata}-${f.dest_iata}`.toUpperCase();
+  } else if (
+    typeof f.orig_icao === "string" &&
+    typeof (f.dest_icao_actual ?? f.dest_icao) === "string"
+  ) {
+    out.route = `${f.orig_icao}-${f.dest_icao_actual ?? f.dest_icao}`.toUpperCase();
   }
 
-  // Total time = (landing - takeoff) in decimal hours
-  if (f.datetime_takeoff && f.datetime_landing) {
+  // Total time = (landed - takeoff) in decimal hours
+  // FR24 uses `datetime_landed` (past tense), not `datetime_landing`.
+  if (f.datetime_takeoff && f.datetime_landed) {
     const t1 = new Date(f.datetime_takeoff).getTime();
-    const t2 = new Date(f.datetime_landing).getTime();
+    const t2 = new Date(f.datetime_landed).getTime();
     if (Number.isFinite(t1) && Number.isFinite(t2) && t2 > t1) {
       const hours = (t2 - t1) / 3600_000;
       out.total_time = Math.round(hours * 10) / 10;
     }
+  } else if (typeof f.duration === "number" && f.duration > 0) {
+    out.total_time = Math.round((f.duration / 3600) * 10) / 10;
   } else if (typeof f.flight_time === "number" && f.flight_time > 0) {
-    // Fallback: flight_time in seconds
     out.total_time = Math.round((f.flight_time / 3600) * 10) / 10;
   }
 

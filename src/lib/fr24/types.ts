@@ -15,7 +15,9 @@ export interface FR24FlightSummary {
   orig_iata?: string;
   dest_iata?: string;
   datetime_takeoff?: string;   // ISO 8601
-  datetime_landing?: string;   // ISO 8601
+  datetime_landed?: string;    // ISO 8601 — FR24 uses past tense
+  dest_icao_actual?: string;   // diversion / actual landing
+  duration?: number;           // seconds (in /full responses)
   hex?: string;                // ICAO mode-S hex
   first_seen?: string;
   last_seen?: string;
