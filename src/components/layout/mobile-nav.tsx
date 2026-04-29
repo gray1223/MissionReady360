@@ -18,6 +18,7 @@ import {
   Shield,
   GraduationCap,
   BookOpen,
+  Radar,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useUser, useLogbookMode, useProfile } from "@/components/providers/supabase-provider";
@@ -33,6 +34,7 @@ const mainNavItems = [
 type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
 
 const baseMoreNavItems: NavItem[] = [
+  { href: "/tracking", label: "Live Tracking", icon: Radar },
   { href: "/aircraft", label: "Aircraft", icon: Cog },
   { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/debrief", label: "Debrief", icon: ClipboardList },

@@ -16,6 +16,7 @@ import { CrewInput } from "./crew-input";
 import { DebriefInput } from "./debrief-input";
 import { FlightTemplatesBar } from "./flight-templates-bar";
 import { AiQuickEntryBar } from "./ai-quick-entry-bar";
+import { Fr24ImportBar } from "./fr24-import-bar";
 import {
   flightSchema,
   flightDefaults,
@@ -31,6 +32,7 @@ import {
   AI_PARSE_FIELDS,
   type AiParsePayload,
 } from "@/lib/templates/ai-parse-fields";
+import type { CompactTrackPoint } from "@/lib/fr24/types";
 import {
   SORTIE_TYPES,
   CREW_POSITIONS,
@@ -137,6 +139,19 @@ export function FlightForm({
     }
   }
 
+  // FR24 import — track log + flight ID held outside the rhf form and merged
+  // into the payload at submit time.
+  const [fr24FlightId, setFr24FlightId] = useState<string | null>(null);
+  const [fr24Track, setFr24Track] = useState<CompactTrackPoint[] | null>(null);
+
+  function handleFr24Track(info: {
+    fr24FlightId: string | null;
+    track: CompactTrackPoint[];
+  }) {
+    setFr24FlightId(info.fr24FlightId);
+    setFr24Track(info.track.length > 0 ? info.track : null);
+  }
+
   async function onSubmit(data: FlightFormData) {
     setSaving(true);
     setError("");
@@ -163,7 +178,7 @@ export function FlightForm({
         }
       }
 
-      const payload = {
+      const payload: Record<string, unknown> = {
         ...data,
         user_id: user.id,
         aircraft_type_id: data.aircraft_type_id || null,
@@ -173,6 +188,11 @@ export function FlightForm({
         air_refueling_type: data.air_refueling_type || null,
         upt_grades: uptGrades,
       };
+
+      if (fr24FlightId) payload.fr24_flight_id = fr24FlightId;
+      if (fr24Track && fr24Track.length > 0) {
+        payload.track_log = fr24Track;
+      }
 
       if (isEdit) {
         const { error: updateError } = await supabase
@@ -206,6 +226,10 @@ export function FlightForm({
 
       {!isEdit && (
         <>
+          <Fr24ImportBar
+            onApply={applyAiParsePayload}
+            onTrackImported={handleFr24Track}
+          />
           <AiQuickEntryBar onApply={applyAiParsePayload} />
           <FlightTemplatesBar
             templates={templates}

@@ -18,6 +18,7 @@ import {
   ClipboardList,
   GraduationCap,
   BookOpen,
+  Radar,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useUser, useProfile } from "@/components/providers/supabase-provider";
@@ -33,6 +34,7 @@ const dashboardItem: NavItem = { href: "/dashboard", label: "Dashboard", icon: L
 
 const logbookItems: NavItem[] = [
   { href: "/flights", label: "Flights", icon: Plane },
+  { href: "/tracking", label: "Live Tracking", icon: Radar },
   { href: "/currencies", label: "Currencies", icon: Clock },
   { href: "/qualifications", label: "Qualifications", icon: Award },
   { href: "/aircraft", label: "Aircraft", icon: Cog },
