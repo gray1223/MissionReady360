@@ -17,52 +17,52 @@ const RATING_STEPS = ["Student", "PPL", "Instrument", "Commercial", "ATP"];
 
 const FEATURES = [
   {
-    icon: BookOpen,
-    title: "Digital Flight Logbook",
-    description:
-      "Log every flight with all FAA-required time categories — PIC, SIC, dual, solo, instrument, night, and cross-country in a clean interface.",
-  },
-  {
-    icon: Clock,
-    title: "FAA Currency Countdown",
-    description:
-      "Automatic tracking of day/night passenger currency, IFR currency, flight review, and medical expiration with countdown timers.",
-  },
-  {
     icon: GraduationCap,
     title: "Rating Progress Tracker",
     description:
-      "Visual progress bars for PPL, Instrument Rating, Commercial, and ATP. See exactly how many hours you still need.",
+      "Visual progress bars for PPL, Instrument, Commercial, and ATP. See exactly how many hours you still need — by category.",
   },
   {
     icon: ClipboardCheck,
     title: "Checkride Prep Dashboard",
     description:
-      "See requirements met vs. gaps remaining at a glance. Know exactly what you need before your next checkride.",
+      "Requirements met vs. gaps remaining at a glance. Walk into your checkride knowing exactly what counts.",
+  },
+  {
+    icon: Clock,
+    title: "FAA Currency Countdown",
+    description:
+      "Day/night passenger currency, IFR currency, flight review, and medical expiration tracked automatically.",
+  },
+  {
+    icon: BookOpen,
+    title: "Digital Flight Logbook",
+    description:
+      "Every FAA time category — PIC, SIC, dual, solo, instrument, night, XC — entered fast with smart defaults.",
   },
   {
     icon: MapPin,
     title: "Cross-Country Tracking",
     description:
-      "Track cross-country time, long XC requirements, and route history. Stay on top of your XC hour requirements.",
+      "XC time, long-XC requirements, and route history kept current so you never have to dig back through pages.",
   },
   {
     icon: Award,
-    title: "Certificate & Medical Tracking",
+    title: "Certificate & Medical",
     description:
-      "Track your certificate type, ratings, endorsements, and medical class with expiration alerts and renewal reminders.",
+      "Certificate type, ratings, endorsements, and medical class with expiration alerts and renewal reminders.",
   },
   {
     icon: Plane,
     title: "Instructor & Dual Time",
     description:
-      "Separate tracking for dual received, instructor given, solo, and PIC time categories. Perfect for students and CFIs.",
+      "Dual received, instructor given, solo, and PIC tracked separately. Clean records for students and CFIs.",
   },
   {
     icon: BarChart3,
-    title: "Flight Analytics & Reports",
+    title: "Analytics & Reports",
     description:
-      "Monthly hour trends, category breakdowns, and year-to-date summaries. Exportable reports for insurance and checkrides.",
+      "Monthly trends, category breakdowns, and year-to-date summaries. Exportable PDFs for insurance and checkrides.",
   },
 ];
 
@@ -105,9 +105,10 @@ export default function CivilianLandingPage() {
             <span className="text-sky-400">Track Every Hour That Counts</span>
           </h1>
 
-          <p className="mx-auto max-w-lg text-lg text-text-secondary">
-            Log flights, track FAA currencies and checkride requirements, and
-            monitor your progress from your first solo to your ATP certificate.
+          <p className="mx-auto max-w-xl text-lg text-text-secondary">
+            Log flights, hit currency deadlines, and see exactly what&apos;s left
+            before your next checkride. Built for the long progression — student
+            pilot through ATP.
           </p>
 
           <div className="flex items-center justify-center gap-4 pt-2">
@@ -160,6 +161,30 @@ export default function CivilianLandingPage() {
               </div>
             );
           })}
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="mx-auto mt-16 max-w-2xl text-center">
+          <h3 className="text-2xl font-bold tracking-tight text-slate-100">
+            Built for the long progression.
+          </h3>
+          <p className="mt-2 text-base text-text-secondary">
+            Set up your logbook in under five minutes. Bring prior hours with you
+            or start fresh from your first solo.
+          </p>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/signup?mode=civilian">
+              <Button variant="primary" size="lg">
+                Get Started
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button variant="outline" size="lg">
+                Sign In
+              </Button>
+            </Link>
+          </div>
         </div>
       </main>
 

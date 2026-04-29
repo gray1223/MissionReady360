@@ -17,6 +17,7 @@ import {
   LogOut,
   Shield,
   GraduationCap,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useUser, useLogbookMode, useProfile } from "@/components/providers/supabase-provider";
@@ -37,7 +38,8 @@ const baseMoreNavItems: NavItem[] = [
   { href: "/debrief", label: "Debrief", icon: ClipboardList },
 ];
 
-const uptNavItem: NavItem = { href: "/upt", label: "UPT Training", icon: GraduationCap };
+const uptNavItem: NavItem = { href: "/upt", label: "EP Practice", icon: GraduationCap };
+const boldfaceNavItem: NavItem = { href: "/upt/boldface", label: "Boldface Drills", icon: BookOpen };
 const settingsNavItem: NavItem = { href: "/settings", label: "Settings", icon: Settings };
 
 export function MobileNav() {
@@ -49,7 +51,9 @@ export function MobileNav() {
 
   const moreNavItems: NavItem[] = [
     ...baseMoreNavItems,
-    ...(profile?.flight_log_preferences?.uptEnabled ? [uptNavItem] : []),
+    ...(profile?.flight_log_preferences?.uptEnabled
+      ? [uptNavItem, boldfaceNavItem]
+      : []),
     settingsNavItem,
   ];
 

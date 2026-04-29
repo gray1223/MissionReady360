@@ -24,8 +24,12 @@ export default function ChooserPage() {
             <h1 className="text-3xl font-bold tracking-tight text-slate-100 sm:text-4xl">
               MissionReady360
             </h1>
-            <p className="text-text-secondary">
-              Choose your logbook experience
+            <p className="text-base text-slate-300">
+              Logbook, currency, and rating-progress tracking for military and
+              civilian pilots.
+            </p>
+            <p className="text-sm text-text-secondary">
+              Choose your experience to get started.
             </p>
           </div>
 
@@ -40,11 +44,11 @@ export default function ChooserPage() {
                 <Shield className="h-6 w-6 text-emerald-400" />
               </div>
               <h2 className="text-xl font-semibold text-slate-100">
-                I&apos;m a Military Pilot
+                Military Pilot
               </h2>
               <p className="mt-2 text-sm text-text-secondary">
-                Track sorties, branch currencies, NVG proficiency, and weapons
-                events alongside FAA rating progress.
+                Sortie logging, branch currencies, NVG & combat hours — plus FAA
+                rating progress from your military time.
               </p>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-emerald-400 group-hover:gap-2 transition-all">
                 Get started <ArrowRight className="h-4 w-4" />
@@ -60,11 +64,11 @@ export default function ChooserPage() {
                 <Plane className="h-6 w-6 text-sky-400" />
               </div>
               <h2 className="text-xl font-semibold text-slate-100">
-                I&apos;m a Civilian Pilot
+                Civilian Pilot
               </h2>
               <p className="mt-2 text-sm text-text-secondary">
-                Log flights, track FAA currencies and checkride requirements,
-                and monitor your progress from Student Pilot to ATP.
+                FAA logbook, currency countdowns, and checkride-gap analysis
+                from student pilot through ATP.
               </p>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-sky-400 group-hover:gap-2 transition-all">
                 Get started <ArrowRight className="h-4 w-4" />

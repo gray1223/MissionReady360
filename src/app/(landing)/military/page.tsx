@@ -8,8 +8,8 @@ import {
   Eye,
   Swords,
   Users,
-  Award,
   Target,
+  BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -20,49 +20,49 @@ const FEATURES = [
     icon: Plane,
     title: "Sortie & Mission Logging",
     description:
-      "Log mission symbols, crew positions, and formation data per branch standards. Track every sortie with tactical precision.",
+      "Log mission symbols, crew positions, and formation data per branch standards. Tactical precision per sortie.",
   },
   {
     icon: Clock,
     title: "Branch Currency Compliance",
     description:
-      "Automatic tracking of AR 95-1, AFI 11-2, and NATOPS currency rules with expiration warnings and countdown timers.",
+      "AR 95-1, AFI 11-2, and NATOPS currency rules tracked automatically with expiration warnings.",
   },
   {
     icon: Eye,
     title: "NVG & Night Proficiency",
     description:
-      "Track NVG hours, goggle currency, and night proficiency requirements. Stay current on all night operations.",
+      "NVG hours, goggle currency, and night proficiency in one place. Never lose currency to a date you forgot.",
   },
   {
     icon: Target,
     title: "Combat & Deployment Hours",
     description:
-      "Log combat sorties, deployment time, and combat support hours. Separate combat from training records.",
+      "Combat sorties, deployment time, and combat-support hours kept separate from training records.",
   },
   {
     icon: Swords,
     title: "Weapons & Tactical Events",
     description:
-      "Record weapons deliveries, air refueling contacts, airdrop events, and other tactical mission data.",
+      "Weapons deliveries, air-refueling contacts, airdrop events, and other tactical data per sortie.",
   },
   {
     icon: Users,
     title: "Crew Resource Management",
     description:
-      "Track crew members, crew positions, and formation roles for every sortie. Build your CRM history.",
+      "Tag crew members, positions, and formation roles. Build a CRM history that mirrors your flight time.",
   },
   {
     icon: GraduationCap,
     title: "FAA Rating Progress",
     description:
-      "Your military flight time counts toward civilian ratings. Track PPL, Instrument, Commercial, and ATP progress.",
+      "Your military time counts toward civilian ratings. Track PPL, Instrument, Commercial, and ATP progress.",
   },
   {
-    icon: Award,
-    title: "Qualification Management",
+    icon: BookOpen,
+    title: "Boldface Drills (T-6A)",
     description:
-      "Track aircraft qualifications, evaluation dates, upgrade status, and instructor certifications in one place.",
+      "Adaptive Leitner-box drilling for T-6A USAF boldface. Misses come back fast; correct items space out.",
   },
 ];
 
@@ -100,25 +100,25 @@ export default function MilitaryLandingPage() {
 
           <h1 className="text-4xl font-bold leading-tight tracking-tight text-slate-100 sm:text-5xl">
             Stay Mission Ready.{" "}
-            <span className="text-emerald-400">Every Flight.</span>
+            <span className="text-emerald-400">Without the busywork.</span>
           </h1>
 
-          <p className="mx-auto max-w-lg text-lg text-text-secondary">
-            Track military sorties, branch currencies, NVG proficiency, and
-            weapons events — plus FAA rating progress using your military flight
-            time.
+          <p className="mx-auto max-w-xl text-lg text-text-secondary">
+            Sortie logging, branch-currency compliance, NVG and combat hours, and
+            FAA rating progress — all in one logbook built for military aviators.
           </p>
 
-          <div className="flex items-center justify-center gap-4 pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <Link href="/signup?mode=military">
               <Button variant="primary" size="lg">
                 Get Started
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/login">
+            <Link href="/boldface">
               <Button variant="outline" size="lg">
-                Sign In
+                <BookOpen className="h-4 w-4" />
+                Study T-6A Boldface — Free
               </Button>
             </Link>
           </div>
@@ -157,6 +157,30 @@ export default function MilitaryLandingPage() {
               </div>
             );
           })}
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="mx-auto mt-16 max-w-2xl text-center">
+          <h3 className="text-2xl font-bold tracking-tight text-slate-100">
+            Built for those who fly.
+          </h3>
+          <p className="mt-2 text-base text-text-secondary">
+            Set up your logbook in under five minutes. Bring prior hours with you
+            or start fresh.
+          </p>
+          <div className="mt-5 flex items-center justify-center gap-3">
+            <Link href="/signup?mode=military">
+              <Button variant="primary" size="lg">
+                Get Started
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button variant="outline" size="lg">
+                Sign In
+              </Button>
+            </Link>
+          </div>
         </div>
       </main>
 

@@ -17,6 +17,7 @@ import {
   Shield,
   ClipboardList,
   GraduationCap,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useUser, useProfile } from "@/components/providers/supabase-provider";
@@ -26,9 +27,11 @@ import { ModeSwitcher } from "./mode-switcher";
 const STORAGE_KEY = "mr360-sidebar-collapsed";
 
 type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
+type NavSection = { label: string | null; items: NavItem[] };
 
-const baseNavItems: NavItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+const dashboardItem: NavItem = { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard };
+
+const logbookItems: NavItem[] = [
   { href: "/flights", label: "Flights", icon: Plane },
   { href: "/currencies", label: "Currencies", icon: Clock },
   { href: "/qualifications", label: "Qualifications", icon: Award },
@@ -37,7 +40,11 @@ const baseNavItems: NavItem[] = [
   { href: "/debrief", label: "Debrief", icon: ClipboardList },
 ];
 
-const uptNavItem: NavItem = { href: "/upt", label: "UPT Training", icon: GraduationCap };
+const trainingItems: NavItem[] = [
+  { href: "/upt", label: "EP Practice", icon: GraduationCap },
+  { href: "/upt/boldface", label: "Boldface Drills", icon: BookOpen },
+];
+
 const settingsNavItem: NavItem = { href: "/settings", label: "Settings", icon: Settings };
 
 export function Sidebar() {
@@ -113,35 +120,54 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
-        {[
-          ...baseNavItems,
-          ...(profile?.flight_log_preferences?.uptEnabled ? [uptNavItem] : []),
-          settingsNavItem,
-        ].map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
-          const Icon = item.icon;
+        {(() => {
+          const sections: NavSection[] = [
+            { label: null, items: [dashboardItem] },
+            { label: "Logbook", items: logbookItems },
+            ...(profile?.flight_log_preferences?.uptEnabled
+              ? [{ label: "Training", items: trainingItems }]
+              : []),
+            { label: null, items: [settingsNavItem] },
+          ];
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+          return sections.map((section, sIdx) => (
+            <div key={sIdx} className={sIdx > 0 ? "pt-3" : undefined}>
+              {section.label && !collapsed && (
+                <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                  {section.label}
+                </p>
               )}
-            >
-              {/* Active indicator bar */}
-              {isActive && (
-                <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-primary" />
+              {section.label && collapsed && (
+                <div className="mx-2 mb-1.5 h-px bg-slate-800" />
               )}
-              <Icon className="h-5 w-5 shrink-0" />
-              {!collapsed && <span>{item.label}</span>}
-            </Link>
-          );
-        })}
+              {section.items.map((item) => {
+                const isActive =
+                  pathname === item.href || pathname.startsWith(item.href + "/");
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                    )}
+                  >
+                    {/* Active indicator bar */}
+                    {isActive && (
+                      <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-primary" />
+                    )}
+                    <Icon className="h-5 w-5 shrink-0" />
+                    {!collapsed && <span>{item.label}</span>}
+                  </Link>
+                );
+              })}
+            </div>
+          ));
+        })()}
       </nav>
 
       {/* Collapse toggle */}
