@@ -25,7 +25,7 @@ import type {
   CompactTrackPoint,
 } from "@/lib/fr24/types";
 import { FR24_PENDING_KEY } from "@/components/flights/fr24-import-bar";
-import { TrackPlot } from "@/components/flights/track-plot";
+import { TrackMap } from "@/components/flights/track-map";
 
 type Mode = "live" | "historical";
 type SearchType = "callsign" | "registration" | "flight";
@@ -520,7 +520,11 @@ export function TrackingClient() {
             )}
             {track && track.length > 0 && (
               <>
-                <TrackPlot points={track} />
+                <TrackMap
+                  points={track}
+                  originLabel={selected.origin}
+                  destinationLabel={selected.destination}
+                />
                 <div className="mt-3 max-h-64 overflow-y-auto rounded-md border border-slate-800 bg-slate-900/40">
                   <table className="w-full text-[11px]">
                     <thead className="sticky top-0 bg-slate-900/95 text-text-muted">
