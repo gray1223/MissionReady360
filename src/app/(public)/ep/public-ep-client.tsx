@@ -7,6 +7,7 @@ import { EpPhaseIndicator } from "@/components/upt/ep-phase-indicator";
 import { EpChatMessage } from "@/components/upt/ep-chat-message";
 import { EpSetupForm } from "@/components/upt/ep-setup-form";
 import { EpAreaMap } from "@/components/upt/ep-area-map";
+import { EpShortcutButtons } from "@/components/upt/ep-shortcut-buttons";
 import {
   EP_PHASES,
   type AircraftPosition,
@@ -224,10 +225,15 @@ export function PublicEpClient() {
 
   function handleSend() {
     if (!input.trim() || isStreaming || !setupData) return;
+    sendStudentMessage(input.trim());
+  }
+
+  function sendStudentMessage(text: string) {
+    if (!setupData) return;
 
     const studentMsg: EpMessage = {
       role: "student",
-      content: input.trim(),
+      content: text,
       timestamp: new Date().toISOString(),
     };
 
@@ -240,6 +246,11 @@ export function PublicEpClient() {
     }
 
     sendToAI(updatedMessages, setupData, currentPhase);
+  }
+
+  function handleShortcut(text: string) {
+    if (isStreaming || !setupData) return;
+    sendStudentMessage(text);
   }
 
   function handleEnd() {
@@ -337,11 +348,6 @@ export function PublicEpClient() {
         />
       </div>
 
-      {/* Brevity shortcuts hint */}
-      <div className="mt-1 px-1 text-[11px] text-slate-500">
-        Brevity: <span className="text-slate-400 font-medium">BPWANTFACTS?</span> = full setup dump &middot; <span className="text-slate-400 font-medium">MATL</span> = take aircraft &rarr; MAC &middot; <span className="text-slate-400 font-medium">Skip</span> = reveal remaining &rarr; next phase
-      </div>
-
       {/* Collapsible training area map */}
       <details className="mt-2">
         <summary className="cursor-pointer text-xs text-slate-500 hover:text-slate-400 transition-colors select-none">
@@ -393,7 +399,13 @@ export function PublicEpClient() {
 
       {/* Input area */}
       {currentPhase !== "complete" && (
-        <div className="mt-3 flex items-end gap-2">
+        <div className="mt-3 space-y-2">
+          <EpShortcutButtons
+            currentPhase={currentPhase}
+            isStreaming={isStreaming}
+            onShortcut={handleShortcut}
+          />
+          <div className="flex items-end gap-2">
           <textarea
             ref={textareaRef}
             value={input}
@@ -419,6 +431,7 @@ export function PublicEpClient() {
           >
             <Square className="h-4 w-4" />
           </button>
+          </div>
         </div>
       )}
 

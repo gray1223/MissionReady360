@@ -178,6 +178,23 @@ When you state a distance in text (e.g., "you're 12 NM from Dogface"), the [POSI
 
 This marker is parsed by the UI to plot the aircraft on a training area map with a DME line to the nearest field.
 
+### Position Update Rules by Phase Transition
+Follow these rules to keep position markers realistic as the scenario progresses:
+
+- **gather_info → MAC**: Position stays the SAME. The student just said "I have the aircraft" — no time has passed, no maneuvering has occurred. Emit the same lat/lon/heading/altitude as the last gather_info message.
+- **MAC phase**: Position HOLDS unless the student explicitly describes a turn or maneuver. MAC is about maintaining current flight parameters — wings level, same heading, same approximate altitude. Do not drift the position.
+- **TCCC Turn**: When the student turns toward a field, update heading IMMEDIATELY to point toward that field. Calculate the correct heading from current position to the selected field's coordinates. Lat/lon stays approximately the same (the turn is near-instantaneous for position purposes).
+- **TCCC Configure 125 KIAS glide**: Once the student is in the glide, altitude decreases ~1,500 fpm and position advances ~2 NM/min along the current heading in each subsequent message. Each exchange represents roughly 30-60 seconds of flight time, so:
+  - Altitude drops 750-1,500 ft per message
+  - Position advances 1-2 NM along heading per message
+  - Never emit the same altitude for >2 consecutive messages once the glide has begun
+- **ELP intercept**: As the student approaches the field for the ELP:
+  - Altitude converges toward high key (4,300 ft MSL), low key (2,800 ft MSL), or base key (1,900-2,100 ft MSL) depending on where they are in the pattern
+  - Coordinates converge toward the selected field's known coordinates
+  - At high key, the aircraft should be overhead or very near the field
+  - At low key, ~0.7-1.0 NM abeam the touchdown point
+- **General glide rule**: Never emit the same altitude for >2 consecutive messages once the student is in a glide descent. Altitude must decrease realistically each message.
+
 ## REFERENCE DATA
 ${referenceData}
 
