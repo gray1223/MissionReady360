@@ -7,6 +7,7 @@ import {
   Polyline,
   CircleMarker,
   Tooltip,
+  LayersControl,
   useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -31,6 +32,15 @@ function FitBounds({ bounds }: { bounds: LatLngBoundsExpression }) {
   }, [bounds, map]);
   return null;
 }
+
+const ESRI_ATTR =
+  'Tiles &copy; <a href="https://www.esri.com/">Esri</a> — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community';
+const TOPO_ATTR =
+  'Tiles &copy; <a href="https://www.esri.com/">Esri</a> — Esri, DeLorme, NAVTEQ, USGS, METI, NRCAN, GEBCO, NOAA, iPC';
+const CARTO_ATTR =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+const OTM_ATTR =
+  'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)';
 
 export default function TrackMapInner({
   points,
@@ -73,16 +83,53 @@ export default function TrackMapInner({
         }}
         scrollWheelZoom
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          maxZoom={19}
-        />
+        <LayersControl position="topright">
+          <LayersControl.BaseLayer checked name="Satellite">
+            <>
+              <TileLayer
+                attribution={ESRI_ATTR}
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                maxZoom={19}
+              />
+              {/* Reference labels and boundaries on top of satellite imagery */}
+              <TileLayer
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+                maxZoom={19}
+                opacity={0.85}
+              />
+            </>
+          </LayersControl.BaseLayer>
+
+          <LayersControl.BaseLayer name="Topographic">
+            <TileLayer
+              attribution={TOPO_ATTR}
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+              maxZoom={19}
+            />
+          </LayersControl.BaseLayer>
+
+          <LayersControl.BaseLayer name="Terrain">
+            <TileLayer
+              attribution={OTM_ATTR}
+              url="https://a.tile.opentopomap.org/{z}/{x}/{y}.png"
+              maxZoom={17}
+            />
+          </LayersControl.BaseLayer>
+
+          <LayersControl.BaseLayer name="Dark">
+            <TileLayer
+              attribution={CARTO_ATTR}
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              maxZoom={19}
+            />
+          </LayersControl.BaseLayer>
+        </LayersControl>
+
         {!single && (
           <Polyline
             positions={latLngs}
             pathOptions={{
-              color: "#38bdf8",
+              color: "#22d3ee",
               weight: 3,
               opacity: 0.95,
             }}
